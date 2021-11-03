@@ -50,7 +50,15 @@ impl Lexer {
             todo!()
         }
 
+        // TODO: We had better not use recursions here...
         match self.src_lexers.last_mut().unwrap().next() {
+            // End of the translation unit.
+            Ok(None) if self.src_lexers.len() == 1 => Ok(None),
+            // End of the current source lexer. Go back to the previous one.
+            Ok(None) => {
+                self.src_lexers.pop().unwrap();
+                self.next()
+            }
             Ok(tok) => Ok(tok),
             Err(e) => {
                 use src_lexer::Error;
