@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 long-sourceloc = { path = "../sourceloc" }
+anyhow = "= 1.0.45"
