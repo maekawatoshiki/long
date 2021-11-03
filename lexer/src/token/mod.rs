@@ -3,6 +3,7 @@ pub mod kind;
 use kind::TokenKind;
 use long_sourceloc::SourceLoc;
 
+// TODO: Add a field to represent leading spaces (or something like syntax trivia).
 #[derive(Debug, Clone)]
 pub struct Token {
     /// The kind of the token.

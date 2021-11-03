@@ -22,9 +22,19 @@ impl SourceLoc {
         self.line
     }
 
+    /// Returns the mutable reference to the line number.
+    pub fn line_mut(&mut self) -> &mut u32 {
+        &mut self.line
+    }
+
     /// Returns the column number.
     pub fn column(&self) -> u32 {
         self.column
+    }
+
+    /// Returns the mutable reference to the column number.
+    pub fn column_mut(&mut self) -> &mut u32 {
+        &mut self.column
     }
 }
 
