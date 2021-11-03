@@ -11,9 +11,20 @@ pub struct SourceLoc {
 }
 
 impl SourceLoc {
+    /// Creates a new `SourceLoc`. `column` must be greater than 0.
     pub fn new(line: u32, column: u32) -> Self {
         assert!(column > 0);
         Self { line, column }
+    }
+
+    /// Returns the line number.
+    pub fn line(&self) -> u32 {
+        self.line
+    }
+
+    /// Returns the column number.
+    pub fn column(&self) -> u32 {
+        self.column
     }
 }
 
@@ -29,6 +40,9 @@ fn test() {
     assert_eq!(loc, SourceLoc::new(0, 1));
     let loc = SourceLoc::new(0xffffffff, 0xffffffff);
     assert_eq!(loc, SourceLoc::new(0xffffffff, 0xffffffff));
+    let loc = SourceLoc::new(10, 17);
+    assert_eq!(loc.line(), 10);
+    assert_eq!(loc.column(), 17);
 }
 
 #[test]
