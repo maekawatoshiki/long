@@ -1,10 +1,12 @@
+pub mod src_lexer;
 pub mod token;
 
 extern crate anyhow;
 extern crate long_sourceloc as sourceloc;
 
 use anyhow::Result;
-use std::{fs::read_to_string, path::PathBuf};
+use src_lexer::SourceLexer;
+use std::path::PathBuf;
 use token::Token;
 
 /// A lexical analyzer for a translation unit.
@@ -15,16 +17,6 @@ pub struct Lexer {
 
     /// The source lexers.
     src_lexers: Vec<SourceLexer>,
-}
-
-/// A lexical analyzer for either a single source file or a string.
-struct SourceLexer {
-    /// The file path of the source file the lexer originally reads.
-    /// Set to `None` if the lexer does not read a file but a string.
-    filepath: Option<PathBuf>,
-
-    /// The source code the lexer reads.
-    source: String,
 }
 
 impl Lexer {
@@ -58,32 +50,23 @@ impl Lexer {
             todo!()
         }
 
-        self.src_lexers.last_mut().unwrap().next()
-    }
-}
-
-impl SourceLexer {
-    /// Creates a new `SourceLexer`.
-    pub fn new(source: String) -> Self {
-        Self {
-            filepath: None,
-            source,
+        match self.src_lexers.last_mut().unwrap().next() {
+            Ok(tok) => Ok(tok),
+            Err(e) => {
+                use src_lexer::Error;
+                match e.downcast_ref::<src_lexer::Error>() {
+                    Some(e) => match e {
+                        // When the source lexer reads #include directive, we create a new source
+                        // lexer for that.
+                        Error::Include(filepath) => {
+                            self.src_lexers.push(SourceLexer::new_from_file(filepath)?);
+                            self.next()
+                        }
+                    },
+                    None => Err(e),
+                }
+            }
         }
-    }
-
-    /// Creates a new `SourceLexer` for a file.
-    pub fn new_from_file<P>(filepath: P) -> Result<Self>
-    where
-        P: Into<PathBuf> + Clone,
-    {
-        Ok(Self {
-            source: read_to_string(filepath.clone().into())?,
-            filepath: Some(filepath.into()),
-        })
-    }
-
-    pub fn next(&mut self) -> Result<Option<Token>> {
-        todo!()
     }
 }
 
@@ -95,6 +78,6 @@ fn test() {
 
 #[test]
 #[should_panic]
-fn test2() {
+fn cannot_open_file() {
     let _ = Lexer::new_from_file("").unwrap();
 }
