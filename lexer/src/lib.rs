@@ -37,14 +37,14 @@ impl Lexer {
     }
 
     /// Creates a new `Lexer` for a file.
-    pub fn new_from_file<P>(filepath: P) -> Self
+    pub fn new_from_file<P>(filepath: P) -> Result<Self>
     where
         P: Into<PathBuf> + Clone,
     {
-        Self {
+        Ok(Self {
+            src_lexers: vec![SourceLexer::new_from_file(filepath.clone().into())?],
             filepath: Some(filepath.into()),
-            src_lexers: vec![],
-        }
+        })
     }
 
     /// Returns the file path.
@@ -53,8 +53,12 @@ impl Lexer {
     }
 
     /// Reads a token.
-    pub fn next(&mut self) -> Result<Token> {
-        todo!()
+    pub fn next(&mut self) -> Result<Option<Token>> {
+        if self.src_lexers.is_empty() {
+            todo!()
+        }
+
+        self.src_lexers.last_mut().unwrap().next()
     }
 }
 
@@ -77,12 +81,20 @@ impl SourceLexer {
             filepath: Some(filepath.into()),
         })
     }
+
+    pub fn next(&mut self) -> Result<Option<Token>> {
+        todo!()
+    }
 }
 
 #[test]
 fn test() {
-    let l = Lexer::new_from_file("hello.c");
-    assert_eq!(l.filepath().unwrap().to_str().unwrap(), "hello.c");
     let l = Lexer::new("int main(){}");
     assert!(l.filepath().is_none());
+}
+
+#[test]
+#[should_panic]
+fn test2() {
+    let _ = Lexer::new_from_file("").unwrap();
 }
