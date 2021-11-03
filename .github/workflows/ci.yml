@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+    - name: Install dependencies
+      env: 
+        ACCEPT_EULA: Y
+      run:  |
+            rustup override set nightly && \
+            sudo -E apt-get update && \
+            sudo -E apt-get install -y zlib1g-dev apt-utils && \
+            sudo -E apt-get install -y opt libedit-dev build-essential make && \
+            sudo -E apt-get install -y cmake pkg-config jq && \
+            sudo -E apt-get install -y libcurl4-openssl-dev libelf-dev libdw-dev binutils-dev libiberty-dev
+    - name: Run tests
+      working-directory: ./
+      run: |
+            cargo clean && cargo test
