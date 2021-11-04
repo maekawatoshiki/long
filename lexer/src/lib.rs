@@ -1,3 +1,4 @@
+pub mod cursor;
 pub mod src_lexer;
 pub mod token;
 

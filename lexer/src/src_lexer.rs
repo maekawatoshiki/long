@@ -1,7 +1,7 @@
+use crate::cursor::Cursor;
 use crate::token::kind::TokenKind;
 use crate::token::Token;
 use anyhow::Result;
-use long_sourceloc::SourceLoc;
 use std::fmt;
 use std::fs::read_to_string;
 use std::path::PathBuf;
@@ -13,14 +13,8 @@ pub(crate) struct SourceLexer {
     #[allow(dead_code)]
     filepath: Option<PathBuf>,
 
-    /// The source code the lexer reads.
-    source: String,
-
-    /// The current position in `source`.
-    pos: usize,
-
-    /// The current source location.
-    loc: SourceLoc,
+    /// The cursor of the lexer.
+    cursor: Cursor,
 }
 
 #[derive(Debug)]
@@ -33,9 +27,7 @@ impl SourceLexer {
     pub fn new(source: impl Into<String>) -> Self {
         Self {
             filepath: None,
-            source: source.into(),
-            pos: 0,
-            loc: SourceLoc::new(0, 1),
+            cursor: Cursor::new(source.into()),
         }
     }
 
@@ -45,10 +37,8 @@ impl SourceLexer {
         P: Into<PathBuf> + Clone,
     {
         Ok(Self {
-            source: read_to_string(filepath.clone().into())?,
+            cursor: Cursor::new(read_to_string(filepath.clone().into())?),
             filepath: Some(filepath.into()),
-            pos: 0,
-            loc: SourceLoc::new(0, 1),
         })
     }
 
@@ -57,21 +47,13 @@ impl SourceLexer {
         self.read_identifier()
     }
 
-    /// Reads an identifier. Assumes the character at `self.pos` is alphabetic.
+    /// Reads an identifier. Assumes the result of `self.cursor.peek_char()` is alphabetic.
     pub fn read_identifier(&mut self) -> Result<Option<Token>> {
-        let loc = self.loc;
-        let source = &self.source[self.pos..];
-        if source.is_empty() {
-            return Ok(None);
-        }
-
-        let ident: String = source
-            .chars()
-            .take_while(|c| c.is_ascii_alphabetic())
-            .collect();
-        self.pos += ident.len();
-        *self.loc.column_mut() += ident.len() as u32;
-
+        let loc = self.cursor.loc;
+        let ident = match self.cursor.take_chars_while(|c| c.is_ascii_alphanumeric()) {
+            Some(ident) => ident,
+            None => return Ok(None),
+        };
         Ok(Some(Token::new(TokenKind::Ident(ident), loc)))
     }
 }
@@ -99,5 +81,5 @@ fn cannot_open_file() {
 fn just_read_one_token() {
     let mut l = SourceLexer::new("int main() {}");
     assert!(matches!(l.next().unwrap().unwrap().kind(), TokenKind::Ident(i) if i == "int"));
-    assert!(l.pos == 3)
+    assert!(l.cursor.pos == 3)
 }
