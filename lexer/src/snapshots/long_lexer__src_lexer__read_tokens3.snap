@@ -1,0 +1,63 @@
+---
+source: lexer/src/src_lexer.rs
+expression: read_all_tokens(&mut l)
+
+---
+[
+    Token {
+        kind: Ident(
+            "int",
+        ),
+        leading_space: false,
+        loc: 1:1,
+    },
+    Token {
+        kind: Ident(
+            "main",
+        ),
+        leading_space: true,
+        loc: 1:5,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        loc: 1:9,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        loc: 1:10,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBrace,
+        ),
+        leading_space: true,
+        loc: 1:12,
+    },
+    Token {
+        kind: Ident(
+            "return",
+        ),
+        leading_space: true,
+        loc: 2:2,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        loc: 2:8,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBrace,
+        ),
+        leading_space: false,
+        loc: 3:1,
+    },
+]

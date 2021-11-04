@@ -172,6 +172,12 @@ fn read_tokens2() {
 }
 
 #[test]
+fn read_tokens3() {
+    let mut l = SourceLexer::new("int main() {\n return;\n}");
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
 fn read_symbols() {
     let mut l = SourceLexer::new(
         "(){}[],;:.+-*/%!~&<>^|?=#++--::-><<>><=>===!=&&||+=-=*=/=%=&=^=|=<<=>>=&&=||=sizeof",
