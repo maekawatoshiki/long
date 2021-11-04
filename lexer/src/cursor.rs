@@ -27,6 +27,21 @@ impl Cursor {
         self.source.get(self.pos..)?.chars().next()
     }
 
+    /// Peeks the character at `self.pos + 1`.
+    pub fn peek_char2(&self) -> Option<char> {
+        let mut chars = self.source.get(self.pos..)?.chars();
+        chars.next();
+        chars.next()
+    }
+
+    /// Peeks the character at `self.pos + 2`.
+    pub fn peek_char3(&self) -> Option<char> {
+        let mut chars = self.source.get(self.pos..)?.chars();
+        chars.next();
+        chars.next();
+        chars.next()
+    }
+
     /// Peeks the character at `self.pos` and advances `self.pos`.
     pub fn next_char(&mut self) -> Option<char> {
         let c = self.source[self.pos..].chars().next();

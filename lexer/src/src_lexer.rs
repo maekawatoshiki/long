@@ -51,7 +51,7 @@ impl SourceLexer {
                 self.next()
                     .map(|t| t.map(|t| t.set_leading_space(leading_space)))
             }
-            Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol1())),
+            Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol()?)),
             None => return Ok(None),
             _ => todo!(),
         }
@@ -63,14 +63,64 @@ impl SourceLexer {
         let ident = self
             .cursor
             .take_chars_while(|&c| c.is_ascii_alphanumeric() || c == '_');
+        if ident == "sizeof" {
+            return Token::new(TokenKind::Symbol(SymbolKind::Sizeof), loc);
+        }
         Token::new(TokenKind::Ident(ident), loc)
+    }
+
+    /// Reads a symbol.
+    fn read_symbol(&mut self) -> Result<Token> {
+        let loc = self.cursor.loc;
+        let x = self.cursor.peek_char();
+        let y = self.cursor.peek_char2();
+        match (x, y) {
+            (Some('.'), Some('.')) if self.cursor.peek_char3() == Some('.') => {
+                self.cursor.next_char();
+                self.cursor.next_char();
+                self.cursor.next_char();
+                Ok(Token::new(TokenKind::Symbol(SymbolKind::Vararg), loc))
+            }
+            (Some('<'), Some('<'))
+            | (Some('>'), Some('>'))
+            | (Some('&'), Some('&'))
+            | (Some('|'), Some('|'))
+                if self.cursor.peek_char3() == Some('=') =>
+            {
+                self.cursor.next_char();
+                self.cursor.next_char();
+                self.cursor.next_char();
+                Ok(Token::new(
+                    TokenKind::Symbol(match x {
+                        Some('<') => SymbolKind::AssignShl,
+                        Some('>') => SymbolKind::AssignShr,
+                        Some('&') => SymbolKind::AssignLAnd,
+                        Some('|') => SymbolKind::AssignLOr,
+                        _ => unreachable!(),
+                    }),
+                    loc,
+                ))
+            }
+            (Some(x), Some(y)) => match SymbolKind::from_two_chars(x, y) {
+                Some(kind) => {
+                    self.cursor.next_char();
+                    self.cursor.next_char();
+                    Ok(Token::new(TokenKind::Symbol(kind), loc))
+                }
+                None => Ok(self.read_symbol1()),
+            },
+            _ => Ok(self.read_symbol1()),
+        }
     }
 
     /// Reads a single-character symbol.
     fn read_symbol1(&mut self) -> Token {
         let loc = self.cursor.loc;
         let c = self.cursor.next_char().unwrap();
-        Token::new(TokenKind::Symbol(c.into()), loc)
+        Token::new(
+            TokenKind::Symbol(SymbolKind::from_char(c).expect("unreachable")),
+            loc,
+        )
     }
 
     /// Reads whitespaces (i.e. ' ' '\t' '\n').
@@ -123,7 +173,9 @@ fn read_tokens2() {
 
 #[test]
 fn read_symbols() {
-    let mut l = SourceLexer::new("(){}[],;:.+-*/%!~&<>^|?=#");
+    let mut l = SourceLexer::new(
+        "(){}[],;:.+-*/%!~&<>^|?=#++--::-><<>><=>===!=&&||+=-=*=/=%=&=^=|=<<=>>=&&=||=sizeof",
+    );
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 

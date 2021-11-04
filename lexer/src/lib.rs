@@ -62,12 +62,12 @@ impl Lexer {
             }
             Ok(tok) => Ok(tok),
             Err(e) => {
-                use src_lexer::Error;
+                use src_lexer::Error as SError;
                 match e.downcast_ref::<src_lexer::Error>() {
                     Some(e) => match e {
                         // When the source lexer reads #include directive, we create a new source
                         // lexer for that.
-                        Error::Include(filepath) => {
+                        SError::Include(filepath) => {
                             self.src_lexers.push(SourceLexer::new_from_file(filepath)?);
                             self.next()
                         }
