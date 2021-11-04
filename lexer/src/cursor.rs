@@ -24,7 +24,7 @@ impl Cursor {
 
     /// Peeks the character at `self.pos`.
     pub fn peek_char(&self) -> Option<char> {
-        self.source[self.pos..].chars().next()
+        self.source.get(self.pos..)?.chars().next()
     }
 
     /// Peeks the character at `self.pos` and advances `self.pos`.
@@ -47,15 +47,13 @@ impl Cursor {
     {
         let mut buf = String::new();
         loop {
-            let c = self.peek_char()?;
-
-            if !predicate(&c) {
-                break;
+            match self.peek_char() {
+                Some(c) if predicate(&c) => {
+                    buf.push(self.next_char().unwrap());
+                }
+                _ => break,
             }
-
-            buf.push(self.next_char()?)
         }
-
         Some(buf)
     }
 }

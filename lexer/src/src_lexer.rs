@@ -44,13 +44,20 @@ impl SourceLexer {
 
     /// Reads a token.
     pub fn next(&mut self) -> Result<Option<Token>> {
-        self.read_identifier()
+        match self.cursor.peek_char() {
+            Some(c) if c.is_ascii_alphabetic() || c == '_' => self.read_identifier(),
+            None => return Ok(None),
+            _ => todo!(),
+        }
     }
 
     /// Reads an identifier. Assumes the result of `self.cursor.peek_char()` is alphabetic.
     pub fn read_identifier(&mut self) -> Result<Option<Token>> {
         let loc = self.cursor.loc;
-        let ident = match self.cursor.take_chars_while(|c| c.is_ascii_alphanumeric()) {
+        let ident = match self
+            .cursor
+            .take_chars_while(|&c| c.is_ascii_alphanumeric() || c == '_')
+        {
             Some(ident) => ident,
             None => return Ok(None),
         };
@@ -81,5 +88,8 @@ fn cannot_open_file() {
 fn just_read_one_token() {
     let mut l = SourceLexer::new("int main() {}");
     assert!(matches!(l.next().unwrap().unwrap().kind(), TokenKind::Ident(i) if i == "int"));
-    assert!(l.cursor.pos == 3)
+    assert!(l.cursor.pos == 3);
+    let mut l = SourceLexer::new("__num");
+    assert!(matches!(l.next().unwrap().unwrap().kind(), TokenKind::Ident(i) if i == "__num"));
+    assert!(l.cursor.pos == 5)
 }
