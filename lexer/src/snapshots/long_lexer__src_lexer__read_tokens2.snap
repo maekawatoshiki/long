@@ -1,0 +1,31 @@
+---
+source: lexer/src/src_lexer.rs
+expression: read_all_tokens(&mut l)
+
+---
+[
+    Token {
+        kind: Ident(
+            "int",
+        ),
+        leading_space: false,
+        loc: 1:1,
+    },
+    Token {
+        kind: Ident(
+            "main",
+        ),
+        leading_space: true,
+        loc: 1:5,
+    },
+    Token {
+        kind: OpeningParen,
+        leading_space: false,
+        loc: 1:9,
+    },
+    Token {
+        kind: ClosingParen,
+        leading_space: false,
+        loc: 1:10,
+    },
+]

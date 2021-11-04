@@ -51,6 +51,7 @@ impl SourceLexer {
                 self.next()
                     .map(|t| t.map(|t| t.set_leading_space(leading_space)))
             }
+            Some(c) if c == '(' || c == ')' => Ok(Some(self.read_symbol1())),
             None => return Ok(None),
             _ => todo!(),
         }
@@ -63,6 +64,13 @@ impl SourceLexer {
             .cursor
             .take_chars_while(|&c| c.is_ascii_alphanumeric() || c == '_');
         Token::new(TokenKind::Ident(ident), loc)
+    }
+
+    /// Reads a single-character symbol.
+    fn read_symbol1(&mut self) -> Token {
+        let loc = self.cursor.loc;
+        let c = self.cursor.next_char().unwrap();
+        Token::new(TokenKind::from(c), loc)
     }
 
     /// Reads whitespaces (i.e. ' ' '\t' '\n').
@@ -104,6 +112,12 @@ fn just_read_one_token() {
 #[test]
 fn read_tokens() {
     let mut l = SourceLexer::new("int main\nlong short");
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
+fn read_tokens2() {
+    let mut l = SourceLexer::new("int main()");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
