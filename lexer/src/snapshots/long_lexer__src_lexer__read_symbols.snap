@@ -1,0 +1,182 @@
+---
+source: lexer/src/src_lexer.rs
+expression: read_all_tokens(&mut l)
+
+---
+[
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        loc: 1:1,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        loc: 1:2,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBrace,
+        ),
+        leading_space: false,
+        loc: 1:3,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBrace,
+        ),
+        leading_space: false,
+        loc: 1:4,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBoxBracket,
+        ),
+        leading_space: false,
+        loc: 1:5,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBoxBracket,
+        ),
+        leading_space: false,
+        loc: 1:6,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        loc: 1:7,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        loc: 1:8,
+    },
+    Token {
+        kind: Symbol(
+            Colon,
+        ),
+        leading_space: false,
+        loc: 1:9,
+    },
+    Token {
+        kind: Symbol(
+            Dot,
+        ),
+        leading_space: false,
+        loc: 1:10,
+    },
+    Token {
+        kind: Symbol(
+            Add,
+        ),
+        leading_space: false,
+        loc: 1:11,
+    },
+    Token {
+        kind: Symbol(
+            Sub,
+        ),
+        leading_space: false,
+        loc: 1:12,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: false,
+        loc: 1:13,
+    },
+    Token {
+        kind: Symbol(
+            Div,
+        ),
+        leading_space: false,
+        loc: 1:14,
+    },
+    Token {
+        kind: Symbol(
+            Mod,
+        ),
+        leading_space: false,
+        loc: 1:15,
+    },
+    Token {
+        kind: Symbol(
+            Not,
+        ),
+        leading_space: false,
+        loc: 1:16,
+    },
+    Token {
+        kind: Symbol(
+            BitwiseNot,
+        ),
+        leading_space: false,
+        loc: 1:17,
+    },
+    Token {
+        kind: Symbol(
+            And,
+        ),
+        leading_space: false,
+        loc: 1:18,
+    },
+    Token {
+        kind: Symbol(
+            Lt,
+        ),
+        leading_space: false,
+        loc: 1:19,
+    },
+    Token {
+        kind: Symbol(
+            Gt,
+        ),
+        leading_space: false,
+        loc: 1:20,
+    },
+    Token {
+        kind: Symbol(
+            Xor,
+        ),
+        leading_space: false,
+        loc: 1:21,
+    },
+    Token {
+        kind: Symbol(
+            Or,
+        ),
+        leading_space: false,
+        loc: 1:22,
+    },
+    Token {
+        kind: Symbol(
+            Question,
+        ),
+        leading_space: false,
+        loc: 1:23,
+    },
+    Token {
+        kind: Symbol(
+            Assign,
+        ),
+        leading_space: false,
+        loc: 1:24,
+    },
+    Token {
+        kind: Symbol(
+            Hash,
+        ),
+        leading_space: false,
+        loc: 1:25,
+    },
+]

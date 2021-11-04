@@ -1,5 +1,5 @@
 use crate::cursor::Cursor;
-use crate::token::kind::TokenKind;
+use crate::token::kind::{SymbolKind, TokenKind};
 use crate::token::Token;
 use anyhow::Result;
 use std::fmt;
@@ -51,7 +51,7 @@ impl SourceLexer {
                 self.next()
                     .map(|t| t.map(|t| t.set_leading_space(leading_space)))
             }
-            Some(c) if c == '(' || c == ')' => Ok(Some(self.read_symbol1())),
+            Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol1())),
             None => return Ok(None),
             _ => todo!(),
         }
@@ -70,7 +70,7 @@ impl SourceLexer {
     fn read_symbol1(&mut self) -> Token {
         let loc = self.cursor.loc;
         let c = self.cursor.next_char().unwrap();
-        Token::new(TokenKind::from(c), loc)
+        Token::new(TokenKind::Symbol(c.into()), loc)
     }
 
     /// Reads whitespaces (i.e. ' ' '\t' '\n').
@@ -118,6 +118,12 @@ fn read_tokens() {
 #[test]
 fn read_tokens2() {
     let mut l = SourceLexer::new("int main()");
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
+fn read_symbols() {
+    let mut l = SourceLexer::new("(){}[],;:.+-*/%!~&<>^|?=#");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 

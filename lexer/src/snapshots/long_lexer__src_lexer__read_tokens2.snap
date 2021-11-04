@@ -19,12 +19,16 @@ expression: read_all_tokens(&mut l)
         loc: 1:5,
     },
     Token {
-        kind: OpeningParen,
+        kind: Symbol(
+            OpeningParen,
+        ),
         leading_space: false,
         loc: 1:9,
     },
     Token {
-        kind: ClosingParen,
+        kind: Symbol(
+            ClosingParen,
+        ),
         leading_space: false,
         loc: 1:10,
     },
