@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 long-sourceloc = { path = "../sourceloc" }
 anyhow = "= 1.0.45"
+
+[dev-dependencies]
+insta = "= 1.7.1"

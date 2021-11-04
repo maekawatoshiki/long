@@ -41,7 +41,7 @@ impl Cursor {
     }
 
     /// Takes a sequence of characters while `preicate()` returns true.
-    pub fn take_chars_while<P>(&mut self, mut predicate: P) -> Option<String>
+    pub fn take_chars_while<P>(&mut self, mut predicate: P) -> String
     where
         P: FnMut(&char) -> bool,
     {
@@ -54,6 +54,6 @@ impl Cursor {
                 _ => break,
             }
         }
-        Some(buf)
+        buf
     }
 }

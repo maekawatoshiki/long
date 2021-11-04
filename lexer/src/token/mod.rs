@@ -3,11 +3,14 @@ pub mod kind;
 use kind::TokenKind;
 use long_sourceloc::SourceLoc;
 
-// TODO: Add a field to represent leading spaces (or something like syntax trivia).
 #[derive(Debug, Clone)]
 pub struct Token {
     /// The kind of the token.
     kind: TokenKind,
+
+    /// `Some(...)` if any leading spaces occurs before the token.
+    /// Line terminator characters are not leading spaces.
+    leading_space: bool,
 
     /// The source location of the token.
     loc: SourceLoc,
@@ -16,7 +19,16 @@ pub struct Token {
 impl Token {
     /// Creates a new `Token`.
     pub fn new(kind: TokenKind, loc: SourceLoc) -> Self {
-        Self { kind, loc }
+        Self {
+            kind,
+            leading_space: false,
+            loc,
+        }
+    }
+
+    pub fn set_leading_space(mut self, leading_space: bool) -> Self {
+        self.leading_space = leading_space;
+        self
     }
 
     /// Returns the kind of the token.

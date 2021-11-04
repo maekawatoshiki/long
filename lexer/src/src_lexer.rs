@@ -45,23 +45,30 @@ impl SourceLexer {
     /// Reads a token.
     pub fn next(&mut self) -> Result<Option<Token>> {
         match self.cursor.peek_char() {
-            Some(c) if c.is_ascii_alphabetic() || c == '_' => self.read_identifier(),
+            Some(c) if c.is_ascii_alphabetic() || c == '_' => Ok(Some(self.read_identifier())),
+            Some(c) if c == ' ' || c == '\t' || c == '\n' => {
+                let leading_space = !self.read_whitespaces().ends_with('\n');
+                self.next()
+                    .map(|t| t.map(|t| t.set_leading_space(leading_space)))
+            }
             None => return Ok(None),
             _ => todo!(),
         }
     }
 
     /// Reads an identifier. Assumes the result of `self.cursor.peek_char()` is alphabetic.
-    pub fn read_identifier(&mut self) -> Result<Option<Token>> {
+    fn read_identifier(&mut self) -> Token {
         let loc = self.cursor.loc;
-        let ident = match self
+        let ident = self
             .cursor
-            .take_chars_while(|&c| c.is_ascii_alphanumeric() || c == '_')
-        {
-            Some(ident) => ident,
-            None => return Ok(None),
-        };
-        Ok(Some(Token::new(TokenKind::Ident(ident), loc)))
+            .take_chars_while(|&c| c.is_ascii_alphanumeric() || c == '_');
+        Token::new(TokenKind::Ident(ident), loc)
+    }
+
+    /// Reads whitespaces (i.e. ' ' '\t' '\n').
+    fn read_whitespaces(&mut self) -> String {
+        self.cursor
+            .take_chars_while(|&c| c == ' ' || c == '\t' || c == '\n')
     }
 }
 
@@ -92,4 +99,19 @@ fn just_read_one_token() {
     let mut l = SourceLexer::new("__num");
     assert!(matches!(l.next().unwrap().unwrap().kind(), TokenKind::Ident(i) if i == "__num"));
     assert!(l.cursor.pos == 5)
+}
+
+#[test]
+fn read_tokens() {
+    let mut l = SourceLexer::new("int main\nlong short");
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[cfg(test)]
+fn read_all_tokens(l: &mut SourceLexer) -> Vec<Token> {
+    let mut tokens = vec![];
+    while let Some(tok) = l.next().unwrap() {
+        tokens.push(tok)
+    }
+    tokens
 }
