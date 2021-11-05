@@ -348,7 +348,7 @@ expression: read_all_tokens(&mut l)
         loc: 1:75,
     },
     Token {
-        kind: Symbol(
+        kind: Keyword(
             Sizeof,
         ),
         leading_space: false,

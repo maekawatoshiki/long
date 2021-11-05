@@ -1,5 +1,5 @@
 use crate::cursor::Cursor;
-use crate::token::kind::{SymbolKind, TokenKind};
+use crate::token::kind::{KeywordKind, SymbolKind, TokenKind};
 use crate::token::Token;
 use anyhow::Result;
 use std::fmt;
@@ -63,10 +63,10 @@ impl SourceLexer {
         let ident = self
             .cursor
             .take_chars_while(|&c| c.is_ascii_alphanumeric() || c == '_');
-        if ident == "sizeof" {
-            return Token::new(TokenKind::Symbol(SymbolKind::Sizeof), loc);
-        }
-        Token::new(TokenKind::Ident(ident), loc)
+        KeywordKind::from_str(ident.as_str()).map_or_else(
+            || Token::new(TokenKind::Ident(ident), loc),
+            |kind| Token::new(TokenKind::Keyword(kind), loc),
+        )
     }
 
     /// Reads a symbol.
@@ -152,7 +152,10 @@ fn cannot_open_file() {
 #[test]
 fn just_read_one_token() {
     let mut l = SourceLexer::new("int main() {}");
-    assert!(matches!(l.next().unwrap().unwrap().kind(), TokenKind::Ident(i) if i == "int"));
+    assert!(matches!(
+        l.next().unwrap().unwrap().kind(),
+        TokenKind::Keyword(KeywordKind::Int)
+    ));
     assert!(l.cursor.pos == 3);
     let mut l = SourceLexer::new("__num");
     assert!(matches!(l.next().unwrap().unwrap().kind(), TokenKind::Ident(i) if i == "__num"));

@@ -1,12 +1,12 @@
 ---
 source: lexer/src/src_lexer.rs
-expression: tokens
+expression: read_all_tokens(&mut l)
 
 ---
 [
     Token {
-        kind: Ident(
-            "int",
+        kind: Keyword(
+            Int,
         ),
         leading_space: false,
         loc: 1:1,
@@ -19,15 +19,15 @@ expression: tokens
         loc: 1:5,
     },
     Token {
-        kind: Ident(
-            "long",
+        kind: Keyword(
+            Long,
         ),
         leading_space: false,
         loc: 2:1,
     },
     Token {
-        kind: Ident(
-            "short",
+        kind: Keyword(
+            Short,
         ),
         leading_space: true,
         loc: 2:6,
