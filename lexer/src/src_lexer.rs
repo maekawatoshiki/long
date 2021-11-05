@@ -147,9 +147,27 @@ impl SourceLexer {
             c.is_alphanumeric() || c == '.' || is_f
         });
         if is_float {
-            // TODO: Support suffix.
-            let f: f64 = lit.parse().unwrap();
-            return Ok(Token::new(TokenKind::Float(FloatKind::Double(f)), loc));
+            return Ok(
+                if let Some((lit, after_suffix)) = lit.split_once(|c| matches!(c, 'f' | 'F')) {
+                    if !after_suffix.is_empty() {
+                        return Err(Error::Unexpected(loc).into());
+                    }
+                    let f: f32 = lit.parse().unwrap();
+                    Token::new(TokenKind::Float(FloatKind::Float(f)), loc)
+                } else if let Some((lit, after_suffix)) = lit.split_once(|c| matches!(c, 'l' | 'L'))
+                {
+                    if !after_suffix.is_empty() {
+                        return Err(Error::Unexpected(loc).into());
+                    }
+                    let f: f64 = lit.parse().unwrap();
+                    Token::new(TokenKind::Float(FloatKind::LongDouble(f)), loc)
+                } else if lit.ends_with(|c: char| c.is_ascii_digit() || c == '.') {
+                    let f: f64 = lit.parse().unwrap();
+                    Token::new(TokenKind::Float(FloatKind::Double(f)), loc)
+                } else {
+                    return Err(Error::Unexpected(loc).into());
+                },
+            );
         }
         // TODO: Support suffix.
         // TODO: Support 64bit int.
@@ -232,7 +250,7 @@ fn read_symbols() {
 
 #[test]
 fn read_ints() {
-    let mut l = SourceLexer::new(".123 1e+10 34567890 123 4300000000");
+    let mut l = SourceLexer::new(".123 1e+10 34567890 123 4300000000 3.4l 2.71f 1.1 2.");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 

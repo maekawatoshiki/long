@@ -49,4 +49,40 @@ expression: read_all_tokens(&mut l)
         leading_space: true,
         loc: 1:25,
     },
+    Token {
+        kind: Float(
+            LongDouble(
+                3.4,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:36,
+    },
+    Token {
+        kind: Float(
+            Float(
+                2.71,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:41,
+    },
+    Token {
+        kind: Float(
+            Double(
+                1.1,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:47,
+    },
+    Token {
+        kind: Float(
+            Double(
+                2.0,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:51,
+    },
 ]
