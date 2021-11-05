@@ -4,6 +4,7 @@ pub enum TokenKind {
     Ident(String),
     Keyword(KeywordKind),
     Symbol(SymbolKind),
+    Int(IntKind),
 }
 
 /// The kind of a symbol.
@@ -140,6 +141,17 @@ pub enum KeywordKind {
     For,
     Public,
     Throw,
+}
+
+/// The kind of an integer constant.
+#[derive(Debug, Clone)]
+pub enum IntKind {
+    Int(i32),
+    LongInt(i32),
+    LongLongInt(i64),
+    UInt(i32),
+    ULongInt(i32),
+    ULongLongInt(i64),
 }
 
 impl SymbolKind {
