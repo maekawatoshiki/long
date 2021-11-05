@@ -169,12 +169,17 @@ impl SourceLexer {
                 },
             );
         }
+        let (lit, radix) = if lit.starts_with("0x") || lit.starts_with("0X") {
+            (&lit[2..], 16)
+        } else if lit.starts_with("0") {
+            (&lit[1..], 8)
+        } else {
+            (lit.as_str(), 10)
+        };
         // TODO: Support suffix.
-        // TODO: Support 64bit int.
-        // TODO: Support hex and oct literals.
-        if let Ok(i) = lit.parse::<i32>() {
+        if let Ok(i) = i32::from_str_radix(lit, radix) {
             Ok(Token::new(TokenKind::Int(IntKind::Int(i)), loc))
-        } else if let Ok(i) = lit.parse::<i64>() {
+        } else if let Ok(i) = i64::from_str_radix(lit, radix) {
             Ok(Token::new(TokenKind::Int(IntKind::LongLongInt(i)), loc))
         } else {
             // Too big integer.
@@ -250,7 +255,8 @@ fn read_symbols() {
 
 #[test]
 fn read_ints() {
-    let mut l = SourceLexer::new(".123 1e+10 34567890 123 4300000000 3.4l 2.71f 1.1 2.");
+    let mut l =
+        SourceLexer::new(".123 1e+10 34567890 123 4300000000 3.4l 2.71f 1.1 2. 0xfff 01727");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
