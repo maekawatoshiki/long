@@ -6,7 +6,9 @@ extern crate anyhow;
 extern crate long_sourceloc as sourceloc;
 
 use anyhow::Result;
+use sourceloc::SourceLoc;
 use src_lexer::SourceLexer;
+use std::fmt;
 use std::path::PathBuf;
 use token::Token;
 
@@ -18,6 +20,11 @@ pub struct Lexer {
 
     /// The source lexers.
     src_lexers: Vec<SourceLexer>,
+}
+
+#[derive(Debug)]
+pub enum Error {
+    Unexpected(SourceLoc),
 }
 
 impl Lexer {
@@ -71,11 +78,20 @@ impl Lexer {
                             self.src_lexers.push(SourceLexer::new_from_file(filepath)?);
                             self.next()
                         }
+                        SError::Unexpected(loc) => Err(Error::Unexpected(*loc).into()),
                     },
                     None => Err(e),
                 }
             }
         }
+    }
+}
+
+impl std::error::Error for Error {}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{:?}", self)
     }
 }
 

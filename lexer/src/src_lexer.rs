@@ -2,6 +2,7 @@ use crate::cursor::Cursor;
 use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use crate::token::Token;
 use anyhow::Result;
+use long_sourceloc::SourceLoc;
 use std::fmt;
 use std::fs::read_to_string;
 use std::path::PathBuf;
@@ -20,6 +21,7 @@ pub(crate) struct SourceLexer {
 #[derive(Debug)]
 pub(crate) enum Error {
     Include(PathBuf),
+    Unexpected(SourceLoc),
 }
 
 impl SourceLexer {
@@ -59,7 +61,7 @@ impl SourceLexer {
                             .peek_char2()
                             .map_or(false, |c| c.is_ascii_digit())) =>
             {
-                Ok(Some(self.read_number()))
+                Ok(Some(self.read_number()?))
             }
             Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol())),
             None => return Ok(None),
@@ -134,7 +136,7 @@ impl SourceLexer {
     }
 
     /// Reads a number literal, including integer literals and floating-point literals.
-    fn read_number(&mut self) -> Token {
+    fn read_number(&mut self) -> Result<Token> {
         let loc = self.cursor.loc;
         let mut is_float = false;
         let mut last = '\0';
@@ -147,13 +149,19 @@ impl SourceLexer {
         if is_float {
             // TODO: Support suffix.
             let f: f64 = lit.parse().unwrap();
-            Token::new(TokenKind::Float(FloatKind::Double(f)), loc)
+            return Ok(Token::new(TokenKind::Float(FloatKind::Double(f)), loc));
+        }
+        // TODO: Support suffix.
+        // TODO: Support 64bit int.
+        // TODO: Support hex and oct literals.
+        if let Ok(i) = lit.parse::<i32>() {
+            Ok(Token::new(TokenKind::Int(IntKind::Int(i)), loc))
+        } else if let Ok(i) = lit.parse::<i64>() {
+            Ok(Token::new(TokenKind::Int(IntKind::LongLongInt(i)), loc))
         } else {
-            // TODO: Support suffix.
-            // TODO: Support 64bit int.
-            // TODO: Support hex and oct literals.
-            let i: i32 = lit.parse().unwrap();
-            Token::new(TokenKind::Int(IntKind::Int(i)), loc)
+            // Too big integer.
+            // TODO: We should have a generous error message.
+            Err(Error::Unexpected(loc).into())
         }
     }
 
@@ -224,7 +232,7 @@ fn read_symbols() {
 
 #[test]
 fn read_ints() {
-    let mut l = SourceLexer::new(".123 1e+10 34567890 123");
+    let mut l = SourceLexer::new(".123 1e+10 34567890 123 4300000000");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
