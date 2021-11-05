@@ -1,5 +1,5 @@
 use crate::cursor::Cursor;
-use crate::token::kind::{KeywordKind, SymbolKind, TokenKind};
+use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use crate::token::Token;
 use anyhow::Result;
 use std::fmt;
@@ -51,7 +51,17 @@ impl SourceLexer {
                 self.next()
                     .map(|t| t.map(|t| t.set_leading_space(leading_space)))
             }
-            Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol()?)),
+            Some(c)
+                if c.is_ascii_digit()
+                    || (c == '.'
+                        && self
+                            .cursor
+                            .peek_char2()
+                            .map_or(false, |c| c.is_ascii_digit())) =>
+            {
+                Ok(Some(self.read_number()))
+            }
+            Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol())),
             None => return Ok(None),
             _ => todo!(),
         }
@@ -70,7 +80,7 @@ impl SourceLexer {
     }
 
     /// Reads a symbol.
-    fn read_symbol(&mut self) -> Result<Token> {
+    fn read_symbol(&mut self) -> Token {
         let loc = self.cursor.loc;
         let x = self.cursor.peek_char();
         let y = self.cursor.peek_char2();
@@ -79,7 +89,7 @@ impl SourceLexer {
                 self.cursor.next_char();
                 self.cursor.next_char();
                 self.cursor.next_char();
-                Ok(Token::new(TokenKind::Symbol(SymbolKind::Vararg), loc))
+                Token::new(TokenKind::Symbol(SymbolKind::Vararg), loc)
             }
             (Some('<'), Some('<'))
             | (Some('>'), Some('>'))
@@ -90,7 +100,7 @@ impl SourceLexer {
                 self.cursor.next_char();
                 self.cursor.next_char();
                 self.cursor.next_char();
-                Ok(Token::new(
+                Token::new(
                     TokenKind::Symbol(match x {
                         Some('<') => SymbolKind::AssignShl,
                         Some('>') => SymbolKind::AssignShr,
@@ -99,17 +109,17 @@ impl SourceLexer {
                         _ => unreachable!(),
                     }),
                     loc,
-                ))
+                )
             }
             (Some(x), Some(y)) => match SymbolKind::from_two_chars(x, y) {
                 Some(kind) => {
                     self.cursor.next_char();
                     self.cursor.next_char();
-                    Ok(Token::new(TokenKind::Symbol(kind), loc))
+                    Token::new(TokenKind::Symbol(kind), loc)
                 }
-                None => Ok(self.read_symbol1()),
+                None => self.read_symbol1(),
             },
-            _ => Ok(self.read_symbol1()),
+            _ => self.read_symbol1(),
         }
     }
 
@@ -121,6 +131,30 @@ impl SourceLexer {
             TokenKind::Symbol(SymbolKind::from_char(c).expect("unreachable")),
             loc,
         )
+    }
+
+    /// Reads a number literal, including integer literals and floating-point literals.
+    fn read_number(&mut self) -> Token {
+        let loc = self.cursor.loc;
+        let mut is_float = false;
+        let mut last = '\0';
+        let lit = self.cursor.take_chars_while(|&c| {
+            let is_f = "eEpP".contains(last) && "+-".contains(c);
+            is_float = is_float || c == '.' || is_f;
+            last = c;
+            c.is_alphanumeric() || c == '.' || is_f
+        });
+        if is_float {
+            // TODO: Support suffix.
+            let f: f64 = lit.parse().unwrap();
+            Token::new(TokenKind::Float(FloatKind::Double(f)), loc)
+        } else {
+            // TODO: Support suffix.
+            // TODO: Support 64bit int.
+            // TODO: Support hex and oct literals.
+            let i: i32 = lit.parse().unwrap();
+            Token::new(TokenKind::Int(IntKind::Int(i)), loc)
+        }
     }
 
     /// Reads whitespaces (i.e. ' ' '\t' '\n').
@@ -185,6 +219,12 @@ fn read_symbols() {
     let mut l = SourceLexer::new(
         "(){}[],;:.+-*/%!~&<>^|?=#++--::-><<>><=>===!=&&||+=-=*=/=%=&=^=|=<<=>>=&&=||=sizeof",
     );
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
+fn read_ints() {
+    let mut l = SourceLexer::new(".123 1e+10 34567890 123");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 

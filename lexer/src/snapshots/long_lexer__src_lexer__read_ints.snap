@@ -1,0 +1,43 @@
+---
+source: lexer/src/src_lexer.rs
+expression: read_all_tokens(&mut l)
+
+---
+[
+    Token {
+        kind: Float(
+            Double(
+                0.123,
+            ),
+        ),
+        leading_space: false,
+        loc: 1:1,
+    },
+    Token {
+        kind: Float(
+            Double(
+                10000000000.0,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:6,
+    },
+    Token {
+        kind: Int(
+            Int(
+                34567890,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:12,
+    },
+    Token {
+        kind: Int(
+            Int(
+                123,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:21,
+    },
+]

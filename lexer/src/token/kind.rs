@@ -5,6 +5,7 @@ pub enum TokenKind {
     Keyword(KeywordKind),
     Symbol(SymbolKind),
     Int(IntKind),
+    Float(FloatKind),
 }
 
 /// The kind of a symbol.
@@ -143,7 +144,9 @@ pub enum KeywordKind {
     Throw,
 }
 
-/// The kind of an integer constant.
+/// The kind of an integer literal.
+///
+/// <https://timsong-cpp.github.io/cppwp/n3337/lex.icon>
 #[derive(Debug, Clone)]
 pub enum IntKind {
     Int(i32),
@@ -152,6 +155,16 @@ pub enum IntKind {
     UInt(i32),
     ULongInt(i32),
     ULongLongInt(i64),
+}
+
+/// The kind of a floating literal.
+///
+/// <https://timsong-cpp.github.io/cppwp/n3337/lex.fcon>
+#[derive(Debug, Clone)]
+pub enum FloatKind {
+    Float(f32),
+    Double(f64),
+    LongDouble(f64),
 }
 
 impl SymbolKind {
