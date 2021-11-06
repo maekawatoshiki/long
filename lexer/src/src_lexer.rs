@@ -63,6 +63,10 @@ impl SourceLexer {
             {
                 Ok(Some(self.read_number()?))
             }
+            Some(c) if c == '/' && matches!(self.cursor.peek_char2(), Some('/' | '*')) => {
+                self.read_comment();
+                self.next()
+            }
             Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol())),
             None => return Ok(None),
             _ => todo!(),
@@ -189,6 +193,23 @@ impl SourceLexer {
         }
     }
 
+    /// Reads a comment. Returns if the comment is a line comment.
+    fn read_comment(&mut self) {
+        assert_eq!(self.cursor.next_char(), Some('/'));
+        let is_line_comment = self.cursor.next_char() == Some('/');
+        if is_line_comment {
+            self.cursor.take_chars_while(|&c| c != '\n');
+        } else {
+            let mut last = '\0';
+            self.cursor.take_chars_while(|&c| {
+                let end = last == '*' && c == '/';
+                last = c;
+                !end
+            });
+            assert_eq!(self.cursor.next_char(), Some('/'));
+        }
+    }
+
     /// Reads whitespaces (i.e. ' ' '\t' '\n').
     fn read_whitespaces(&mut self) -> String {
         self.cursor
@@ -258,6 +279,12 @@ fn read_symbols() {
 fn read_ints() {
     let mut l =
         SourceLexer::new(".123 1e+10 34567890 123 4300000000 3.4l 2.71f 1.1 2. 0xfff 01727 33llu");
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
+fn read_comments() {
+    let mut l = SourceLexer::new("int // hello!\nmain(/*hello*/)");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
