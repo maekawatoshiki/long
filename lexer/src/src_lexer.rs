@@ -44,6 +44,20 @@ impl SourceLexer {
         })
     }
 
+    /// Reads a token and preprocess it if necessary.
+    pub fn next_preprocessed(&mut self) -> Result<Option<Token>> {
+        let tok = match self.next()? {
+            Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Hash)) => {
+                self.read_cpp_directive()?;
+                return self.next_preprocessed();
+            }
+            Some(tok) => tok,
+            None => return Ok(None),
+        };
+        // TODO: Macro-expand `tok` here.
+        Ok(Some(tok))
+    }
+
     /// Reads a token.
     pub fn next(&mut self) -> Result<Option<Token>> {
         match self.cursor.peek_char() {
@@ -215,6 +229,13 @@ impl SourceLexer {
         self.cursor
             .take_chars_while(|&c| c == ' ' || c == '\t' || c == '\n')
     }
+
+    // Functions for preprocess.
+
+    /// Reads a preprocessor directive.
+    fn read_cpp_directive(&mut self) -> Result<()> {
+        Ok(())
+    }
 }
 
 impl std::error::Error for Error {}
@@ -288,10 +309,25 @@ fn read_comments() {
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
+#[test]
+fn read_macro() {
+    let mut l = SourceLexer::new("int f(int x) { return x + 1; }");
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
 #[cfg(test)]
 fn read_all_tokens(l: &mut SourceLexer) -> Vec<Token> {
     let mut tokens = vec![];
     while let Some(tok) = l.next().unwrap() {
+        tokens.push(tok)
+    }
+    tokens
+}
+
+#[cfg(test)]
+fn read_all_tokens_expanded(l: &mut SourceLexer) -> Vec<Token> {
+    let mut tokens = vec![];
+    while let Some(tok) = l.next_preprocessed().unwrap() {
         tokens.push(tok)
     }
     tokens

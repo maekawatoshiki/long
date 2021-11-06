@@ -1,0 +1,100 @@
+---
+source: lexer/src/src_lexer.rs
+expression: read_all_tokens_expanded(&mut l)
+
+---
+[
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        loc: 1:1,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: true,
+        loc: 1:5,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        loc: 1:6,
+    },
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        loc: 1:7,
+    },
+    Token {
+        kind: Ident(
+            "x",
+        ),
+        leading_space: true,
+        loc: 1:11,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        loc: 1:12,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBrace,
+        ),
+        leading_space: true,
+        loc: 1:14,
+    },
+    Token {
+        kind: Keyword(
+            Return,
+        ),
+        leading_space: true,
+        loc: 1:16,
+    },
+    Token {
+        kind: Ident(
+            "x",
+        ),
+        leading_space: true,
+        loc: 1:23,
+    },
+    Token {
+        kind: Symbol(
+            Add,
+        ),
+        leading_space: true,
+        loc: 1:25,
+    },
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:27,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        loc: 1:28,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBrace,
+        ),
+        leading_space: true,
+        loc: 1:30,
+    },
+]
