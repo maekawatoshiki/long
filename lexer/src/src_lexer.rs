@@ -67,6 +67,7 @@ impl SourceLexer {
                 self.next()
                     .map(|t| t.map(|t| t.set_leading_space(leading_space)))
             }
+            Some(c) if c == '\"' => Ok(Some(self.read_string()?)),
             Some(c)
                 if c.is_ascii_digit()
                     || (c == '.'
@@ -97,6 +98,21 @@ impl SourceLexer {
             || Token::new(TokenKind::Ident(ident), loc),
             |kind| Token::new(TokenKind::Keyword(kind), loc),
         )
+    }
+
+    /// Reads a string literal.
+    fn read_string(&mut self) -> Result<Token> {
+        let loc = self.cursor.loc;
+        assert_eq!(self.cursor.next_char(), Some('\"'));
+        let mut string = "".to_string();
+        while let Some(c) = self.cursor.next_char() {
+            if c == '\"' {
+                return Ok(Token::new(TokenKind::String(string), loc));
+            }
+            // TODO: Support escape sequences.
+            string.push(c);
+        }
+        Err(Error::Unexpected(loc).into())
     }
 
     /// Reads a symbol.
@@ -312,6 +328,12 @@ fn read_tokens2() {
 #[test]
 fn read_tokens3() {
     let mut l = SourceLexer::new("int main() {\n return;\n}");
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
+fn read_tokens4() {
+    let mut l = SourceLexer::new("int main() {\n puts(\"hello\");\n}");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 

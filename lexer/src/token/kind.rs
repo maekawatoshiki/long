@@ -3,6 +3,7 @@
 pub enum TokenKind {
     Ident(String),
     Keyword(KeywordKind),
+    String(String),
     Symbol(SymbolKind),
     Int(IntKind),
     Float(FloatKind),
