@@ -1,4 +1,5 @@
 pub mod cursor;
+pub mod macros;
 pub mod src_lexer;
 pub mod token;
 
@@ -6,6 +7,7 @@ extern crate anyhow;
 extern crate long_sourceloc as sourceloc;
 
 use anyhow::Result;
+use macros::Macros;
 use sourceloc::SourceLoc;
 use src_lexer::SourceLexer;
 use std::fmt;
@@ -20,6 +22,9 @@ pub struct Lexer {
 
     /// The source lexers.
     src_lexers: Vec<SourceLexer>,
+
+    /// The macros defined in the translation unit.
+    macros: Macros,
 }
 
 #[derive(Debug)]
@@ -35,6 +40,7 @@ impl Lexer {
         Self {
             filepath: None,
             src_lexers: vec![SourceLexer::new(source.into())],
+            macros: Macros::new(),
         }
     }
 
@@ -46,6 +52,7 @@ impl Lexer {
         Ok(Self {
             src_lexers: vec![SourceLexer::new_from_file(filepath.clone().into())?],
             filepath: Some(filepath.into()),
+            macros: Macros::new(),
         })
     }
 
@@ -61,7 +68,12 @@ impl Lexer {
         }
 
         // TODO: We had better not use recursions here...
-        match self.src_lexers.last_mut().unwrap().next_preprocessed() {
+        match self
+            .src_lexers
+            .last_mut()
+            .unwrap()
+            .next_preprocessed(&mut self.macros)
+        {
             // End of the translation unit.
             Ok(None) if self.src_lexers.len() == 1 => Ok(None),
             // End of the current source lexer. Go back to the previous one.

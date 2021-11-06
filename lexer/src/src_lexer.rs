@@ -1,4 +1,5 @@
 use crate::cursor::Cursor;
+use crate::macros::Macros;
 use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use crate::token::Token;
 use anyhow::Result;
@@ -52,7 +53,7 @@ impl SourceLexer {
     }
 
     /// Reads a token and preprocess it if necessary.
-    pub fn next_preprocessed(&mut self) -> Result<Option<Token>> {
+    pub fn next_preprocessed(&mut self, macros: &mut Macros) -> Result<Option<Token>> {
         if !self.buf.is_empty() {
             return Ok(self.buf.pop_front());
         }
@@ -60,7 +61,7 @@ impl SourceLexer {
         let tok = match self.next()? {
             Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Hash)) => {
                 self.read_cpp_directive()?;
-                return self.next_preprocessed();
+                return self.next_preprocessed(macros);
             }
             Some(Token {
                 kind: TokenKind::Ident(ident),
@@ -287,6 +288,12 @@ impl SourceLexer {
                     Err(Error::Include(name.into(), loc).into())
                 }
                 "define" => self.read_define(),
+                // "undef" => self.read_undef(),
+                // "if" => self.read_if(),
+                // "ifdef" => self.read_ifdef(),
+                // "ifndef" => self.read_ifndef(),
+                // "elif" => self.read_elif(),
+                // "else" => self.read_else(),
                 _ => Ok(()),
             },
             _ => Ok(()),
@@ -412,7 +419,7 @@ fn read_macro() {
 fn read_include() {
     let mut l = SourceLexer::new("#include <stdio.h>");
     assert!(matches!(
-        l.next_preprocessed().unwrap_err().downcast_ref::<Error>().unwrap(),
+        l.next_preprocessed(&mut Macros::new()).unwrap_err().downcast_ref::<Error>().unwrap(),
         Error::Include(p, _) if p.to_str() == Some("stdio.h")
     ));
 }
@@ -429,7 +436,8 @@ fn read_all_tokens(l: &mut SourceLexer) -> Vec<Token> {
 #[cfg(test)]
 fn read_all_tokens_expanded(l: &mut SourceLexer) -> Vec<Token> {
     let mut tokens = vec![];
-    while let Some(tok) = l.next_preprocessed().unwrap() {
+    let mut macros = Macros::new();
+    while let Some(tok) = l.next_preprocessed(&mut macros).unwrap() {
         tokens.push(tok)
     }
     tokens
