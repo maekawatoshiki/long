@@ -103,4 +103,13 @@ expression: read_all_tokens(&mut l)
         leading_space: true,
         loc: 1:60,
     },
+    Token {
+        kind: Int(
+            Int(
+                33,
+            ),
+        ),
+        leading_space: true,
+        loc: 1:66,
+    },
 ]

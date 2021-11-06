@@ -177,6 +177,7 @@ impl SourceLexer {
             (lit.as_str(), 10)
         };
         // TODO: Support suffix.
+        let lit = lit.trim_end_matches(|c| matches!(c, 'u' | 'U' | 'l' | 'L'));
         if let Ok(i) = i32::from_str_radix(lit, radix) {
             Ok(Token::new(TokenKind::Int(IntKind::Int(i)), loc))
         } else if let Ok(i) = i64::from_str_radix(lit, radix) {
@@ -256,7 +257,7 @@ fn read_symbols() {
 #[test]
 fn read_ints() {
     let mut l =
-        SourceLexer::new(".123 1e+10 34567890 123 4300000000 3.4l 2.71f 1.1 2. 0xfff 01727");
+        SourceLexer::new(".123 1e+10 34567890 123 4300000000 3.4l 2.71f 1.1 2. 0xfff 01727 33llu");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
