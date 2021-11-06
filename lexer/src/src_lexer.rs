@@ -20,7 +20,7 @@ pub(crate) struct SourceLexer {
 
 #[derive(Debug)]
 pub(crate) enum Error {
-    Include(PathBuf),
+    Include(PathBuf, SourceLoc),
     Unexpected(SourceLoc),
 }
 
@@ -241,8 +241,9 @@ impl SourceLexer {
         match tok.kind() {
             TokenKind::Ident(i) => match i.as_str() {
                 "include" => {
+                    let loc = self.cursor.loc;
                     let name = self.read_header_name()?;
-                    Err(Error::Include(name.into()).into())
+                    Err(Error::Include(name.into(), loc).into())
                 }
                 _ => Ok(()),
             },
@@ -256,6 +257,7 @@ impl SourceLexer {
         match self.next()? {
             Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Lt)) => {
                 let name = self.cursor.take_chars_while(|&c| c != '>');
+                assert_eq!(self.cursor.next_char(), Some('>'));
                 Ok(name)
             }
             _ => Err(Error::Unexpected(loc).into()),
@@ -346,7 +348,7 @@ fn read_include() {
     let mut l = SourceLexer::new("#include <stdio.h>");
     assert!(matches!(
         l.next_preprocessed().unwrap_err().downcast_ref::<Error>().unwrap(),
-        Error::Include(p) if p.to_str() == Some("stdio.h")
+        Error::Include(p, _) if p.to_str() == Some("stdio.h")
     ));
 }
 

@@ -9,7 +9,7 @@ use anyhow::Result;
 use sourceloc::SourceLoc;
 use src_lexer::SourceLexer;
 use std::fmt;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use token::Token;
 
 /// A lexical analyzer for a translation unit.
@@ -24,6 +24,7 @@ pub struct Lexer {
 
 #[derive(Debug)]
 pub enum Error {
+    FileNotFound(PathBuf, SourceLoc),
     Unexpected(SourceLoc),
 }
 
@@ -74,8 +75,17 @@ impl Lexer {
                     Some(e) => match e {
                         // When the source lexer reads #include directive, we create a new source
                         // lexer for that.
-                        SError::Include(filepath) => {
-                            self.src_lexers.push(SourceLexer::new_from_file(filepath)?);
+                        SError::Include(filepath, loc) => {
+                            self.src_lexers.push(SourceLexer::new_from_file(
+                                match try_include(filepath) {
+                                    Some(path) => path,
+                                    None => {
+                                        return Err(
+                                            Error::FileNotFound(filepath.clone(), *loc).into()
+                                        )
+                                    }
+                                },
+                            )?);
                             self.next()
                         }
                         SError::Unexpected(loc) => Err(Error::Unexpected(*loc).into()),
@@ -85,6 +95,28 @@ impl Lexer {
             }
         }
     }
+}
+
+fn try_include(filepath: &PathBuf) -> Option<PathBuf> {
+    let header_paths = vec![
+        "./include/",
+        "/include/",
+        "/usr/include/",
+        "/usr/include/linux/",
+        "/usr/include/c++/7/",
+        "/usr/include/x86_64-linux-gnu/",
+        "./include/",
+        "",
+    ];
+    header_paths.iter().find_map(|header_path| {
+        let mut path = Path::new(header_path).to_path_buf();
+        path.push(filepath);
+        if path.exists() {
+            Some(path)
+        } else {
+            None
+        }
+    })
 }
 
 impl std::error::Error for Error {}
