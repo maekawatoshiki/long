@@ -59,7 +59,7 @@ impl Lexer {
         }
 
         // TODO: We had better not use recursions here...
-        match self.src_lexers.last_mut().unwrap().next() {
+        match self.src_lexers.last_mut().unwrap().next_preprocessed() {
             // End of the translation unit.
             Ok(None) if self.src_lexers.len() == 1 => Ok(None),
             // End of the current source lexer. Go back to the previous one.

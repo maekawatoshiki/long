@@ -234,7 +234,32 @@ impl SourceLexer {
 
     /// Reads a preprocessor directive.
     fn read_cpp_directive(&mut self) -> Result<()> {
-        Ok(())
+        let tok = match self.next()? {
+            Some(tok) => tok,
+            None => return Ok(()),
+        };
+        match tok.kind() {
+            TokenKind::Ident(i) => match i.as_str() {
+                "include" => {
+                    let name = self.read_header_name()?;
+                    Err(Error::Include(name.into()).into())
+                }
+                _ => Ok(()),
+            },
+            _ => Ok(()),
+        }
+    }
+
+    /// Reads a header name of #include directive.
+    fn read_header_name(&mut self) -> Result<String> {
+        let loc = self.cursor.loc;
+        match self.next()? {
+            Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Lt)) => {
+                let name = self.cursor.take_chars_while(|&c| c != '>');
+                Ok(name)
+            }
+            _ => Err(Error::Unexpected(loc).into()),
+        }
     }
 }
 
@@ -311,8 +336,18 @@ fn read_comments() {
 
 #[test]
 fn read_macro() {
+    // TODO: We must support #define.
     let mut l = SourceLexer::new("int f(int x) { return x + 1; }");
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_include() {
+    let mut l = SourceLexer::new("#include <stdio.h>");
+    assert!(matches!(
+        l.next_preprocessed().unwrap_err().downcast_ref::<Error>().unwrap(),
+        Error::Include(p) if p.to_str() == Some("stdio.h")
+    ));
 }
 
 #[cfg(test)]
