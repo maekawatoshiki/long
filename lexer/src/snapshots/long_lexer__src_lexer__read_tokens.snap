@@ -19,6 +19,11 @@ expression: read_all_tokens(&mut l)
         loc: 1:5,
     },
     Token {
+        kind: NewLine,
+        leading_space: false,
+        loc: 2:1,
+    },
+    Token {
         kind: Ident(
             "long",
         ),

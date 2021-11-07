@@ -54,13 +54,9 @@ impl SourceLexer {
 
     /// Reads a token and preprocess it if necessary.
     pub fn next_preprocessed(&mut self, macros: &mut Macros) -> Result<Option<Token>> {
-        if !self.buf.is_empty() {
-            return Ok(self.buf.pop_front());
-        }
-
         let tok = match self.next()? {
             Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Hash)) => {
-                self.read_cpp_directive()?;
+                self.read_cpp_directive(macros)?;
                 return self.next_preprocessed(macros);
             }
             Some(Token {
@@ -86,10 +82,13 @@ impl SourceLexer {
 
         match self.cursor.peek_char() {
             Some(c) if c.is_ascii_alphabetic() || c == '_' => Ok(Some(self.read_identifier())),
-            Some(c) if c == ' ' || c == '\t' || c == '\n' => {
-                let leading_space = !self.read_whitespaces().ends_with('\n');
-                self.next()
-                    .map(|t| t.map(|t| t.set_leading_space(leading_space)))
+            Some(c) if c == ' ' || c == '\t' => {
+                self.read_whitespaces();
+                self.next().map(|t| t.map(|t| t.set_leading_space(true)))
+            }
+            Some(c) if c == '\n' => {
+                self.read_newlines();
+                Ok(Some(Token::new(TokenKind::NewLine, self.cursor.loc)))
             }
             Some(c) if c == '\"' => Ok(Some(self.read_string()?)),
             Some(c)
@@ -266,16 +265,20 @@ impl SourceLexer {
         }
     }
 
-    /// Reads whitespaces (i.e. ' ' '\t' '\n').
+    /// Reads whitespaces (i.e. ' ' '\t').
     fn read_whitespaces(&mut self) -> String {
-        self.cursor
-            .take_chars_while(|&c| c == ' ' || c == '\t' || c == '\n')
+        self.cursor.take_chars_while(|&c| c == ' ' || c == '\t')
+    }
+
+    /// Reads whitespaces (i.e. '\n').
+    fn read_newlines(&mut self) -> String {
+        self.cursor.take_chars_while(|&c| c == '\n')
     }
 
     // Functions for preprocess.
 
     /// Reads a preprocessor directive.
-    fn read_cpp_directive(&mut self) -> Result<()> {
+    fn read_cpp_directive(&mut self, macros: &mut Macros) -> Result<()> {
         let tok = match self.next()? {
             Some(tok) => tok,
             None => return Ok(()),
@@ -287,7 +290,7 @@ impl SourceLexer {
                     let name = self.read_header_name()?;
                     Err(Error::Include(name.into(), loc).into())
                 }
-                "define" => self.read_define(),
+                "define" => self.read_define(macros),
                 // "undef" => self.read_undef(),
                 // "if" => self.read_if(),
                 // "ifdef" => self.read_ifdef(),
@@ -314,20 +317,39 @@ impl SourceLexer {
     }
 
     /// Reads a #define directive.
-    fn read_define(&mut self) -> Result<()> {
+    fn read_define(&mut self, macros: &mut Macros) -> Result<()> {
         let loc = self.cursor.loc;
-        let name = self.next()?.ok_or(Error::UnexpectedEof(loc))?;
-        if !matches!(name.kind(), TokenKind::Ident(_)) {
-            return Err(Error::Unexpected(loc).into());
-        }
+        let name = match self.next()?.ok_or(Error::UnexpectedEof(loc))? {
+            Token {
+                kind: TokenKind::Ident(name),
+                ..
+            } => name,
+            _ => return Err(Error::Unexpected(loc).into()),
+        };
         let t = self.next()?.ok_or(Error::UnexpectedEof(loc))?;
         if !t.leading_space && matches!(t.kind(), TokenKind::Symbol(SymbolKind::OpeningParen)) {
-            // func-like macro.
+            self.read_define_func_macro()
         } else {
-            // obj-like macro.
+            self.unget(t);
+            let body = self.read_define_obj_macro()?;
+            macros.add_obj_macro(name, body);
+            Ok(())
         }
+    }
 
-        Ok(())
+    fn read_define_func_macro(&mut self) -> Result<()> {
+        todo!()
+    }
+
+    fn read_define_obj_macro(&mut self) -> Result<Vec<Token>> {
+        let mut body = vec![];
+        while let Some(t) = self.next()? {
+            if matches!(t.kind(), TokenKind::NewLine) {
+                break;
+            }
+            body.push(t);
+        }
+        Ok(body)
     }
 }
 
@@ -411,7 +433,11 @@ fn read_comments() {
 #[test]
 fn read_macro() {
     // TODO: We must support #define.
-    let mut l = SourceLexer::new("int f(int x) { return x + 1; }");
+    let mut l = SourceLexer::new(
+        r#"
+#define ONE 1
+int f(int x) { return x + ONE; }"#,
+    );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
 }
 

@@ -5,96 +5,99 @@ expression: read_all_tokens_expanded(&mut l)
 ---
 [
     Token {
+        kind: NewLine,
+        leading_space: false,
+        loc: 2:1,
+    },
+    Token {
         kind: Keyword(
             Int,
         ),
         leading_space: false,
-        loc: 1:1,
+        loc: 3:1,
     },
     Token {
         kind: Ident(
             "f",
         ),
         leading_space: true,
-        loc: 1:5,
+        loc: 3:5,
     },
     Token {
         kind: Symbol(
             OpeningParen,
         ),
         leading_space: false,
-        loc: 1:6,
+        loc: 3:6,
     },
     Token {
         kind: Keyword(
             Int,
         ),
         leading_space: false,
-        loc: 1:7,
+        loc: 3:7,
     },
     Token {
         kind: Ident(
             "x",
         ),
         leading_space: true,
-        loc: 1:11,
+        loc: 3:11,
     },
     Token {
         kind: Symbol(
             ClosingParen,
         ),
         leading_space: false,
-        loc: 1:12,
+        loc: 3:12,
     },
     Token {
         kind: Symbol(
             OpeningBrace,
         ),
         leading_space: true,
-        loc: 1:14,
+        loc: 3:14,
     },
     Token {
         kind: Keyword(
             Return,
         ),
         leading_space: true,
-        loc: 1:16,
+        loc: 3:16,
     },
     Token {
         kind: Ident(
             "x",
         ),
         leading_space: true,
-        loc: 1:23,
+        loc: 3:23,
     },
     Token {
         kind: Symbol(
             Add,
         ),
         leading_space: true,
-        loc: 1:25,
+        loc: 3:25,
     },
     Token {
-        kind: Int(
-            Int(
-                1,
-            ),
+        kind: Ident(
+            "ONE",
         ),
         leading_space: true,
-        loc: 1:27,
+        loc: 3:27,
     },
     Token {
         kind: Symbol(
             Semicolon,
         ),
         leading_space: false,
-        loc: 1:28,
+        loc: 3:30,
     },
     Token {
         kind: Symbol(
             ClosingBrace,
         ),
         leading_space: true,
-        loc: 1:30,
+        loc: 3:32,
     },
 ]

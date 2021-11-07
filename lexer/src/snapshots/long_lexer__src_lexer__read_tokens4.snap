@@ -40,6 +40,11 @@ expression: read_all_tokens(&mut l)
         loc: 1:12,
     },
     Token {
+        kind: NewLine,
+        leading_space: false,
+        loc: 2:1,
+    },
+    Token {
         kind: Ident(
             "puts",
         ),
@@ -73,6 +78,11 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         loc: 2:15,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        loc: 3:1,
     },
     Token {
         kind: Symbol(

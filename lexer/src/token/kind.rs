@@ -7,6 +7,7 @@ pub enum TokenKind {
     Symbol(SymbolKind),
     Int(IntKind),
     Float(FloatKind),
+    NewLine,
 }
 
 /// The kind of a symbol.
