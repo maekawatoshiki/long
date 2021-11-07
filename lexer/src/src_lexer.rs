@@ -54,24 +54,31 @@ impl SourceLexer {
 
     /// Reads a token and preprocess it if necessary.
     pub fn next_preprocessed(&mut self, macros: &mut Macros) -> Result<Option<Token>> {
-        let tok = match self.next()? {
+        // Convert an identifier token to a keyword token if necessary.
+        fn to_keyword_if_necessary(tok: Token) -> Token {
+            match tok {
+                Token {
+                    kind: TokenKind::Ident(ident),
+                    leading_space,
+                    loc,
+                } => KeywordKind::from_str(ident.as_str()).map_or_else(
+                    || Token::new(TokenKind::Ident(ident), loc).set_leading_space(leading_space),
+                    |kind| {
+                        Token::new(TokenKind::Keyword(kind), loc).set_leading_space(leading_space)
+                    },
+                ),
+                _ => tok,
+            }
+        }
+
+        match self.next()? {
             Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Hash)) => {
                 self.read_cpp_directive(macros)?;
                 return self.next_preprocessed(macros);
             }
-            Some(Token {
-                kind: TokenKind::Ident(ident),
-                leading_space,
-                loc,
-            }) => KeywordKind::from_str(ident.as_str()).map_or_else(
-                || Token::new(TokenKind::Ident(ident), loc).set_leading_space(leading_space),
-                |kind| Token::new(TokenKind::Keyword(kind), loc).set_leading_space(leading_space),
-            ),
-            Some(tok) => tok,
+            Some(tok) => Ok(Some(to_keyword_if_necessary(self.expand(macros, tok)?))),
             None => return Ok(None),
-        };
-        // TODO: Macro-expand `tok` here.
-        Ok(Some(tok))
+        }
     }
 
     /// Reads a token.
@@ -350,6 +357,13 @@ impl SourceLexer {
             body.push(t);
         }
         Ok(body)
+    }
+
+    /// If `token` is defined as a macro, expands it and returns the first token of the macro.
+    /// The remaining macro tokens are pushed back to the buffer.
+    fn expand(&mut self, _macros: &Macros, token: Token) -> Result<Token> {
+        // TODO
+        Ok(token)
     }
 }
 
