@@ -3,6 +3,7 @@ use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind}
 use crate::token::Token;
 use anyhow::Result;
 use long_sourceloc::SourceLoc;
+use std::collections::VecDeque;
 use std::fmt;
 use std::fs::read_to_string;
 use std::path::PathBuf;
@@ -16,12 +17,16 @@ pub(crate) struct SourceLexer {
 
     /// The cursor of the lexer.
     cursor: Cursor,
+
+    /// The buffer for the tokens ungot.
+    buf: VecDeque<Token>,
 }
 
 #[derive(Debug)]
 pub(crate) enum Error {
     Include(PathBuf, SourceLoc),
     Unexpected(SourceLoc),
+    UnexpectedEof(SourceLoc),
 }
 
 impl SourceLexer {
@@ -30,6 +35,7 @@ impl SourceLexer {
         Self {
             filepath: None,
             cursor: Cursor::new(source.into()),
+            buf: VecDeque::new(),
         }
     }
 
@@ -41,11 +47,16 @@ impl SourceLexer {
         Ok(Self {
             cursor: Cursor::new(read_to_string(filepath.clone().into())?),
             filepath: Some(filepath.into()),
+            buf: VecDeque::new(),
         })
     }
 
     /// Reads a token and preprocess it if necessary.
     pub fn next_preprocessed(&mut self) -> Result<Option<Token>> {
+        if !self.buf.is_empty() {
+            return Ok(self.buf.pop_front());
+        }
+
         let tok = match self.next()? {
             Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Hash)) => {
                 self.read_cpp_directive()?;
@@ -68,6 +79,10 @@ impl SourceLexer {
 
     /// Reads a token.
     pub fn next(&mut self) -> Result<Option<Token>> {
+        if !self.buf.is_empty() {
+            return Ok(self.buf.pop_front());
+        }
+
         match self.cursor.peek_char() {
             Some(c) if c.is_ascii_alphabetic() || c == '_' => Ok(Some(self.read_identifier())),
             Some(c) if c == ' ' || c == '\t' || c == '\n' => {
@@ -94,6 +109,11 @@ impl SourceLexer {
             None => return Ok(None),
             _ => todo!(),
         }
+    }
+
+    /// Pushes `tok` back to the buffer so that it can be read again.
+    fn unget(&mut self, tok: Token) {
+        self.buf.push_back(tok);
     }
 
     /// Reads an identifier. Assumes the result of `self.cursor.peek_char()` is alphabetic.
@@ -266,6 +286,7 @@ impl SourceLexer {
                     let name = self.read_header_name()?;
                     Err(Error::Include(name.into(), loc).into())
                 }
+                "define" => self.read_define(),
                 _ => Ok(()),
             },
             _ => Ok(()),
@@ -283,6 +304,23 @@ impl SourceLexer {
             }
             _ => Err(Error::Unexpected(loc).into()),
         }
+    }
+
+    /// Reads a #define directive.
+    fn read_define(&mut self) -> Result<()> {
+        let loc = self.cursor.loc;
+        let name = self.next()?.ok_or(Error::UnexpectedEof(loc))?;
+        if !matches!(name.kind(), TokenKind::Ident(_)) {
+            return Err(Error::Unexpected(loc).into());
+        }
+        let t = self.next()?.ok_or(Error::UnexpectedEof(loc))?;
+        if !t.leading_space && matches!(t.kind(), TokenKind::Symbol(SymbolKind::OpeningParen)) {
+            // func-like macro.
+        } else {
+            // obj-like macro.
+        }
+
+        Ok(())
     }
 }
 
