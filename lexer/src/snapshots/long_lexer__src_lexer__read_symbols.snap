@@ -9,6 +9,7 @@ expression: read_all_tokens(&mut l)
             OpeningParen,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:1,
     },
     Token {
@@ -16,6 +17,7 @@ expression: read_all_tokens(&mut l)
             ClosingParen,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:2,
     },
     Token {
@@ -23,6 +25,7 @@ expression: read_all_tokens(&mut l)
             OpeningBrace,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:3,
     },
     Token {
@@ -30,6 +33,7 @@ expression: read_all_tokens(&mut l)
             ClosingBrace,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:4,
     },
     Token {
@@ -37,6 +41,7 @@ expression: read_all_tokens(&mut l)
             OpeningBoxBracket,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:5,
     },
     Token {
@@ -44,6 +49,7 @@ expression: read_all_tokens(&mut l)
             ClosingBoxBracket,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:6,
     },
     Token {
@@ -51,6 +57,7 @@ expression: read_all_tokens(&mut l)
             Comma,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:7,
     },
     Token {
@@ -58,6 +65,7 @@ expression: read_all_tokens(&mut l)
             Semicolon,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:8,
     },
     Token {
@@ -65,6 +73,7 @@ expression: read_all_tokens(&mut l)
             Colon,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:9,
     },
     Token {
@@ -72,6 +81,7 @@ expression: read_all_tokens(&mut l)
             Dot,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:10,
     },
     Token {
@@ -79,6 +89,7 @@ expression: read_all_tokens(&mut l)
             Add,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:11,
     },
     Token {
@@ -86,6 +97,7 @@ expression: read_all_tokens(&mut l)
             Sub,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:12,
     },
     Token {
@@ -93,6 +105,7 @@ expression: read_all_tokens(&mut l)
             Asterisk,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:13,
     },
     Token {
@@ -100,6 +113,7 @@ expression: read_all_tokens(&mut l)
             Div,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:14,
     },
     Token {
@@ -107,6 +121,7 @@ expression: read_all_tokens(&mut l)
             Mod,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:15,
     },
     Token {
@@ -114,6 +129,7 @@ expression: read_all_tokens(&mut l)
             Not,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:16,
     },
     Token {
@@ -121,6 +137,7 @@ expression: read_all_tokens(&mut l)
             BitwiseNot,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:17,
     },
     Token {
@@ -128,6 +145,7 @@ expression: read_all_tokens(&mut l)
             And,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:18,
     },
     Token {
@@ -135,6 +153,7 @@ expression: read_all_tokens(&mut l)
             Lt,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:19,
     },
     Token {
@@ -142,6 +161,7 @@ expression: read_all_tokens(&mut l)
             Gt,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:20,
     },
     Token {
@@ -149,6 +169,7 @@ expression: read_all_tokens(&mut l)
             Xor,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:21,
     },
     Token {
@@ -156,6 +177,7 @@ expression: read_all_tokens(&mut l)
             Or,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:22,
     },
     Token {
@@ -163,6 +185,7 @@ expression: read_all_tokens(&mut l)
             Question,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:23,
     },
     Token {
@@ -170,6 +193,7 @@ expression: read_all_tokens(&mut l)
             Assign,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:24,
     },
     Token {
@@ -177,6 +201,7 @@ expression: read_all_tokens(&mut l)
             Hash,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:25,
     },
     Token {
@@ -184,6 +209,7 @@ expression: read_all_tokens(&mut l)
             Inc,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:26,
     },
     Token {
@@ -191,6 +217,7 @@ expression: read_all_tokens(&mut l)
             Dec,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:28,
     },
     Token {
@@ -198,6 +225,7 @@ expression: read_all_tokens(&mut l)
             DoubleColon,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:30,
     },
     Token {
@@ -205,6 +233,7 @@ expression: read_all_tokens(&mut l)
             Arrow,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:32,
     },
     Token {
@@ -212,6 +241,7 @@ expression: read_all_tokens(&mut l)
             Shl,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:34,
     },
     Token {
@@ -219,6 +249,7 @@ expression: read_all_tokens(&mut l)
             Shr,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:36,
     },
     Token {
@@ -226,6 +257,7 @@ expression: read_all_tokens(&mut l)
             Le,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:38,
     },
     Token {
@@ -233,6 +265,7 @@ expression: read_all_tokens(&mut l)
             Ge,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:40,
     },
     Token {
@@ -240,6 +273,7 @@ expression: read_all_tokens(&mut l)
             Eq,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:42,
     },
     Token {
@@ -247,6 +281,7 @@ expression: read_all_tokens(&mut l)
             Ne,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:44,
     },
     Token {
@@ -254,6 +289,7 @@ expression: read_all_tokens(&mut l)
             LAnd,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:46,
     },
     Token {
@@ -261,6 +297,7 @@ expression: read_all_tokens(&mut l)
             LOr,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:48,
     },
     Token {
@@ -268,6 +305,7 @@ expression: read_all_tokens(&mut l)
             AssignAdd,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:50,
     },
     Token {
@@ -275,6 +313,7 @@ expression: read_all_tokens(&mut l)
             AssignSub,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:52,
     },
     Token {
@@ -282,6 +321,7 @@ expression: read_all_tokens(&mut l)
             AssignMul,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:54,
     },
     Token {
@@ -289,6 +329,7 @@ expression: read_all_tokens(&mut l)
             AssignDiv,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:56,
     },
     Token {
@@ -296,6 +337,7 @@ expression: read_all_tokens(&mut l)
             AssignMod,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:58,
     },
     Token {
@@ -303,6 +345,7 @@ expression: read_all_tokens(&mut l)
             AssignAnd,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:60,
     },
     Token {
@@ -310,6 +353,7 @@ expression: read_all_tokens(&mut l)
             AssignXor,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:62,
     },
     Token {
@@ -317,6 +361,7 @@ expression: read_all_tokens(&mut l)
             AssignOr,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:64,
     },
     Token {
@@ -324,6 +369,7 @@ expression: read_all_tokens(&mut l)
             AssignShl,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:66,
     },
     Token {
@@ -331,6 +377,7 @@ expression: read_all_tokens(&mut l)
             AssignShr,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:69,
     },
     Token {
@@ -338,6 +385,7 @@ expression: read_all_tokens(&mut l)
             AssignLAnd,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:72,
     },
     Token {
@@ -345,6 +393,7 @@ expression: read_all_tokens(&mut l)
             AssignLOr,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:75,
     },
     Token {
@@ -352,6 +401,7 @@ expression: read_all_tokens(&mut l)
             "sizeof",
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:78,
     },
 ]

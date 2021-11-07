@@ -9,6 +9,7 @@ expression: read_all_tokens(&mut l)
             "int",
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:1,
     },
     Token {
@@ -16,6 +17,7 @@ expression: read_all_tokens(&mut l)
             "main",
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:5,
     },
     Token {
@@ -23,6 +25,7 @@ expression: read_all_tokens(&mut l)
             OpeningParen,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:9,
     },
     Token {
@@ -30,6 +33,7 @@ expression: read_all_tokens(&mut l)
             ClosingParen,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:10,
     },
 ]

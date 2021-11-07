@@ -1,5 +1,5 @@
 use crate::cursor::Cursor;
-use crate::macros::Macros;
+use crate::macros::{Macro, Macros};
 use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use crate::token::Token;
 use anyhow::Result;
@@ -60,9 +60,14 @@ impl SourceLexer {
                 Token {
                     kind: TokenKind::Ident(ident),
                     leading_space,
+                    hideset,
                     loc,
                 } => KeywordKind::from_str(ident.as_str()).map_or_else(
-                    || Token::new(TokenKind::Ident(ident), loc).set_leading_space(leading_space),
+                    || {
+                        Token::new(TokenKind::Ident(ident), loc)
+                            .set_leading_space(leading_space)
+                            .with_hideset(hideset)
+                    },
                     |kind| {
                         Token::new(TokenKind::Keyword(kind), loc).set_leading_space(leading_space)
                     },
@@ -361,9 +366,29 @@ impl SourceLexer {
 
     /// If `token` is defined as a macro, expands it and returns the first token of the macro.
     /// The remaining macro tokens are pushed back to the buffer.
-    fn expand(&mut self, _macros: &Macros, token: Token) -> Result<Token> {
-        // TODO
-        Ok(token)
+    fn expand(&mut self, macros: &Macros, token: Token) -> Result<Token> {
+        match token.kind {
+            TokenKind::Ident(ref name) => match macros.find(name) {
+                Some(Macro::Obj(ref body)) => self.expand_obj_macro(name, body, token.loc),
+                None => Ok(token),
+            },
+            TokenKind::Keyword(_) => unreachable!(),
+            _ => return Ok(token),
+        }
+    }
+
+    /// Expands an object-like macro named `name` (whose body is `body`).
+    fn expand_obj_macro(&mut self, name: &str, body: &[Token], loc: SourceLoc) -> Result<Token> {
+        for t in body {
+            self.unget(
+                t.clone()
+                    .with_hideset_modified(|s| {
+                        s.insert(name.into());
+                    })
+                    .with_loc(loc),
+            );
+        }
+        Ok(self.next()?.unwrap())
     }
 }
 
@@ -446,7 +471,6 @@ fn read_comments() {
 
 #[test]
 fn read_macro() {
-    // TODO: We must support #define.
     let mut l = SourceLexer::new(
         r#"
 #define ONE 1

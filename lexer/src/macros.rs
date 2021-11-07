@@ -22,4 +22,8 @@ impl Macros {
     pub fn add_obj_macro(&mut self, name: impl Into<String>, body: Vec<Token>) {
         self.0.insert(name.into(), Macro::Obj(body));
     }
+
+    pub fn find(&self, name: impl AsRef<str>) -> Option<&Macro> {
+        self.0.get(name.as_ref())
+    }
 }

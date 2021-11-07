@@ -11,6 +11,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:1,
     },
     Token {
@@ -20,6 +21,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:6,
     },
     Token {
@@ -29,6 +31,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:12,
     },
     Token {
@@ -38,6 +41,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:21,
     },
     Token {
@@ -47,6 +51,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:25,
     },
     Token {
@@ -56,6 +61,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:36,
     },
     Token {
@@ -65,6 +71,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:41,
     },
     Token {
@@ -74,6 +81,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:47,
     },
     Token {
@@ -83,6 +91,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:51,
     },
     Token {
@@ -92,6 +101,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:54,
     },
     Token {
@@ -101,6 +111,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:60,
     },
     Token {
@@ -110,6 +121,7 @@ expression: read_all_tokens(&mut l)
             ),
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:66,
     },
 ]

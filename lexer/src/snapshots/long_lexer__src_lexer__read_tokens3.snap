@@ -9,6 +9,7 @@ expression: read_all_tokens(&mut l)
             "int",
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:1,
     },
     Token {
@@ -16,6 +17,7 @@ expression: read_all_tokens(&mut l)
             "main",
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:5,
     },
     Token {
@@ -23,6 +25,7 @@ expression: read_all_tokens(&mut l)
             OpeningParen,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:9,
     },
     Token {
@@ -30,6 +33,7 @@ expression: read_all_tokens(&mut l)
             ClosingParen,
         ),
         leading_space: false,
+        hideset: {},
         loc: 1:10,
     },
     Token {
@@ -37,11 +41,13 @@ expression: read_all_tokens(&mut l)
             OpeningBrace,
         ),
         leading_space: true,
+        hideset: {},
         loc: 1:12,
     },
     Token {
         kind: NewLine,
         leading_space: false,
+        hideset: {},
         loc: 2:1,
     },
     Token {
@@ -49,6 +55,7 @@ expression: read_all_tokens(&mut l)
             "return",
         ),
         leading_space: true,
+        hideset: {},
         loc: 2:2,
     },
     Token {
@@ -56,11 +63,13 @@ expression: read_all_tokens(&mut l)
             Semicolon,
         ),
         leading_space: false,
+        hideset: {},
         loc: 2:8,
     },
     Token {
         kind: NewLine,
         leading_space: false,
+        hideset: {},
         loc: 3:1,
     },
     Token {
@@ -68,6 +77,7 @@ expression: read_all_tokens(&mut l)
             ClosingBrace,
         ),
         leading_space: false,
+        hideset: {},
         loc: 3:1,
     },
 ]
