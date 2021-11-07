@@ -169,6 +169,21 @@ pub enum FloatKind {
     LongDouble(f64),
 }
 
+impl TokenKind {
+    /// Converts the token to a string.
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Ident(i) => i.clone(),
+            Self::Keyword(k) => k.as_str().to_string(),
+            Self::String(s) => s.clone(),
+            Self::Symbol(s) => s.as_str().to_string(),
+            Self::Int(i) => i.to_string(),
+            Self::Float(f) => f.to_string(),
+            Self::NewLine => "".to_string(),
+        }
+    }
+}
+
 impl SymbolKind {
     pub(crate) fn at_least_starts_with(c: char) -> bool {
         matches!(
@@ -256,6 +271,62 @@ impl SymbolKind {
             _ => None,
         }
     }
+
+    /// Returns the corresponding symbol string.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::OpeningParen => "(",
+            Self::ClosingParen => ")",
+            Self::OpeningBrace => "{",
+            Self::ClosingBrace => "}",
+            Self::OpeningBoxBracket => "[",
+            Self::ClosingBoxBracket => "]",
+            Self::Comma => ",",
+            Self::Semicolon => ";",
+            Self::Colon => ":",
+            Self::Dot => ".",
+            Self::Add => "+",
+            Self::Sub => "-",
+            Self::Asterisk => "*",
+            Self::Div => "/",
+            Self::Mod => "%",
+            Self::Not => "!",
+            Self::BitwiseNot => "~",
+            Self::And => "&",
+            Self::Lt => "<",
+            Self::Gt => ">",
+            Self::Xor => "^",
+            Self::Or => "|",
+            Self::Question => "?",
+            Self::Assign => "=",
+            Self::DoubleColon => "::",
+            Self::Arrow => "->",
+            Self::Inc => "++",
+            Self::Dec => "--",
+            Self::Shl => "<<",
+            Self::Shr => ">>",
+            Self::Le => "<=",
+            Self::Ge => ">=",
+            Self::Eq => "==",
+            Self::Ne => "!=",
+            Self::LAnd => "&&",
+            Self::LOr => "||",
+            Self::AssignAdd => "+=",
+            Self::AssignSub => "-=",
+            Self::AssignMul => "*=",
+            Self::AssignDiv => "/=",
+            Self::AssignMod => "%=",
+            Self::AssignAnd => "&=",
+            Self::AssignOr => "|=",
+            Self::AssignXor => "^=",
+            Self::AssignShl => "<<=",
+            Self::AssignShr => ">>=",
+            Self::AssignLAnd => "&&=",
+            Self::AssignLOr => "||=",
+            Self::Vararg => "...",
+            Self::Hash => "#",
+        }
+    }
 }
 
 impl KeywordKind {
@@ -336,6 +407,110 @@ impl KeywordKind {
             "public" => Some(Self::Public),
             "throw" => Some(Self::Throw),
             _ => None,
+        }
+    }
+
+    /// Returns the corresponding keyword name.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Alignas => "alignas",
+            Self::Continue => "continue",
+            Self::Friend => "friend",
+            Self::Register => "register",
+            Self::True => "true",
+            Self::Alignof => "alignof",
+            Self::Decltype => "decltype",
+            Self::Goto => "goto",
+            Self::ReinterpretCast => "reinterpret_cast",
+            Self::Try => "try",
+            Self::Asm => "asm",
+            Self::Default => "default",
+            Self::If => "if",
+            Self::Return => "return",
+            Self::Typedef => "typedef",
+            Self::Auto => "auto",
+            Self::Delete => "delete",
+            Self::Inline => "inline",
+            Self::Short => "short",
+            Self::Typeid => "typeid",
+            Self::Bool => "bool",
+            Self::Do => "do",
+            Self::Int => "int",
+            Self::Signed => "signed",
+            Self::Typename => "typename",
+            Self::Break => "break",
+            Self::Double => "double",
+            Self::Long => "long",
+            Self::Sizeof => "sizeof",
+            Self::Union => "union",
+            Self::Case => "case",
+            Self::DynamicCast => "dynamic_cast",
+            Self::Mutable => "mutable",
+            Self::Static => "static",
+            Self::Unsigned => "unsigned",
+            Self::Catch => "catch",
+            Self::Else => "else",
+            Self::Namespace => "namespace",
+            Self::StatiAssert => "static_assert",
+            Self::Using => "using",
+            Self::Char => "char",
+            Self::Enum => "enum",
+            Self::New => "new",
+            Self::StaticCast => "static_cast",
+            Self::Virtual => "virtual",
+            Self::Char16T => "char16_t",
+            Self::Explicit => "explicit",
+            Self::Noexcept => "noexcept",
+            Self::Struct => "struct",
+            Self::Void => "void",
+            Self::Char32T => "char32_t",
+            Self::Export => "export",
+            Self::Nullptr => "nullptr",
+            Self::Switch => "switch",
+            Self::Volatile => "volatile",
+            Self::Class => "class",
+            Self::Extern => "extern",
+            Self::Operator => "operator",
+            Self::Template => "template",
+            Self::WcharT => "wchar_t",
+            Self::Const => "const",
+            Self::False => "false",
+            Self::Private => "private",
+            Self::This => "this",
+            Self::While => "while",
+            Self::Constexpr => "constexpr",
+            Self::Float => "float",
+            Self::Protected => "protected",
+            Self::ThreadLocal => "thread_local",
+            Self::ConstCast => "const_cast",
+            Self::For => "for",
+            Self::Public => "public",
+            Self::Throw => "throw",
+        }
+    }
+}
+
+impl IntKind {
+    /// Converts the token to a string.
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Int(i) => format!("{}", i),
+            Self::UInt(i) => format!("{}", i),
+            Self::LongInt(i) => format!("{}", i),
+            Self::ULongInt(i) => format!("{}", i),
+            Self::LongLongInt(i) => format!("{}", i),
+            Self::ULongLongInt(i) => format!("{}", i),
+        }
+    }
+}
+
+impl FloatKind {
+    /// Converts the token to a string.
+    pub fn to_string(&self) -> String {
+        match self {
+            Self::Float(f) => format!("{}", f),
+            Self::Double(f) => format!("{}", f),
+            Self::LongDouble(f) => format!("{}", f),
         }
     }
 }

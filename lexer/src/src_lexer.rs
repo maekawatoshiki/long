@@ -1,7 +1,7 @@
 use crate::cursor::Cursor;
 use crate::macros::{FuncMacroToken, Macro, Macros};
 use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
-use crate::token::Token;
+use crate::token::{stringify, Token};
 use anyhow::Result;
 use long_sourceloc::SourceLoc;
 use std::collections::{HashMap, VecDeque};
@@ -438,16 +438,33 @@ impl SourceLexer {
         }
 
         let mut expanded = vec![];
+        let mut is_stringify = false;
 
         for tok in body {
             // TODO: Support stringifying and combining tokens.
             match tok {
+                FuncMacroToken::Token(Token {
+                    kind: TokenKind::Symbol(SymbolKind::Hash),
+                    ..
+                }) => {
+                    if is_stringify {
+                        todo!("combining tokens");
+                    } else {
+                        is_stringify = true;
+                    }
+                    continue;
+                }
                 FuncMacroToken::Token(tok) => {
                     expanded.push(tok.clone());
                 }
                 FuncMacroToken::Param(n) => {
                     if let Some(arg) = args.get(*n) {
-                        expanded.extend(arg.iter().cloned());
+                        if is_stringify {
+                            expanded.push(Token::new(TokenKind::String(stringify(arg)), loc));
+                            is_stringify = false;
+                        } else {
+                            expanded.extend(arg.iter().cloned());
+                        }
                     } else {
                         return Err(Error::Unexpected(loc).into());
                     }
@@ -583,6 +600,16 @@ fn read_macro2() {
         r#"
 #define F(x, y) (x) + (y)
 int f(int x, int y) { return F(x, y); }"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro3() {
+    let mut l = SourceLexer::new(
+        r#"
+#define PUTS(x) puts(#x)
+void main() { PUTS(1 *2+ 3); }"#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
 }

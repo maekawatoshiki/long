@@ -69,4 +69,25 @@ impl Token {
     pub fn loc(&self) -> &SourceLoc {
         &self.loc
     }
+
+    /// Converts the token to a string.
+    pub fn to_string(&self) -> String {
+        self.kind.to_string()
+    }
+}
+
+/// Converts the token stream to a string.
+pub fn stringify(tokens: &[Token]) -> String {
+    tokens
+        .iter()
+        .fold("".to_string(), |acc, tok| {
+            format!(
+                "{}{}{}",
+                acc,
+                if tok.leading_space { " " } else { "" },
+                tok.to_string()
+            )
+        })
+        .trim_start() // Remove a leading space.
+        .to_string()
 }

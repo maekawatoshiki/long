@@ -1,0 +1,109 @@
+---
+source: lexer/src/src_lexer.rs
+expression: read_all_tokens_expanded(&mut l)
+
+---
+[
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 2:1,
+    },
+    Token {
+        kind: Keyword(
+            Void,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 3:1,
+    },
+    Token {
+        kind: Ident(
+            "main",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 3:6,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 3:10,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 3:11,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBrace,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 3:13,
+    },
+    Token {
+        kind: Ident(
+            "puts",
+        ),
+        leading_space: true,
+        hideset: {
+            "PUTS",
+        },
+        loc: 3:15,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {
+            "PUTS",
+        },
+        loc: 3:15,
+    },
+    Token {
+        kind: String(
+            "1 *2+ 3",
+        ),
+        leading_space: false,
+        hideset: {
+            "PUTS",
+        },
+        loc: 3:15,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {
+            "PUTS",
+        },
+        loc: 3:15,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 3:28,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBrace,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 3:30,
+    },
+]
