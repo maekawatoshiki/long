@@ -51,6 +51,14 @@ impl SourceLexer {
                 self.read_cpp_directive()?;
                 return self.next_preprocessed();
             }
+            Some(Token {
+                kind: TokenKind::Ident(ident),
+                leading_space,
+                loc,
+            }) => KeywordKind::from_str(ident.as_str()).map_or_else(
+                || Token::new(TokenKind::Ident(ident), loc).set_leading_space(leading_space),
+                |kind| Token::new(TokenKind::Keyword(kind), loc).set_leading_space(leading_space),
+            ),
             Some(tok) => tok,
             None => return Ok(None),
         };
@@ -94,10 +102,7 @@ impl SourceLexer {
         let ident = self
             .cursor
             .take_chars_while(|&c| c.is_ascii_alphanumeric() || c == '_');
-        KeywordKind::from_str(ident.as_str()).map_or_else(
-            || Token::new(TokenKind::Ident(ident), loc),
-            |kind| Token::new(TokenKind::Keyword(kind), loc),
-        )
+        Token::new(TokenKind::Ident(ident), loc)
     }
 
     /// Reads a string literal.
@@ -305,7 +310,7 @@ fn just_read_one_token() {
     let mut l = SourceLexer::new("int main() {}");
     assert!(matches!(
         l.next().unwrap().unwrap().kind(),
-        TokenKind::Keyword(KeywordKind::Int)
+        TokenKind::Ident(i) if i == "int"
     ));
     assert!(l.cursor.pos == 3);
     let mut l = SourceLexer::new("__num");

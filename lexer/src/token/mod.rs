@@ -6,14 +6,14 @@ use long_sourceloc::SourceLoc;
 #[derive(Debug, Clone)]
 pub struct Token {
     /// The kind of the token.
-    kind: TokenKind,
+    pub(crate) kind: TokenKind,
 
     /// `Some(...)` if any leading spaces occurs before the token.
     /// Line terminator characters are not leading spaces.
-    leading_space: bool,
+    pub(crate) leading_space: bool,
 
     /// The source location of the token.
-    loc: SourceLoc,
+    pub(crate) loc: SourceLoc,
 }
 
 impl Token {

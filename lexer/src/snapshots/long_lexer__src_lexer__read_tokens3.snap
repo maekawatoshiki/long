@@ -5,8 +5,8 @@ expression: read_all_tokens(&mut l)
 ---
 [
     Token {
-        kind: Keyword(
-            Int,
+        kind: Ident(
+            "int",
         ),
         leading_space: false,
         loc: 1:1,
@@ -40,8 +40,8 @@ expression: read_all_tokens(&mut l)
         loc: 1:12,
     },
     Token {
-        kind: Keyword(
-            Return,
+        kind: Ident(
+            "return",
         ),
         leading_space: true,
         loc: 2:2,
