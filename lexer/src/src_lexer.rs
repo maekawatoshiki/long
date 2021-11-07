@@ -1,10 +1,10 @@
 use crate::cursor::Cursor;
-use crate::macros::{Macro, Macros};
+use crate::macros::{FuncMacroToken, Macro, Macros};
 use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use crate::token::Token;
 use anyhow::Result;
 use long_sourceloc::SourceLoc;
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 use std::fmt;
 use std::fs::read_to_string;
 use std::path::PathBuf;
@@ -340,17 +340,38 @@ impl SourceLexer {
         };
         let t = self.next()?.ok_or(Error::UnexpectedEof(loc))?;
         if !t.leading_space && matches!(t.kind(), TokenKind::Symbol(SymbolKind::OpeningParen)) {
-            self.read_define_func_macro()
+            let body = self.read_define_func_macro()?;
+            macros.add_func_macro(name, body);
         } else {
             self.unget(t);
             let body = self.read_define_obj_macro()?;
             macros.add_obj_macro(name, body);
-            Ok(())
         }
+        Ok(())
     }
 
-    fn read_define_func_macro(&mut self) -> Result<()> {
-        todo!()
+    fn read_define_func_macro(&mut self) -> Result<Vec<FuncMacroToken>> {
+        let mut params = HashMap::new();
+        while let Some(arg) = self.next()? {
+            let arg = match arg.kind() {
+                TokenKind::Ident(name) => name.to_owned(),
+                TokenKind::Symbol(SymbolKind::ClosingParen) => break,
+                TokenKind::Symbol(SymbolKind::Comma) if !params.is_empty() => continue,
+                _ => return Err(Error::Unexpected(arg.loc).into()),
+            };
+            params.insert(arg, params.len());
+        }
+        let mut body = vec![];
+        while let Some(t) = self.next()? {
+            match t.kind {
+                TokenKind::NewLine => break,
+                TokenKind::Ident(ref i) if params.contains_key(i) => {
+                    body.push(FuncMacroToken::Param(params[i]));
+                }
+                _ => body.push(FuncMacroToken::Token(t)),
+            }
+        }
+        Ok(body)
     }
 
     fn read_define_obj_macro(&mut self) -> Result<Vec<Token>> {
@@ -368,8 +389,10 @@ impl SourceLexer {
     /// The remaining macro tokens are pushed back to the buffer.
     fn expand(&mut self, macros: &Macros, token: Token) -> Result<Token> {
         match token.kind {
+            TokenKind::Ident(ref name) if token.hideset.contains(name) => Ok(token),
             TokenKind::Ident(ref name) => match macros.find(name) {
                 Some(Macro::Obj(ref body)) => self.expand_obj_macro(name, body, token.loc),
+                Some(Macro::Func(ref body)) => self.expand_func_macro(name, body, token.loc),
                 None => Ok(token),
             },
             TokenKind::Keyword(_) => unreachable!(),
@@ -389,6 +412,81 @@ impl SourceLexer {
             );
         }
         Ok(self.next()?.unwrap())
+    }
+
+    /// Expands an function-like macro named `name` (whose body is `body`).
+    fn expand_func_macro(
+        &mut self,
+        name: &str,
+        body: &[FuncMacroToken],
+        loc: SourceLoc,
+    ) -> Result<Token> {
+        if !matches!(
+            self.next()?,
+            Some(Token {
+                kind: TokenKind::Symbol(SymbolKind::OpeningParen),
+                ..
+            })
+        ) {
+            return Err(Error::Unexpected(loc).into());
+        }
+
+        let mut args = vec![];
+        let mut end = false;
+        while !end {
+            args.push(self.read_func_macro_arg(&mut end)?);
+        }
+
+        let mut expanded = vec![];
+
+        for tok in body {
+            // TODO: Support stringifying and combining tokens.
+            match tok {
+                FuncMacroToken::Token(tok) => {
+                    expanded.push(tok.clone());
+                }
+                FuncMacroToken::Param(n) => {
+                    if let Some(arg) = args.get(*n) {
+                        expanded.extend(arg.iter().cloned());
+                    } else {
+                        return Err(Error::Unexpected(loc).into());
+                    }
+                }
+            }
+        }
+
+        for tok in expanded {
+            let tok = tok
+                .with_hideset_modified(|s| {
+                    s.insert(name.into());
+                })
+                .with_loc(loc);
+            self.unget(tok);
+        }
+
+        Ok(self.next()?.unwrap())
+    }
+
+    fn read_func_macro_arg(&mut self, end: &mut bool) -> Result<Vec<Token>> {
+        let mut nest = 0;
+        let mut arg = vec![];
+        while let Some(t) = self.next()? {
+            match t.kind {
+                TokenKind::Symbol(SymbolKind::OpeningParen) => nest += 1,
+                TokenKind::Symbol(SymbolKind::Comma) if nest == 0 => {
+                    return Ok(arg);
+                }
+                TokenKind::Symbol(SymbolKind::ClosingParen) if nest == 0 => {
+                    *end = true;
+                    return Ok(arg);
+                }
+                TokenKind::Symbol(SymbolKind::ClosingParen) => nest -= 1,
+                _ => {
+                    arg.push(t);
+                }
+            }
+        }
+        Err(Error::UnexpectedEof(self.cursor.loc).into())
     }
 }
 
@@ -475,6 +573,16 @@ fn read_macro() {
         r#"
 #define ONE 1
 int f(int x) { return x + ONE; }"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro2() {
+    let mut l = SourceLexer::new(
+        r#"
+#define F(x, y) (x) + (y)
+int f(int x, int y) { return F(x, y); }"#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
 }

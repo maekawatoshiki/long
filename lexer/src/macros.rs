@@ -10,6 +10,16 @@ pub struct Macros(HashMap<String, Macro>);
 pub enum Macro {
     /// Object-like macro.
     Obj(Vec<Token>),
+
+    /// Function-like macro.
+    Func(Vec<FuncMacroToken>),
+}
+
+/// A function-like macro token. `Param(n)` represents a `n`th parameter.
+#[derive(Debug, Clone)]
+pub enum FuncMacroToken {
+    Token(Token),
+    Param(usize),
 }
 
 impl Macros {
@@ -23,6 +33,12 @@ impl Macros {
         self.0.insert(name.into(), Macro::Obj(body));
     }
 
+    /// Adds a new function-like macro.
+    pub fn add_func_macro(&mut self, name: impl Into<String>, body: Vec<FuncMacroToken>) {
+        self.0.insert(name.into(), Macro::Func(body));
+    }
+
+    /// If `name` is a defined macro name, returns the corresponding macro body.
     pub fn find(&self, name: impl AsRef<str>) -> Option<&Macro> {
         self.0.get(name.as_ref())
     }
