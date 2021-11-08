@@ -77,14 +77,18 @@ impl Token {
 }
 
 /// Converts the token stream to a string.
-pub fn stringify(tokens: &[Token]) -> String {
+pub fn stringify(tokens: &[Token], ignore_leading_space: bool) -> String {
     tokens
         .iter()
         .fold("".to_string(), |acc, tok| {
             format!(
                 "{}{}{}",
                 acc,
-                if tok.leading_space { " " } else { "" },
+                if !ignore_leading_space && tok.leading_space {
+                    " "
+                } else {
+                    ""
+                },
                 tok.to_string()
             )
         })

@@ -170,6 +170,22 @@ pub enum FloatKind {
 }
 
 impl TokenKind {
+    /// Returns the reference to the identifier string.
+    pub fn as_ident(&self) -> Option<&String> {
+        match self {
+            TokenKind::Ident(ref s) => Some(s),
+            _ => None,
+        }
+    }
+
+    /// Returns the mutable reference to the identifier string.
+    pub fn as_ident_mut(&mut self) -> Option<&mut String> {
+        match self {
+            TokenKind::Ident(ref mut s) => Some(s),
+            _ => None,
+        }
+    }
+
     /// Converts the token to a string.
     pub fn to_string(&self) -> String {
         match self {

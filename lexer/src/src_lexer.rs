@@ -437,34 +437,62 @@ impl SourceLexer {
             args.push(self.read_func_macro_arg(&mut end)?);
         }
 
+        #[derive(Copy, Clone)]
+        enum Substitution {
+            Stringify,
+            Concat,
+            None,
+        }
+
         let mut expanded = vec![];
-        let mut is_stringify = false;
+        let mut subst = Substitution::None;
+
+        fn append_expanded_tokens(
+            expanded: &mut Vec<Token>,
+            tokens: &[Token],
+            loc: SourceLoc,
+            s: &mut Substitution,
+        ) {
+            match s {
+                Substitution::Stringify => {
+                    expanded.push(Token::new(TokenKind::String(stringify(tokens, false)), loc));
+                }
+                Substitution::Concat => {
+                    let mut toks = vec![expanded.pop().unwrap()];
+                    toks.extend(tokens.iter().cloned());
+                    expanded.push(Token::new(TokenKind::Ident(stringify(&toks, true)), loc));
+                }
+                Substitution::None => {
+                    expanded.extend(tokens.iter().cloned());
+                }
+            }
+            *s = Substitution::None;
+        }
 
         for tok in body {
-            // TODO: Support stringifying and combining tokens.
             match tok {
                 FuncMacroToken::Token(Token {
                     kind: TokenKind::Symbol(SymbolKind::Hash),
                     ..
                 }) => {
-                    if is_stringify {
-                        todo!("combining tokens");
-                    } else {
-                        is_stringify = true;
+                    match subst {
+                        Substitution::None => subst = Substitution::Stringify,
+                        Substitution::Stringify => subst = Substitution::Concat,
+                        Substitution::Concat => subst = Substitution::None,
                     }
                     continue;
                 }
                 FuncMacroToken::Token(tok) => {
-                    expanded.push(tok.clone());
+                    append_expanded_tokens(
+                        &mut expanded,
+                        std::slice::from_ref(tok),
+                        loc,
+                        &mut subst,
+                    );
                 }
                 FuncMacroToken::Param(n) => {
                     if let Some(arg) = args.get(*n) {
-                        if is_stringify {
-                            expanded.push(Token::new(TokenKind::String(stringify(arg)), loc));
-                            is_stringify = false;
-                        } else {
-                            expanded.extend(arg.iter().cloned());
-                        }
+                        append_expanded_tokens(&mut expanded, arg, loc, &mut subst);
                     } else {
                         return Err(Error::Unexpected(loc).into());
                     }
@@ -610,6 +638,16 @@ fn read_macro3() {
         r#"
 #define PUTS(x) puts(#x)
 void main() { PUTS(1 *2+ 3); }"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro4() {
+    let mut l = SourceLexer::new(
+        r#"
+#define CAT(x, y) x##y##123
+void main() { int CAT(foo, bar); }"#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
 }
