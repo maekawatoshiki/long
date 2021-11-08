@@ -2,6 +2,7 @@ pub mod cursor;
 pub mod macros;
 pub mod src_lexer;
 pub mod token;
+pub mod traits;
 
 extern crate anyhow;
 extern crate long_sourceloc as sourceloc;
@@ -108,6 +109,16 @@ impl Lexer {
                 }
             }
         }
+    }
+}
+
+impl traits::LexerLike for Lexer {
+    fn next(&mut self) -> Result<Option<Token>> {
+        self.next()
+    }
+
+    fn filepath(&self) -> Option<&PathBuf> {
+        self.filepath()
     }
 }
 
