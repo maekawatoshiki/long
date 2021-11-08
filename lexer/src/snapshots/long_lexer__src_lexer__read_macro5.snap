@@ -1,0 +1,103 @@
+---
+source: lexer/src/src_lexer.rs
+expression: read_all_tokens_expanded(&mut l)
+
+---
+[
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 2:1,
+    },
+    Token {
+        kind: String(
+            "hello",
+        ),
+        leading_space: false,
+        hideset: {
+            "HELLO",
+        },
+        loc: 4:1,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 4:6,
+    },
+    Token {
+        kind: Int(
+            Int(
+                10,
+            ),
+        ),
+        leading_space: true,
+        hideset: {
+            "TEN",
+        },
+        loc: 4:8,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 4:11,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 5:1,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 6:1,
+    },
+    Token {
+        kind: String(
+            "hello",
+        ),
+        leading_space: false,
+        hideset: {
+            "HELLO",
+        },
+        loc: 6:1,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 6:6,
+    },
+    Token {
+        kind: Ident(
+            "TEN",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 6:8,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 6:11,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 7:1,
+    },
+]

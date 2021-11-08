@@ -27,7 +27,7 @@ pub(crate) struct SourceLexer {
 pub(crate) enum Error {
     Include(PathBuf, SourceLoc),
     Unexpected(SourceLoc),
-    UnexpectedEof(SourceLoc),
+    UnexpectedEof,
 }
 
 impl SourceLexer {
@@ -303,7 +303,7 @@ impl SourceLexer {
                     Err(Error::Include(name.into(), loc).into())
                 }
                 "define" => self.read_define(macros),
-                // "undef" => self.read_undef(),
+                "undef" => self.read_undef(macros),
                 // "if" => self.read_if(),
                 // "ifdef" => self.read_ifdef(),
                 // "ifndef" => self.read_ifndef(),
@@ -331,14 +331,14 @@ impl SourceLexer {
     /// Reads a #define directive.
     fn read_define(&mut self, macros: &mut Macros) -> Result<()> {
         let loc = self.cursor.loc;
-        let name = match self.next()?.ok_or(Error::UnexpectedEof(loc))? {
+        let name = match self.next()?.ok_or(Error::UnexpectedEof)? {
             Token {
                 kind: TokenKind::Ident(name),
                 ..
             } => name,
             _ => return Err(Error::Unexpected(loc).into()),
         };
-        let t = self.next()?.ok_or(Error::UnexpectedEof(loc))?;
+        let t = self.next()?.ok_or(Error::UnexpectedEof)?;
         if !t.leading_space && matches!(t.kind(), TokenKind::Symbol(SymbolKind::OpeningParen)) {
             let body = self.read_define_func_macro()?;
             macros.add_func_macro(name, body);
@@ -389,10 +389,14 @@ impl SourceLexer {
     /// The remaining macro tokens are pushed back to the buffer.
     fn expand(&mut self, macros: &Macros, token: Token) -> Result<Token> {
         match token.kind {
-            TokenKind::Ident(ref name) if token.hideset.contains(name) => Ok(token),
+            TokenKind::Ident(ref name) if token.hideset.contains(name) => return Ok(token),
             TokenKind::Ident(ref name) => match macros.find(name) {
-                Some(Macro::Obj(ref body)) => self.expand_obj_macro(name, body, token.loc),
-                Some(Macro::Func(ref body)) => self.expand_func_macro(name, body, token.loc),
+                Some(Macro::Obj(ref body)) => self
+                    .expand_obj_macro(name, body, token.loc)
+                    .map(|t| t.set_leading_space(token.leading_space)),
+                Some(Macro::Func(ref body)) => self
+                    .expand_func_macro(name, body, token.loc)
+                    .map(|t| t.set_leading_space(token.leading_space)),
                 None => Ok(token),
             },
             TokenKind::Keyword(_) => unreachable!(),
@@ -531,7 +535,15 @@ impl SourceLexer {
                 }
             }
         }
-        Err(Error::UnexpectedEof(self.cursor.loc).into())
+        Err(Error::UnexpectedEof.into())
+    }
+
+    /// Reads a #undef directive.
+    fn read_undef(&mut self, macros: &mut Macros) -> Result<()> {
+        let tok = self.next()?.ok_or(Error::UnexpectedEof)?;
+        let name = tok.kind.as_ident().ok_or(Error::Unexpected(tok.loc))?;
+        macros.remove(name);
+        Ok(())
     }
 }
 
@@ -648,6 +660,20 @@ fn read_macro4() {
         r#"
 #define CAT(x, y) x##y##123
 void main() { int CAT(foo, bar); }"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro5() {
+    let mut l = SourceLexer::new(
+        r#"
+#define HELLO "hello"
+#define TEN 10
+HELLO; TEN;
+#undef TEN
+HELLO; TEN;
+"#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
 }

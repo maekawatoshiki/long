@@ -42,4 +42,8 @@ impl Macros {
     pub fn find(&self, name: impl AsRef<str>) -> Option<&Macro> {
         self.0.get(name.as_ref())
     }
+
+    pub fn remove(&mut self, name: impl AsRef<str>) {
+        self.0.remove(name.as_ref());
+    }
 }

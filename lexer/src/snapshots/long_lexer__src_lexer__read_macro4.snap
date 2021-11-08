@@ -62,7 +62,7 @@ expression: read_all_tokens_expanded(&mut l)
         kind: Ident(
             "foobar123",
         ),
-        leading_space: false,
+        leading_space: true,
         hideset: {
             "CAT",
         },
