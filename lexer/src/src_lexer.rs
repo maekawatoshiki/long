@@ -304,7 +304,9 @@ impl SourceLexer {
                 }
                 "define" => self.read_define(macros),
                 "undef" => self.read_undef(macros),
-                // "if" => self.read_if(),
+                // TODO: The directives below requires parsing constant expression,
+                // TODO: thus we need to create a parser first.
+                "if" => self.read_if(macros),
                 // "ifdef" => self.read_ifdef(),
                 // "ifndef" => self.read_ifndef(),
                 // "elif" => self.read_elif(),
@@ -544,6 +546,11 @@ impl SourceLexer {
         let name = tok.kind.as_ident().ok_or(Error::Unexpected(tok.loc))?;
         macros.remove(name);
         Ok(())
+    }
+
+    /// Reads a #if directive.
+    fn read_if(&mut self, _macros: &mut Macros) -> Result<()> {
+        todo!()
     }
 }
 
