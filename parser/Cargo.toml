@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 long-lexer = { path = "../lexer" }
+long-ast = { path = "../ast" }
 anyhow = "= 1.0.45"

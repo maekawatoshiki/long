@@ -2,5 +2,6 @@
 members = [
   "sourceloc",
   "lexer",
-  "parser"
+  "parser",
+  "ast"
 ]
