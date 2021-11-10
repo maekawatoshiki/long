@@ -1,11 +1,16 @@
 use crate::Parser;
 use anyhow::Result;
-use ast::node::expr::Expr;
-use lexer::{traits::LexerLike, Error};
+use long_ast::node::expr::{BinOp, Expr};
+use long_lexer::{token::kind::SymbolKind, traits::LexerLike, Error};
 
 impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a comma expression.
-    pub fn parse_comma(&mut self) -> Result<Expr> {
+    pub(crate) fn parse_comma(&mut self) -> Result<Expr> {
+        let mut lhs = self.parse_primary()?;
+        while self.lexer.skip(SymbolKind::Comma.into()) {
+            let rhs = self.parse_primary()?;
+            lhs = Expr::BinOp(BinOp::Comma(Box::new(lhs), Box::new(rhs)));
+        }
         todo!()
         // let mut lhs = try!(self.read_assign());
         // while try!(self.lexer.skip_symbol(Symbol::Comma)) {
@@ -19,7 +24,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     }
 
     /// Parses a literal or parenthetical expression.
-    fn read_primary(&mut self) -> Result<Expr> {
+    pub(crate) fn parse_primary(&mut self) -> Result<Expr> {
         // TODO: Support other than int literals.
         let _tok = self.lexer.next()?.ok_or_else(|| Error::UnexpectedEof)?;
         todo!()

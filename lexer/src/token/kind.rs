@@ -1,5 +1,5 @@
 /// The kind of a token.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenKind {
     Ident(String),
     Keyword(KeywordKind),
@@ -14,7 +14,7 @@ pub enum TokenKind {
 ///
 /// Currently, some symbols from <https://timsong-cpp.github.io/cppwp/n3337/lex.operators> are
 /// not implemented.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum SymbolKind {
     OpeningParen,
     ClosingParen,
@@ -69,7 +69,7 @@ pub enum SymbolKind {
 }
 
 /// The kind of a keyword.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum KeywordKind {
     Alignas,
     Continue,
@@ -149,7 +149,7 @@ pub enum KeywordKind {
 /// The kind of an integer literal.
 ///
 /// <https://timsong-cpp.github.io/cppwp/n3337/lex.icon>
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum IntKind {
     Int(i32),
     LongInt(i32),
@@ -162,7 +162,7 @@ pub enum IntKind {
 /// The kind of a floating literal.
 ///
 /// <https://timsong-cpp.github.io/cppwp/n3337/lex.fcon>
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum FloatKind {
     Float(f32),
     Double(f64),
@@ -345,6 +345,12 @@ impl SymbolKind {
     }
 }
 
+impl From<SymbolKind> for TokenKind {
+    fn from(kind: SymbolKind) -> Self {
+        TokenKind::Symbol(kind)
+    }
+}
+
 impl KeywordKind {
     /// Returns the kind of the keyword if `kwd` is a keyword.
     pub(crate) fn from_str(kwd: impl AsRef<str>) -> Option<Self> {
@@ -517,6 +523,12 @@ impl IntKind {
             Self::LongLongInt(i) => format!("{}", i),
             Self::ULongLongInt(i) => format!("{}", i),
         }
+    }
+}
+
+impl From<IntKind> for TokenKind {
+    fn from(kind: IntKind) -> Self {
+        TokenKind::Int(kind)
     }
 }
 

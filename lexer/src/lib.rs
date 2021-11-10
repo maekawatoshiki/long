@@ -13,6 +13,7 @@ use sourceloc::SourceLoc;
 use src_lexer::SourceLexer;
 use std::fmt;
 use std::path::{Path, PathBuf};
+use token::kind::TokenKind;
 use token::Token;
 
 /// A lexical analyzer for a translation unit.
@@ -115,6 +116,15 @@ impl Lexer {
 impl traits::LexerLike for Lexer {
     fn next(&mut self) -> Result<Option<Token>> {
         self.next()
+    }
+
+    fn skip(&mut self, kind: TokenKind) -> bool {
+        if let Ok(Some(tok)) = Lexer::next(self) {
+            if tok.kind() == &kind {
+                return true;
+            }
+        }
+        false
     }
 
     fn filepath(&self) -> Option<&PathBuf> {
