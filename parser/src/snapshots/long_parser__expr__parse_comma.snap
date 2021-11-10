@@ -1,0 +1,49 @@
+---
+source: parser/src/expr.rs
+expression: node
+
+---
+Ok(
+    Expr {
+        kind: Binary(
+            Comma,
+            Expr {
+                kind: Binary(
+                    Comma,
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                        loc: 1:1,
+                    },
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                        ),
+                        loc: 1:4,
+                    },
+                ),
+                loc: 1:1,
+            },
+            Expr {
+                kind: Literal(
+                    Int(
+                        Int(
+                            3,
+                        ),
+                    ),
+                ),
+                loc: 1:7,
+            },
+        ),
+        loc: 1:1,
+    },
+)

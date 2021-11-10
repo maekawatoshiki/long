@@ -24,10 +24,3 @@ impl<'a, L: LexerLike> Parser<'a, L> {
         self.parse_comma()
     }
 }
-
-#[test]
-#[should_panic]
-fn parse() {
-    use lexer::Lexer;
-    let _ = Parser::new(&mut Lexer::new("1+2+3")).parse_expr();
-}

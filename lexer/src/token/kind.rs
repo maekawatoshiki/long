@@ -149,7 +149,7 @@ pub enum KeywordKind {
 /// The kind of an integer literal.
 ///
 /// <https://timsong-cpp.github.io/cppwp/n3337/lex.icon>
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum IntKind {
     Int(i32),
     LongInt(i32),

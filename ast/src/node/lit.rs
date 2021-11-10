@@ -1,3 +1,7 @@
+use long_lexer::token::kind::IntKind as Int;
+
 /// A literal node.
-#[derive(Debug, Clone)]
-pub enum Literal {}
+#[derive(Debug, Clone, PartialEq)]
+pub enum Literal {
+    Int(Int),
+}

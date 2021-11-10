@@ -7,3 +7,6 @@ edition = "2021"
 long-lexer = { path = "../lexer" }
 long-ast = { path = "../ast" }
 anyhow = "= 1.0.45"
+
+[dev-dependencies]
+insta = "= 1.7.1"
