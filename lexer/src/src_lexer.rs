@@ -534,8 +534,63 @@ impl SourceLexer {
     }
 
     /// Reads a #if directive.
-    fn read_if(&mut self, _macros: &mut Macros) -> Result<()> {
+    fn read_if(&mut self, macros: &mut Macros) -> Result<()> {
+        self.read_and_eval_constexpr(macros)?;
         todo!()
+    }
+
+    /// Reads an integer expression line and returns its evaluated value.
+    fn read_and_eval_constexpr(&mut self, macros: &mut Macros) -> Result<bool> {
+        let _expr_line = self.read_intexpr_line(macros)?;
+        todo!()
+        // let node = parser::Parser::new(self).run_as_expr().ok().unwrap();
+        //
+        // self.buf.pop_back();
+        //
+        // if let Ok(e) = node.eval_constexpr() {
+        //     Ok(e != 0)
+        // } else {
+        //     println!("error: lexer constexpr");
+        //     Err(Error::Something)
+        // }
+    }
+
+    /// Reads an integer expression line.
+    fn read_intexpr_line(&mut self, macros: &mut Macros) -> Result<Vec<Token>> {
+        let mut tokens = vec![];
+        while let Some(tok) = self.next()? {
+            if tok.kind() == &TokenKind::NewLine {
+                break;
+            }
+            let tok = self.expand(macros, tok)?;
+            match tok.kind() {
+                TokenKind::Ident(ident) if ident == "defined" => {
+                    tokens.push(self.read_defined_op(macros)?)
+                }
+                TokenKind::Ident(_) => {
+                    tokens.push(Token::new(IntKind::Int(0).into(), *tok.loc()));
+                }
+                _ => tokens.push(tok),
+            }
+        }
+        Ok(tokens)
+    }
+
+    /// Reads a "defined" operator in an integer expression.
+    fn read_defined_op(&mut self, macros: &mut Macros) -> Result<Token> {
+        let mut tok = self.next()?.ok_or(Error::UnexpectedEof)?;
+        if tok.kind() == &SymbolKind::OpeningParen.into() {
+            tok = self.next()?.ok_or(Error::UnexpectedEof)?;
+            let maybe_closing_paren = self.next()?.ok_or(Error::UnexpectedEof)?;
+            if maybe_closing_paren.kind() != &SymbolKind::ClosingParen.into() {
+                return Err(Error::Unexpected(*maybe_closing_paren.loc()).into());
+            }
+        }
+        let name = tok.kind().as_ident().ok_or(Error::Unexpected(*tok.loc()))?;
+        Ok(Token::new(
+            IntKind::Int(macros.find(name).is_some().into()).into(),
+            *tok.loc(),
+        ))
     }
 }
 
