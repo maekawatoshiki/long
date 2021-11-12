@@ -1,0 +1,65 @@
+---
+source: parser/src/expr.rs
+expression: node
+
+---
+Ok(
+    Expr {
+        kind: Binary(
+            LogicalOr,
+            Expr {
+                kind: Binary(
+                    LogicalAnd,
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                        loc: 1:1,
+                    },
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    2,
+                                ),
+                            ),
+                        ),
+                        loc: 1:6,
+                    },
+                ),
+                loc: 1:1,
+            },
+            Expr {
+                kind: Binary(
+                    LogicalAnd,
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    3,
+                                ),
+                            ),
+                        ),
+                        loc: 1:11,
+                    },
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    4,
+                                ),
+                            ),
+                        ),
+                        loc: 1:16,
+                    },
+                ),
+                loc: 1:11,
+            },
+        ),
+        loc: 1:1,
+    },
+)

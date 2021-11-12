@@ -45,4 +45,6 @@ pub enum ExprKind {
 #[derive(Debug, Clone, PartialEq)]
 pub enum BinOp {
     Comma,
+    LogicalOr,
+    LogicalAnd,
 }
