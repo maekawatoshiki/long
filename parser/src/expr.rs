@@ -1,14 +1,13 @@
 use crate::Parser;
 use anyhow::Result;
-use long_ast::node::{
-    expr::{BinOp, Expr, ExprKind},
-    lit::Literal,
-};
-use long_lexer::{
+use long_ast::{
+    node::{
+        expr::{BinOp, Expr, ExprKind},
+        lit::Literal,
+    },
     token::kind::{SymbolKind, TokenKind},
-    traits::LexerLike,
-    Error,
 };
+use long_lexer::{traits::LexerLike, Error};
 
 impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a comma expression.

@@ -1,8 +1,8 @@
 use crate::cursor::Cursor;
 use crate::macros::{FuncMacroToken, Macro, Macros};
-use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
-use crate::token::{stringify, Token};
 use anyhow::Result;
+use ast::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
+use ast::token::{stringify, Token};
 use long_sourceloc::SourceLoc;
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;

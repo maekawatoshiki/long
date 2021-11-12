@@ -1,5 +1,5 @@
-use crate::token::{kind::TokenKind, Token};
 use anyhow::Result;
+use ast::token::{kind::TokenKind, Token};
 use std::path::PathBuf;
 
 pub trait LexerLike {
@@ -34,7 +34,7 @@ impl LexerLike for std::vec::IntoIter<Token> {
 
 #[test]
 fn vec_tokens() {
-    use crate::token::*;
+    use ast::token::*;
     use sourceloc::SourceLoc;
     let tokens = vec![
         Token::new(
@@ -54,7 +54,7 @@ fn vec_tokens() {
 
 #[test]
 fn vec_tokens_skip() {
-    use crate::token::*;
+    use ast::token::*;
     use sourceloc::SourceLoc;
     let tokens = vec![
         Token::new(kind::SymbolKind::Add.into(), SourceLoc::new(0, 1)),

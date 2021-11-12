@@ -201,7 +201,7 @@ impl TokenKind {
 }
 
 impl SymbolKind {
-    pub(crate) fn at_least_starts_with(c: char) -> bool {
+    pub fn at_least_starts_with(c: char) -> bool {
         matches!(
             c,
             '(' | ')'
@@ -231,7 +231,7 @@ impl SymbolKind {
         )
     }
 
-    pub(crate) fn from_char(c: char) -> Option<Self> {
+    pub fn from_char(c: char) -> Option<Self> {
         match c {
             '(' => Some(SymbolKind::OpeningParen),
             ')' => Some(SymbolKind::ClosingParen),
@@ -262,7 +262,7 @@ impl SymbolKind {
         }
     }
 
-    pub(crate) fn from_two_chars(x: char, y: char) -> Option<SymbolKind> {
+    pub fn from_two_chars(x: char, y: char) -> Option<SymbolKind> {
         match (x, y) {
             (':', ':') => Some(SymbolKind::DoubleColon),
             ('-', '>') => Some(SymbolKind::Arrow),
@@ -353,7 +353,7 @@ impl From<SymbolKind> for TokenKind {
 
 impl KeywordKind {
     /// Returns the kind of the keyword if `kwd` is a keyword.
-    pub(crate) fn from_str(kwd: impl AsRef<str>) -> Option<Self> {
+    pub fn from_str(kwd: impl AsRef<str>) -> Option<Self> {
         match kwd.as_ref() {
             "alignas" => Some(Self::Alignas),
             "continue" => Some(Self::Continue),

@@ -1,4 +1,4 @@
-use long_lexer::token::kind::IntKind as Int;
+use crate::token::kind::IntKind as Int;
 
 /// A literal node.
 #[derive(Debug, Clone, PartialEq)]

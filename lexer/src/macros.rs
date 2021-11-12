@@ -1,4 +1,4 @@
-use crate::token::Token;
+use ast::token::Token;
 use std::collections::HashMap;
 
 /// Defined macros.

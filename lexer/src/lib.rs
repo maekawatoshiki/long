@@ -1,20 +1,20 @@
 pub mod cursor;
 pub mod macros;
 pub mod src_lexer;
-pub mod token;
 pub mod traits;
 
 extern crate anyhow;
+extern crate long_ast as ast;
 extern crate long_sourceloc as sourceloc;
 
 use anyhow::Result;
+use ast::token::kind::TokenKind;
+use ast::token::Token;
 use macros::Macros;
 use sourceloc::SourceLoc;
 use src_lexer::SourceLexer;
 use std::fmt;
 use std::path::{Path, PathBuf};
-use token::kind::TokenKind;
-use token::Token;
 
 /// A lexical analyzer for a translation unit.
 pub struct Lexer {
