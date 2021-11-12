@@ -23,6 +23,9 @@ pub(crate) struct SourceLexer {
 
     /// The buffer for the tokens ungot.
     buf: VecDeque<Token>,
+
+    /// The conditions of preprocessor directives.
+    cond_stack: VecDeque<bool>,
 }
 
 #[derive(Debug)]
@@ -40,6 +43,7 @@ impl SourceLexer {
             filepath: None,
             cursor: Cursor::new(source.into()),
             buf: VecDeque::new(),
+            cond_stack: VecDeque::new(),
         }
     }
 
@@ -52,6 +56,7 @@ impl SourceLexer {
             cursor: Cursor::new(read_to_string(filepath.clone().into())?),
             filepath: Some(filepath.into()),
             buf: VecDeque::new(),
+            cond_stack: VecDeque::new(),
         })
     }
 
@@ -538,8 +543,43 @@ impl SourceLexer {
 
     /// Reads a #if directive.
     fn read_if(&mut self, macros: &mut Macros) -> Result<()> {
-        self.read_and_eval_constexpr(macros)?;
-        todo!()
+        let cond = self.read_and_eval_constexpr(macros)?;
+        self.do_if(cond)
+    }
+
+    /// Skips the group if `cond` is false.
+    fn do_if(&mut self, cond: bool) -> Result<()> {
+        self.cond_stack.push_back(cond);
+        if !cond {
+            self.skip_group()?;
+        }
+        Ok(())
+    }
+
+    /// Skips the group.
+    fn skip_group(&mut self) -> Result<()> {
+        let mut nest = 0;
+        while let Some(tok) = self.next()? {
+            if tok.kind() != &SymbolKind::Hash.into() {
+                continue;
+            }
+            let directive = self.next()?.ok_or(Error::UnexpectedEof)?;
+            if nest == 0 {
+                if matches!(directive.kind(), TokenKind::Ident(ident)
+                    if matches!(ident.as_str(), "else" | "elif" | "endif"))
+                {
+                    self.unget(directive);
+                    self.unget(tok);
+                    return Ok(());
+                }
+            }
+            match directive.kind().as_ident().map(|s| s.as_str()) {
+                Some("if" | "ifdef" | "ifndef") => nest += 1,
+                Some("endif") => nest -= 1,
+                _ => {}
+            }
+        }
+        Err(Error::UnexpectedEof.into())
     }
 
     /// Reads an integer expression line and returns its evaluated value.

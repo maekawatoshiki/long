@@ -51,6 +51,8 @@ pub enum BinOp {
 }
 
 impl Expr {
+    // TODO: Add tests for this.
+    /// Evaluates the constant expression.
     pub fn eval_constexpr(&self) -> Option<i64> {
         match self.kind {
             ExprKind::Literal(Literal::Int(IntKind::Int(i))) => Some(i as i64),
