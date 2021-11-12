@@ -25,7 +25,7 @@ pub(crate) struct SourceLexer {
     buf: VecDeque<Token>,
 
     /// The conditions of preprocessor directives.
-    cond_stack: VecDeque<bool>,
+    cond_stack: Vec<bool>,
 }
 
 #[derive(Debug)]
@@ -43,7 +43,7 @@ impl SourceLexer {
             filepath: None,
             cursor: Cursor::new(source.into()),
             buf: VecDeque::new(),
-            cond_stack: VecDeque::new(),
+            cond_stack: Vec::new(),
         }
     }
 
@@ -56,7 +56,7 @@ impl SourceLexer {
             cursor: Cursor::new(read_to_string(filepath.clone().into())?),
             filepath: Some(filepath.into()),
             buf: VecDeque::new(),
-            cond_stack: VecDeque::new(),
+            cond_stack: Vec::new(),
         })
     }
 
@@ -306,10 +306,10 @@ impl SourceLexer {
                 // TODO: The directives below requires parsing constant expression,
                 // TODO: thus we need to create a parser first.
                 "if" => self.read_if(macros),
-                // "ifdef" => self.read_ifdef(),
-                // "ifndef" => self.read_ifndef(),
-                // "elif" => self.read_elif(),
-                // "else" => self.read_else(),
+                "ifdef" => self.read_ifdef(macros),
+                "ifndef" => self.read_ifndef(macros),
+                "elif" => self.read_elif(macros),
+                "else" => self.read_else(),
                 _ => Ok(()),
             },
             _ => Ok(()),
@@ -547,9 +547,48 @@ impl SourceLexer {
         self.do_if(cond)
     }
 
+    /// Reads a #ifdef directive.
+    fn read_ifdef(&mut self, macros: &mut Macros) -> Result<()> {
+        let name = self.next()?.ok_or(Error::UnexpectedEof)?;
+        let is_defined = name
+            .kind()
+            .as_ident()
+            .map_or(false, |name| macros.find(name).is_some());
+        self.do_if(is_defined)
+    }
+
+    /// Reads a #ifndef directive.
+    fn read_ifndef(&mut self, macros: &mut Macros) -> Result<()> {
+        let name = self.next()?.ok_or(Error::UnexpectedEof)?;
+        let is_defined = name
+            .kind()
+            .as_ident()
+            .map_or(false, |name| macros.find(name).is_some());
+        self.do_if(!is_defined)
+    }
+
+    /// Reads a #elif directive.
+    fn read_elif(&mut self, macros: &mut Macros) -> Result<()> {
+        if *self.cond_stack.last().unwrap() || !self.read_and_eval_constexpr(macros)? {
+            self.skip_group()?;
+        } else {
+            self.cond_stack.pop();
+            self.cond_stack.push(true);
+        }
+        Ok(())
+    }
+
+    /// Reads a #else directive.
+    fn read_else(&mut self) -> Result<()> {
+        if *self.cond_stack.last().unwrap() {
+            self.skip_group()?;
+        }
+        Ok(())
+    }
+
     /// Skips the group if `cond` is false.
     fn do_if(&mut self, cond: bool) -> Result<()> {
-        self.cond_stack.push_back(cond);
+        self.cond_stack.push(cond);
         if !cond {
             self.skip_group()?;
         }
@@ -776,6 +815,29 @@ int f;
 #undef ONE
 #if defined ONE
 int g;
+#endif
+"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro7() {
+    let mut l = SourceLexer::new(
+        r#"
+#define ONE 1
+#define TWO 2
+#ifdef ONE
+int f;
+#endif
+#ifndef ONE
+int g;
+#elif TWO
+int h;
+#endif
+#undef ONE
+#ifndef ONE
+int k;
 #endif
 "#,
     );

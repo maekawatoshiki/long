@@ -1,0 +1,139 @@
+---
+source: parser/src/lexer/src_lexer.rs
+expression: read_all_tokens_expanded(&mut l)
+
+---
+[
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 2:1,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 5:1,
+    },
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 5:1,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 5:5,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 5:6,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 6:1,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 7:1,
+    },
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 10:1,
+    },
+    Token {
+        kind: Ident(
+            "h",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 10:5,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 10:6,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 11:1,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 12:1,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 13:1,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 14:1,
+    },
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 14:1,
+    },
+    Token {
+        kind: Ident(
+            "k",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 14:5,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: 14:6,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 15:1,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: 16:1,
+    },
+]

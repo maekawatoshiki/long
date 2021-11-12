@@ -56,7 +56,7 @@ impl Expr {
     pub fn eval_constexpr(&self) -> Option<i64> {
         match self.kind {
             ExprKind::Literal(Literal::Int(IntKind::Int(i))) => Some(i as i64),
-            ExprKind::Literal(Literal::Int(_)) => None,
+            ExprKind::Literal(Literal::Int(_)) => todo!(),
             ExprKind::Binary(BinOp::Comma, _, ref rhs) => rhs.eval_constexpr(),
             ExprKind::Binary(BinOp::LogicalOr, ref lhs, ref rhs) => {
                 if lhs.eval_constexpr() != Some(0) {
