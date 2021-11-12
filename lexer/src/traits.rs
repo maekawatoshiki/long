@@ -6,6 +6,9 @@ pub trait LexerLike {
     /// Returns the next token.
     fn next(&mut self) -> Result<Option<Token>>;
 
+    /// Peeks the next token.
+    fn peek(&mut self) -> Result<Option<Token>>;
+
     /// Skips the next token only if it matches the given kind.
     fn skip(&mut self, kind: TokenKind) -> bool;
 
@@ -16,6 +19,10 @@ pub trait LexerLike {
 impl LexerLike for std::vec::IntoIter<Token> {
     fn next(&mut self) -> Result<Option<Token>> {
         Ok(Iterator::next(self))
+    }
+
+    fn peek(&mut self) -> Result<Option<Token>> {
+        Ok(Iterator::next(&mut (*self).clone()))
     }
 
     fn skip(&mut self, kind: TokenKind) -> bool {

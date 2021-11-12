@@ -115,7 +115,7 @@ impl SourceLexer {
     }
 
     /// Pushes `tok` back to the buffer so that it can be read again.
-    fn unget(&mut self, tok: Token) {
+    pub fn unget(&mut self, tok: Token) {
         self.buf.push_back(tok);
     }
 

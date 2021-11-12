@@ -111,6 +111,11 @@ impl Lexer {
             }
         }
     }
+
+    /// Pushes `tok` back to the buffer so that it can be read again.
+    pub fn unget(&mut self, tok: Token) {
+        self.src_lexers.last_mut().unwrap().unget(tok);
+    }
 }
 
 impl traits::LexerLike for Lexer {
@@ -118,11 +123,22 @@ impl traits::LexerLike for Lexer {
         self.next()
     }
 
+    fn peek(&mut self) -> Result<Option<Token>> {
+        match self.next() {
+            Ok(Some(tok)) => {
+                self.unget(tok.clone());
+                Ok(Some(tok))
+            }
+            e => e,
+        }
+    }
+
     fn skip(&mut self, kind: TokenKind) -> bool {
         if let Ok(Some(tok)) = Lexer::next(self) {
             if tok.kind() == &kind {
                 return true;
             }
+            self.unget(tok)
         }
         false
     }

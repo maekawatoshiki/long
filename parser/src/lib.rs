@@ -5,8 +5,8 @@ extern crate long_lexer as lexer;
 mod expr;
 
 use anyhow::Result;
-use ast::node::expr::Expr;
-use lexer::traits::LexerLike;
+use ast::{node::expr::Expr, token::kind::TokenKind};
+use lexer::{traits::LexerLike, Error};
 
 /// A parser for C++.
 pub struct Parser<'a, L: LexerLike> {
@@ -22,5 +22,14 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses an expression.
     pub fn parse_expr(&mut self) -> Result<Expr> {
         self.parse_comma()
+    }
+
+    fn expect(&mut self, kind: impl Into<TokenKind>) -> Result<()> {
+        let loc = *self.lexer.peek()?.ok_or(Error::UnexpectedEof)?.loc();
+        if self.lexer.skip(kind.into()) {
+            Ok(())
+        } else {
+            Err(Error::Unexpected(loc).into())
+        }
     }
 }

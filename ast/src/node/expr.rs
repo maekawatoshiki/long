@@ -36,6 +36,9 @@ pub enum ExprKind {
 
     /// A binary expression.
     Binary(BinOp, Box<Expr>, Box<Expr>),
+
+    /// A ternary expression.
+    Ternary(Box<Expr>, Box<Expr>, Box<Expr>), // cond, then, else.
 }
 
 /// A binary operator node.
