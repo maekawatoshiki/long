@@ -1,3 +1,4 @@
+use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
 use long_ast::{
@@ -7,7 +8,6 @@ use long_ast::{
     },
     token::kind::{SymbolKind, TokenKind},
 };
-use long_lexer::{traits::LexerLike, Error};
 
 impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a comma expression.
@@ -90,21 +90,21 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
 #[test]
 fn parse_comma() {
-    use lexer::Lexer;
+    use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("1, 2, 3")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
 
 #[test]
 fn parse_ternary() {
-    use lexer::Lexer;
+    use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("1 ? 2 : 3")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
 
 #[test]
 fn parse_logor_logand() {
-    use lexer::Lexer;
+    use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("1 && 2 || 3 && 4")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }

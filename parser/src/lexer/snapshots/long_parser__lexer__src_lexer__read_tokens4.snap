@@ -1,5 +1,5 @@
 ---
-source: lexer/src/src_lexer.rs
+source: parser/src/lexer/src_lexer.rs
 expression: read_all_tokens(&mut l)
 
 ---

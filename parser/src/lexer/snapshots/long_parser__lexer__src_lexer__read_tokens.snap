@@ -1,5 +1,5 @@
 ---
-source: lexer/src/src_lexer.rs
+source: parser/src/lexer/src_lexer.rs
 expression: read_all_tokens(&mut l)
 
 ---
@@ -13,33 +13,33 @@ expression: read_all_tokens(&mut l)
         loc: 1:1,
     },
     Token {
-        kind: NewLine,
+        kind: Ident(
+            "main",
+        ),
         leading_space: true,
+        hideset: {},
+        loc: 1:5,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
         hideset: {},
         loc: 2:1,
     },
     Token {
         kind: Ident(
-            "main",
+            "long",
         ),
         leading_space: false,
         hideset: {},
         loc: 2:1,
     },
     Token {
-        kind: Symbol(
-            OpeningParen,
+        kind: Ident(
+            "short",
         ),
-        leading_space: false,
+        leading_space: true,
         hideset: {},
-        loc: 2:5,
-    },
-    Token {
-        kind: Symbol(
-            ClosingParen,
-        ),
-        leading_space: false,
-        hideset: {},
-        loc: 2:15,
+        loc: 2:6,
     },
 ]

@@ -1,7 +1,6 @@
 [workspace]
 members = [
   "sourceloc",
-  "lexer",
   "parser",
   "ast"
 ]

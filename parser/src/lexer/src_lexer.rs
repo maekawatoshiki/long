@@ -1,5 +1,5 @@
-use crate::cursor::Cursor;
-use crate::macros::{FuncMacroToken, Macro, Macros};
+use super::cursor::Cursor;
+use super::macros::{FuncMacroToken, Macro, Macros};
 use anyhow::Result;
 use ast::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use ast::token::{stringify, Token};

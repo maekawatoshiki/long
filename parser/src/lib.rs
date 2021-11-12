@@ -1,8 +1,9 @@
 extern crate anyhow;
 extern crate long_ast as ast;
-extern crate long_lexer as lexer;
+extern crate long_sourceloc as sourceloc;
 
 mod expr;
+pub mod lexer;
 
 use anyhow::Result;
 use ast::{node::expr::Expr, token::kind::TokenKind};

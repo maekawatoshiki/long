@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-long-lexer = { path = "../lexer" }
+long-sourceloc = { path = "../sourceloc" }
 long-ast = { path = "../ast" }
 anyhow = "= 1.0.45"
 

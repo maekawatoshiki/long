@@ -1,5 +1,5 @@
 ---
-source: lexer/src/src_lexer.rs
+source: parser/src/lexer/src_lexer.rs
 expression: read_all_tokens_expanded(&mut l)
 
 ---
@@ -12,7 +12,7 @@ expression: read_all_tokens_expanded(&mut l)
     },
     Token {
         kind: Keyword(
-            Int,
+            Void,
         ),
         leading_space: false,
         hideset: {},
@@ -20,11 +20,11 @@ expression: read_all_tokens_expanded(&mut l)
     },
     Token {
         kind: Ident(
-            "f",
+            "main",
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:5,
+        loc: 3:6,
     },
     Token {
         kind: Symbol(
@@ -32,23 +32,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:6,
-    },
-    Token {
-        kind: Keyword(
-            Int,
-        ),
-        leading_space: false,
-        hideset: {},
-        loc: 3:7,
-    },
-    Token {
-        kind: Ident(
-            "x",
-        ),
-        leading_space: true,
-        hideset: {},
-        loc: 3:11,
+        loc: 3:10,
     },
     Token {
         kind: Symbol(
@@ -56,7 +40,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:12,
+        loc: 3:11,
     },
     Token {
         kind: Symbol(
@@ -64,43 +48,47 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:14,
-    },
-    Token {
-        kind: Keyword(
-            Return,
-        ),
-        leading_space: true,
-        hideset: {},
-        loc: 3:16,
+        loc: 3:13,
     },
     Token {
         kind: Ident(
-            "x",
-        ),
-        leading_space: true,
-        hideset: {},
-        loc: 3:23,
-    },
-    Token {
-        kind: Symbol(
-            Add,
-        ),
-        leading_space: true,
-        hideset: {},
-        loc: 3:25,
-    },
-    Token {
-        kind: Int(
-            Int(
-                1,
-            ),
+            "puts",
         ),
         leading_space: true,
         hideset: {
-            "ONE",
+            "PUTS",
         },
-        loc: 3:27,
+        loc: 3:15,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {
+            "PUTS",
+        },
+        loc: 3:15,
+    },
+    Token {
+        kind: String(
+            "1 *2+ 3",
+        ),
+        leading_space: false,
+        hideset: {
+            "PUTS",
+        },
+        loc: 3:15,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {
+            "PUTS",
+        },
+        loc: 3:15,
     },
     Token {
         kind: Symbol(
@@ -108,7 +96,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:30,
+        loc: 3:28,
     },
     Token {
         kind: Symbol(
@@ -116,6 +104,6 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:32,
+        loc: 3:30,
     },
 ]

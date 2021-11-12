@@ -1,5 +1,5 @@
 ---
-source: lexer/src/src_lexer.rs
+source: parser/src/lexer/src_lexer.rs
 expression: read_all_tokens_expanded(&mut l)
 
 ---
@@ -51,44 +51,22 @@ expression: read_all_tokens_expanded(&mut l)
         loc: 3:13,
     },
     Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: 3:15,
+    },
+    Token {
         kind: Ident(
-            "puts",
+            "foobar123",
         ),
         leading_space: true,
         hideset: {
-            "PUTS",
+            "CAT",
         },
-        loc: 3:15,
-    },
-    Token {
-        kind: Symbol(
-            OpeningParen,
-        ),
-        leading_space: false,
-        hideset: {
-            "PUTS",
-        },
-        loc: 3:15,
-    },
-    Token {
-        kind: String(
-            "1 *2+ 3",
-        ),
-        leading_space: false,
-        hideset: {
-            "PUTS",
-        },
-        loc: 3:15,
-    },
-    Token {
-        kind: Symbol(
-            ClosingParen,
-        ),
-        leading_space: false,
-        hideset: {
-            "PUTS",
-        },
-        loc: 3:15,
+        loc: 3:19,
     },
     Token {
         kind: Symbol(
@@ -96,7 +74,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:28,
+        loc: 3:32,
     },
     Token {
         kind: Symbol(
@@ -104,6 +82,6 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:30,
+        loc: 3:34,
     },
 ]

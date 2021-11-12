@@ -5,7 +5,6 @@ pub mod traits;
 
 extern crate anyhow;
 extern crate long_ast as ast;
-extern crate long_sourceloc as sourceloc;
 
 use anyhow::Result;
 use ast::token::kind::TokenKind;
