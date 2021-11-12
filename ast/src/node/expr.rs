@@ -1,4 +1,5 @@
 use super::lit::Literal;
+use crate::token::kind::IntKind;
 use long_sourceloc::SourceLoc;
 
 /// An expression node.
@@ -47,4 +48,35 @@ pub enum BinOp {
     Comma,
     LogicalOr,
     LogicalAnd,
+}
+
+impl Expr {
+    pub fn eval_constexpr(&self) -> Option<i64> {
+        match self.kind {
+            ExprKind::Literal(Literal::Int(IntKind::Int(i))) => Some(i as i64),
+            ExprKind::Literal(Literal::Int(_)) => None,
+            ExprKind::Binary(BinOp::Comma, _, ref rhs) => rhs.eval_constexpr(),
+            ExprKind::Binary(BinOp::LogicalOr, ref lhs, ref rhs) => {
+                if lhs.eval_constexpr() != Some(0) {
+                    Some(1)
+                } else {
+                    Some((rhs.eval_constexpr() != Some(0)) as i64)
+                }
+            }
+            ExprKind::Binary(BinOp::LogicalAnd, ref lhs, ref rhs) => {
+                if lhs.eval_constexpr() == Some(0) {
+                    Some(0)
+                } else {
+                    Some((rhs.eval_constexpr() != Some(0)) as i64)
+                }
+            }
+            ExprKind::Ternary(ref cond, ref thn, ref els) => {
+                if cond.eval_constexpr() != Some(0) {
+                    thn.eval_constexpr()
+                } else {
+                    els.eval_constexpr()
+                }
+            }
+        }
+    }
 }

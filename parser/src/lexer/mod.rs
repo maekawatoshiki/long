@@ -32,6 +32,7 @@ pub struct Lexer {
 pub enum Error {
     FileNotFound(PathBuf, SourceLoc),
     Unexpected(SourceLoc),
+    Message(&'static str, SourceLoc),
     UnexpectedEof,
 }
 
@@ -103,6 +104,7 @@ impl Lexer {
                             self.next()
                         }
                         SError::Unexpected(loc) => Err(Error::Unexpected(*loc).into()),
+                        SError::Message(msg, loc) => Err(Error::Message(msg, *loc).into()),
                         SError::UnexpectedEof => Err(Error::UnexpectedEof.into()),
                     },
                     None => Err(e),

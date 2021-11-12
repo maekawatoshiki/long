@@ -1,3 +1,5 @@
+use crate::Parser;
+
 use super::cursor::Cursor;
 use super::macros::{FuncMacroToken, Macro, Macros};
 use anyhow::Result;
@@ -27,6 +29,7 @@ pub(crate) struct SourceLexer {
 pub(crate) enum Error {
     Include(PathBuf, SourceLoc),
     Unexpected(SourceLoc),
+    Message(&'static str, SourceLoc),
     UnexpectedEof,
 }
 
@@ -541,18 +544,14 @@ impl SourceLexer {
 
     /// Reads an integer expression line and returns its evaluated value.
     fn read_and_eval_constexpr(&mut self, macros: &mut Macros) -> Result<bool> {
-        let _expr_line = self.read_intexpr_line(macros)?;
-        todo!()
-        // let node = parser::Parser::new(self).run_as_expr().ok().unwrap();
-        //
-        // self.buf.pop_back();
-        //
-        // if let Ok(e) = node.eval_constexpr() {
-        //     Ok(e != 0)
-        // } else {
-        //     println!("error: lexer constexpr");
-        //     Err(Error::Something)
-        // }
+        let expr_line = self.read_intexpr_line(macros)?;
+        let loc = *expr_line[0].loc();
+        let expr = Parser::new(&mut expr_line.into_iter()).parse_expr()?;
+        if let Some(e) = expr.eval_constexpr() {
+            Ok(e != 0)
+        } else {
+            Err(Error::Message("The expression is invalid", loc).into())
+        }
     }
 
     /// Reads an integer expression line.
