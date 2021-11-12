@@ -20,7 +20,7 @@ impl LexerLike for std::vec::IntoIter<Token> {
 
     fn skip(&mut self, kind: TokenKind) -> bool {
         // Unfortunately, we can't use `Peekable` here...
-        let skipped = Iterator::next(&mut (*self).clone()).map_or(false, |t| t.kind == kind);
+        let skipped = Iterator::next(&mut (*self).clone()).map_or(false, |t| t.kind() == &kind);
         if skipped {
             LexerLike::next(self).unwrap();
         }

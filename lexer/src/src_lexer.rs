@@ -4,7 +4,7 @@ use crate::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind}
 use crate::token::{stringify, Token};
 use anyhow::Result;
 use long_sourceloc::SourceLoc;
-use std::collections::{HashMap, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;
 use std::fs::read_to_string;
 use std::path::PathBuf;
@@ -56,22 +56,13 @@ impl SourceLexer {
     pub fn next_preprocessed(&mut self, macros: &mut Macros) -> Result<Option<Token>> {
         // Convert an identifier token to a keyword token if necessary.
         fn to_keyword_if_necessary(tok: Token) -> Token {
-            match tok {
-                Token {
-                    kind: TokenKind::Ident(ident),
-                    leading_space,
-                    hideset,
-                    loc,
-                } => KeywordKind::from_str(ident.as_str()).map_or_else(
-                    || {
-                        Token::new(TokenKind::Ident(ident), loc)
-                            .set_leading_space(leading_space)
-                            .with_hideset(hideset)
-                    },
-                    |kind| {
-                        Token::new(TokenKind::Keyword(kind), loc).set_leading_space(leading_space)
-                    },
-                ),
+            match tok.kind() {
+                TokenKind::Ident(ident) => match KeywordKind::from_str(ident.as_str()) {
+                    Some(kind) => tok
+                        .with_kind(TokenKind::Keyword(kind))
+                        .with_hideset(HashSet::new()),
+                    None => tok,
+                },
                 _ => tok,
             }
         }
@@ -333,15 +324,13 @@ impl SourceLexer {
     /// Reads a #define directive.
     fn read_define(&mut self, macros: &mut Macros) -> Result<()> {
         let loc = self.cursor.loc;
-        let name = match self.next()?.ok_or(Error::UnexpectedEof)? {
-            Token {
-                kind: TokenKind::Ident(name),
-                ..
-            } => name,
+        let tok = self.next()?.ok_or(Error::UnexpectedEof)?;
+        let name = match tok.kind() {
+            TokenKind::Ident(name) => name,
             _ => return Err(Error::Unexpected(loc).into()),
         };
         let t = self.next()?.ok_or(Error::UnexpectedEof)?;
-        if !t.leading_space && matches!(t.kind(), TokenKind::Symbol(SymbolKind::OpeningParen)) {
+        if !t.leading_space() && matches!(t.kind(), TokenKind::Symbol(SymbolKind::OpeningParen)) {
             let body = self.read_define_func_macro()?;
             macros.add_func_macro(name, body);
         } else {
@@ -359,13 +348,13 @@ impl SourceLexer {
                 TokenKind::Ident(name) => name.to_owned(),
                 TokenKind::Symbol(SymbolKind::ClosingParen) => break,
                 TokenKind::Symbol(SymbolKind::Comma) if !params.is_empty() => continue,
-                _ => return Err(Error::Unexpected(arg.loc).into()),
+                _ => return Err(Error::Unexpected(*arg.loc()).into()),
             };
             params.insert(arg, params.len());
         }
         let mut body = vec![];
         while let Some(t) = self.next()? {
-            match t.kind {
+            match t.kind() {
                 TokenKind::NewLine => break,
                 TokenKind::Ident(ref i) if params.contains_key(i) => {
                     body.push(FuncMacroToken::Param(params[i]));
@@ -390,15 +379,15 @@ impl SourceLexer {
     /// If `token` is defined as a macro, expands it and returns the first token of the macro.
     /// The remaining macro tokens are pushed back to the buffer.
     fn expand(&mut self, macros: &Macros, token: Token) -> Result<Token> {
-        match token.kind {
-            TokenKind::Ident(ref name) if token.hideset.contains(name) => return Ok(token),
+        match token.kind() {
+            TokenKind::Ident(ref name) if token.hideset().contains(name) => return Ok(token),
             TokenKind::Ident(ref name) => match macros.find(name) {
                 Some(Macro::Obj(ref body)) => self
-                    .expand_obj_macro(name, body, token.loc)
-                    .map(|t| t.set_leading_space(token.leading_space)),
+                    .expand_obj_macro(name, body, *token.loc())
+                    .map(|t| t.set_leading_space(token.leading_space())),
                 Some(Macro::Func(ref body)) => self
-                    .expand_func_macro(name, body, token.loc)
-                    .map(|t| t.set_leading_space(token.leading_space)),
+                    .expand_func_macro(name, body, *token.loc())
+                    .map(|t| t.set_leading_space(token.leading_space())),
                 None => Ok(token),
             },
             TokenKind::Keyword(_) => unreachable!(),
@@ -429,10 +418,7 @@ impl SourceLexer {
     ) -> Result<Token> {
         if !matches!(
             self.next()?,
-            Some(Token {
-                kind: TokenKind::Symbol(SymbolKind::OpeningParen),
-                ..
-            })
+            Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::OpeningParen))
         ) {
             return Err(Error::Unexpected(loc).into());
         }
@@ -477,10 +463,9 @@ impl SourceLexer {
 
         for tok in body {
             match tok {
-                FuncMacroToken::Token(Token {
-                    kind: TokenKind::Symbol(SymbolKind::Hash),
-                    ..
-                }) => {
+                FuncMacroToken::Token(tok)
+                    if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Hash)) =>
+                {
                     match subst {
                         Substitution::None => subst = Substitution::Stringify,
                         Substitution::Stringify => subst = Substitution::Concat,
@@ -522,7 +507,7 @@ impl SourceLexer {
         let mut nest = 0;
         let mut arg = vec![];
         while let Some(t) = self.next()? {
-            match t.kind {
+            match t.kind() {
                 TokenKind::Symbol(SymbolKind::OpeningParen) => nest += 1,
                 TokenKind::Symbol(SymbolKind::Comma) if nest == 0 => {
                     return Ok(arg);
@@ -543,7 +528,7 @@ impl SourceLexer {
     /// Reads a #undef directive.
     fn read_undef(&mut self, macros: &mut Macros) -> Result<()> {
         let tok = self.next()?.ok_or(Error::UnexpectedEof)?;
-        let name = tok.kind.as_ident().ok_or(Error::Unexpected(tok.loc))?;
+        let name = tok.kind().as_ident().ok_or(Error::Unexpected(*tok.loc()))?;
         macros.remove(name);
         Ok(())
     }
