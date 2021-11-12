@@ -565,15 +565,16 @@ impl SourceLexer {
             }
             let directive = self.next()?.ok_or(Error::UnexpectedEof)?;
             if nest == 0 {
-                if matches!(directive.kind(), TokenKind::Ident(ident)
-                    if matches!(ident.as_str(), "else" | "elif" | "endif"))
-                {
-                    self.unget(directive);
+                if matches!(
+                    directive.kind().as_ident().map(String::as_str),
+                    Some("else" | "elif" | "endif")
+                ) {
                     self.unget(tok);
+                    self.unget(directive);
                     return Ok(());
                 }
             }
-            match directive.kind().as_ident().map(|s| s.as_str()) {
+            match directive.kind().as_ident().map(String::as_str) {
                 Some("if" | "ifdef" | "ifndef") => nest += 1,
                 Some("endif") => nest -= 1,
                 _ => {}
@@ -759,6 +760,23 @@ fn read_macro5() {
 HELLO; TEN;
 #undef TEN
 HELLO; TEN;
+"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro6() {
+    let mut l = SourceLexer::new(
+        r#"
+#define ONE 1
+#if defined ONE
+int f;
+#endif
+#undef ONE
+#if defined ONE
+int g;
+#endif
 "#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
