@@ -247,7 +247,7 @@ impl SourceLexer {
         let (lit, radix) = if lit.starts_with("0x") || lit.starts_with("0X") {
             (&lit[2..], 16)
         } else if lit.starts_with("0") {
-            (&lit[1..], 8)
+            (&lit[..], 8)
         } else {
             (lit.as_str(), 10)
         };
