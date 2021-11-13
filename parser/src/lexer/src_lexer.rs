@@ -116,6 +116,11 @@ impl SourceLexer {
                 self.read_comment();
                 self.next()
             }
+            Some(c) if c == '\\' => {
+                self.cursor.take_chars_while(|&c| c != '\n');
+                assert_eq!(self.cursor.next_char().unwrap(), '\n');
+                self.next()
+            }
             Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol())),
             None => return Ok(None),
             _ => todo!(),
