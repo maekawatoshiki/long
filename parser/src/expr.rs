@@ -83,7 +83,12 @@ impl<'a, L: LexerLike> Parser<'a, L> {
         let tok = self.lexer.next()?.ok_or_else(|| Error::UnexpectedEof)?;
         match tok.kind() {
             TokenKind::Int(i) => Ok(Expr::new(ExprKind::Literal(Literal::Int(*i)), *tok.loc())),
-            _ => todo!(),
+            TokenKind::Symbol(SymbolKind::OpeningParen) => {
+                let expr = self.parse_expr()?;
+                self.expect(SymbolKind::ClosingParen)?;
+                Ok(expr)
+            }
+            e => todo!("parse_primary: {:?}", e),
         }
     }
 }
@@ -106,5 +111,12 @@ fn parse_ternary() {
 fn parse_logor_logand() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("1 && 2 || 3 && 4")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_paren() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("0 && (1 || 2)")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
