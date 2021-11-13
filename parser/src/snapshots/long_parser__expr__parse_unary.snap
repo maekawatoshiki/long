@@ -1,0 +1,23 @@
+---
+source: parser/src/expr.rs
+expression: node
+
+---
+Ok(
+    Expr {
+        kind: Unary(
+            Not,
+            Expr {
+                kind: Literal(
+                    Int(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+                loc: 1:2,
+            },
+        ),
+        loc: 1:1,
+    },
+)

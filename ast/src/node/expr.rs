@@ -35,6 +35,9 @@ pub enum ExprKind {
     /// A literal expression.
     Literal(Literal),
 
+    /// A unary expression.
+    Unary(UnaryOp, Box<Expr>),
+
     /// A binary expression.
     Binary(BinOp, Box<Expr>, Box<Expr>),
 
@@ -42,7 +45,13 @@ pub enum ExprKind {
     Ternary(Box<Expr>, Box<Expr>, Box<Expr>), // cond, then, else.
 }
 
-/// A binary operator node.
+/// A unary operator kind.
+#[derive(Debug, Clone, PartialEq)]
+pub enum UnaryOp {
+    Not,
+}
+
+/// A binary operator kind.
 #[derive(Debug, Clone, PartialEq)]
 pub enum BinOp {
     Comma,
@@ -55,6 +64,9 @@ impl Expr {
     /// Evaluates the constant expression.
     pub fn eval_constexpr(&self) -> Option<i64> {
         match self.kind {
+            ExprKind::Unary(UnaryOp::Not, ref val) => {
+                Some((val.eval_constexpr() == Some(0)) as i64)
+            }
             ExprKind::Literal(Literal::Int(IntKind::Int(i))) => Some(i as i64),
             ExprKind::Literal(Literal::Int(_)) => todo!(),
             ExprKind::Binary(BinOp::Comma, _, ref rhs) => rhs.eval_constexpr(),

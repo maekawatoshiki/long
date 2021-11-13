@@ -1,6 +1,7 @@
 use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
+use long_ast::node::expr::UnaryOp;
 use long_ast::{
     node::{
         expr::{BinOp, Expr, ExprKind},
@@ -65,16 +66,31 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses a logical and expression.
     fn parse_logand(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_primary()?;
+        let mut lhs = self.parse_unary()?;
         let loc = *lhs.loc();
         while self.lexer.skip(SymbolKind::LAnd.into()) {
-            let rhs = self.parse_primary()?;
+            let rhs = self.parse_unary()?;
             lhs = Expr::new(
                 ExprKind::Binary(BinOp::LogicalAnd, Box::new(lhs), Box::new(rhs)),
                 loc,
             );
         }
         Ok(lhs)
+    }
+
+    /// Parses a unary expression.
+    fn parse_unary(&mut self) -> Result<Expr> {
+        let tok = self.lexer.peek()?.ok_or_else(|| Error::UnexpectedEof)?;
+        match tok.kind() {
+            TokenKind::Symbol(SymbolKind::Not) => {
+                self.lexer.next()?;
+                return Ok(Expr::new(
+                    ExprKind::Unary(UnaryOp::Not, Box::new(self.parse_logand()?)),
+                    *tok.loc(),
+                ));
+            }
+            _ => self.parse_primary(),
+        }
     }
 
     /// Parses a literal or parenthetical expression.
@@ -118,5 +134,12 @@ fn parse_logor_logand() {
 fn parse_paren() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("0 && (1 || 2)")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_unary() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("!0")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
