@@ -63,6 +63,11 @@ impl Lexer {
         self.filepath.as_ref()
     }
 
+    /// Returns the file path the current source lexer is reading.
+    pub fn current_reading_filepath(&self) -> Option<&PathBuf> {
+        self.src_lexers.last().and_then(|lexer| lexer.filepath())
+    }
+
     /// Reads a token.
     pub fn next(&mut self) -> Result<Option<Token>> {
         if self.src_lexers.is_empty() {

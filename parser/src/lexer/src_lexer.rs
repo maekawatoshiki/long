@@ -1,7 +1,6 @@
-use crate::Parser;
-
 use super::cursor::Cursor;
 use super::macros::{FuncMacroToken, Macro, Macros};
+use crate::Parser;
 use anyhow::Result;
 use ast::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use ast::token::{stringify, Token};
@@ -15,7 +14,6 @@ use std::path::PathBuf;
 pub(crate) struct SourceLexer {
     /// The file path of the source file the lexer originally reads.
     /// Set to `None` if the lexer does not read a file but a string.
-    #[allow(dead_code)]
     filepath: Option<PathBuf>,
 
     /// The cursor of the lexer.
@@ -58,6 +56,11 @@ impl SourceLexer {
             buf: VecDeque::new(),
             cond_stack: Vec::new(),
         })
+    }
+
+    /// Returns the file path.
+    pub fn filepath(&self) -> Option<&PathBuf> {
+        self.filepath.as_ref()
     }
 
     /// Reads a token and preprocess it if necessary.
