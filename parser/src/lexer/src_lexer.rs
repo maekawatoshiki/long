@@ -400,10 +400,10 @@ impl SourceLexer {
             TokenKind::Ident(ref name) if token.hideset().contains(name) => return Ok(token),
             TokenKind::Ident(ref name) => match macros.find(name) {
                 Some(Macro::Obj(ref body)) => self
-                    .expand_obj_macro(name, body, *token.loc())
+                    .expand_obj_macro(macros, name, body, *token.loc())
                     .map(|t| t.set_leading_space(token.leading_space())),
                 Some(Macro::Func(ref body)) => self
-                    .expand_func_macro(name, body, *token.loc())
+                    .expand_func_macro(macros, name, body, *token.loc())
                     .map(|t| t.set_leading_space(token.leading_space())),
                 None => Ok(token),
             },
@@ -413,7 +413,13 @@ impl SourceLexer {
     }
 
     /// Expands an object-like macro named `name` (whose body is `body`).
-    fn expand_obj_macro(&mut self, name: &str, body: &[Token], loc: SourceLoc) -> Result<Token> {
+    fn expand_obj_macro(
+        &mut self,
+        macros: &Macros,
+        name: &str,
+        body: &[Token],
+        loc: SourceLoc,
+    ) -> Result<Token> {
         for t in body {
             self.unget(
                 t.clone()
@@ -423,12 +429,14 @@ impl SourceLexer {
                     .with_loc(loc),
             );
         }
-        Ok(self.next()?.unwrap())
+        let tok = self.next()?.unwrap();
+        self.expand(macros, tok)
     }
 
     /// Expands an function-like macro named `name` (whose body is `body`).
     fn expand_func_macro(
         &mut self,
+        macros: &Macros,
         name: &str,
         body: &[FuncMacroToken],
         loc: SourceLoc,
@@ -517,7 +525,8 @@ impl SourceLexer {
             self.unget(tok);
         }
 
-        Ok(self.next()?.unwrap())
+        let tok = self.next()?.unwrap();
+        self.expand(macros, tok)
     }
 
     fn read_func_macro_arg(&mut self, end: &mut bool) -> Result<Vec<Token>> {
@@ -625,7 +634,10 @@ impl SourceLexer {
             match directive.kind().as_ident().map(String::as_str) {
                 Some("if" | "ifdef" | "ifndef") => nest += 1,
                 Some("endif") => nest -= 1,
-                _ => {}
+                _ => {
+                    assert!(self.buf.is_empty());
+                    self.cursor.take_chars_while(|&c| c != '\n');
+                }
             }
         }
         Err(Error::UnexpectedEof.into())
@@ -848,6 +860,18 @@ int h;
 #ifndef ONE
 int k;
 #endif
+"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro8() {
+    let mut l = SourceLexer::new(
+        r#"
+#define ONE 1
+#define one ONE
+one
 "#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));

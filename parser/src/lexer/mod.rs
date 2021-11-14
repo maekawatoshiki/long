@@ -162,7 +162,6 @@ fn try_include(filepath: &PathBuf) -> Option<PathBuf> {
         "/usr/include/linux/",
         "/usr/include/c++/7/",
         "/usr/include/x86_64-linux-gnu/",
-        "./include/",
         "",
     ];
     header_paths.iter().find_map(|header_path| {

@@ -1,0 +1,19 @@
+---
+source: parser/src/lexer/src_lexer.rs
+expression: read_all_tokens_expanded(&mut l)
+
+---
+[
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: false,
+        hideset: {
+            "ONE",
+        },
+        loc: 4:1,
+    },
+]
