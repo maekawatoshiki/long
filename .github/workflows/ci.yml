@@ -32,4 +32,4 @@ jobs:
     - name: Run tests
       working-directory: ./
       run: |
-            cargo clean && cargo test
+            export LONGCCPATH=`pwd` && cargo clean && cargo test
