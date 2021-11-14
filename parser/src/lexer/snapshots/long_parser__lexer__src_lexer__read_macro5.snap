@@ -12,7 +12,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "HELLO",
         },
-        loc: 4:1,
+        loc: None:4:1,
     },
     Token {
         kind: Symbol(
@@ -20,7 +20,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 4:6,
+        loc: None:4:6,
     },
     Token {
         kind: Int(
@@ -32,7 +32,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "TEN",
         },
-        loc: 4:8,
+        loc: None:4:8,
     },
     Token {
         kind: Symbol(
@@ -40,7 +40,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 4:11,
+        loc: None:4:11,
     },
     Token {
         kind: String(
@@ -50,7 +50,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "HELLO",
         },
-        loc: 6:1,
+        loc: None:6:1,
     },
     Token {
         kind: Symbol(
@@ -58,7 +58,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 6:6,
+        loc: None:6:6,
     },
     Token {
         kind: Ident(
@@ -66,7 +66,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 6:8,
+        loc: None:6:8,
     },
     Token {
         kind: Symbol(
@@ -74,6 +74,6 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 6:11,
+        loc: None:6:11,
     },
 ]

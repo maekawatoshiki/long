@@ -10,7 +10,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:1,
+        loc: None:1:1,
     },
     Token {
         kind: Symbol(
@@ -18,7 +18,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:2,
+        loc: None:1:2,
     },
     Token {
         kind: Symbol(
@@ -26,7 +26,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:3,
+        loc: None:1:3,
     },
     Token {
         kind: Symbol(
@@ -34,7 +34,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:4,
+        loc: None:1:4,
     },
     Token {
         kind: Symbol(
@@ -42,7 +42,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:5,
+        loc: None:1:5,
     },
     Token {
         kind: Symbol(
@@ -50,7 +50,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:6,
+        loc: None:1:6,
     },
     Token {
         kind: Symbol(
@@ -58,7 +58,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:7,
+        loc: None:1:7,
     },
     Token {
         kind: Symbol(
@@ -66,7 +66,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:8,
+        loc: None:1:8,
     },
     Token {
         kind: Symbol(
@@ -74,7 +74,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:9,
+        loc: None:1:9,
     },
     Token {
         kind: Symbol(
@@ -82,7 +82,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:10,
+        loc: None:1:10,
     },
     Token {
         kind: Symbol(
@@ -90,7 +90,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:11,
+        loc: None:1:11,
     },
     Token {
         kind: Symbol(
@@ -98,7 +98,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:12,
+        loc: None:1:12,
     },
     Token {
         kind: Symbol(
@@ -106,7 +106,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:13,
+        loc: None:1:13,
     },
     Token {
         kind: Symbol(
@@ -114,7 +114,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:14,
+        loc: None:1:14,
     },
     Token {
         kind: Symbol(
@@ -122,7 +122,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:15,
+        loc: None:1:15,
     },
     Token {
         kind: Symbol(
@@ -130,7 +130,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:16,
+        loc: None:1:16,
     },
     Token {
         kind: Symbol(
@@ -138,7 +138,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:17,
+        loc: None:1:17,
     },
     Token {
         kind: Symbol(
@@ -146,7 +146,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:18,
+        loc: None:1:18,
     },
     Token {
         kind: Symbol(
@@ -154,7 +154,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:19,
+        loc: None:1:19,
     },
     Token {
         kind: Symbol(
@@ -162,7 +162,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:20,
+        loc: None:1:20,
     },
     Token {
         kind: Symbol(
@@ -170,7 +170,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:21,
+        loc: None:1:21,
     },
     Token {
         kind: Symbol(
@@ -178,7 +178,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:22,
+        loc: None:1:22,
     },
     Token {
         kind: Symbol(
@@ -186,7 +186,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:23,
+        loc: None:1:23,
     },
     Token {
         kind: Symbol(
@@ -194,7 +194,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:24,
+        loc: None:1:24,
     },
     Token {
         kind: Symbol(
@@ -202,7 +202,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:25,
+        loc: None:1:25,
     },
     Token {
         kind: Symbol(
@@ -210,7 +210,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:26,
+        loc: None:1:26,
     },
     Token {
         kind: Symbol(
@@ -218,7 +218,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:28,
+        loc: None:1:28,
     },
     Token {
         kind: Symbol(
@@ -226,7 +226,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:30,
+        loc: None:1:30,
     },
     Token {
         kind: Symbol(
@@ -234,7 +234,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:32,
+        loc: None:1:32,
     },
     Token {
         kind: Symbol(
@@ -242,7 +242,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:34,
+        loc: None:1:34,
     },
     Token {
         kind: Symbol(
@@ -250,7 +250,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:36,
+        loc: None:1:36,
     },
     Token {
         kind: Symbol(
@@ -258,7 +258,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:38,
+        loc: None:1:38,
     },
     Token {
         kind: Symbol(
@@ -266,7 +266,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:40,
+        loc: None:1:40,
     },
     Token {
         kind: Symbol(
@@ -274,7 +274,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:42,
+        loc: None:1:42,
     },
     Token {
         kind: Symbol(
@@ -282,7 +282,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:44,
+        loc: None:1:44,
     },
     Token {
         kind: Symbol(
@@ -290,7 +290,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:46,
+        loc: None:1:46,
     },
     Token {
         kind: Symbol(
@@ -298,7 +298,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:48,
+        loc: None:1:48,
     },
     Token {
         kind: Symbol(
@@ -306,7 +306,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:50,
+        loc: None:1:50,
     },
     Token {
         kind: Symbol(
@@ -314,7 +314,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:52,
+        loc: None:1:52,
     },
     Token {
         kind: Symbol(
@@ -322,7 +322,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:54,
+        loc: None:1:54,
     },
     Token {
         kind: Symbol(
@@ -330,7 +330,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:56,
+        loc: None:1:56,
     },
     Token {
         kind: Symbol(
@@ -338,7 +338,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:58,
+        loc: None:1:58,
     },
     Token {
         kind: Symbol(
@@ -346,7 +346,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:60,
+        loc: None:1:60,
     },
     Token {
         kind: Symbol(
@@ -354,7 +354,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:62,
+        loc: None:1:62,
     },
     Token {
         kind: Symbol(
@@ -362,7 +362,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:64,
+        loc: None:1:64,
     },
     Token {
         kind: Symbol(
@@ -370,7 +370,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:66,
+        loc: None:1:66,
     },
     Token {
         kind: Symbol(
@@ -378,7 +378,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:69,
+        loc: None:1:69,
     },
     Token {
         kind: Symbol(
@@ -386,7 +386,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:72,
+        loc: None:1:72,
     },
     Token {
         kind: Symbol(
@@ -394,7 +394,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:75,
+        loc: None:1:75,
     },
     Token {
         kind: Ident(
@@ -402,6 +402,6 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:78,
+        loc: None:1:78,
     },
 ]

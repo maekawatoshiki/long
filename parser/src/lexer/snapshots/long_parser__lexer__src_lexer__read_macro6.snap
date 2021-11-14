@@ -10,7 +10,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 4:1,
+        loc: None:4:1,
     },
     Token {
         kind: Ident(
@@ -18,7 +18,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 4:5,
+        loc: None:4:5,
     },
     Token {
         kind: Symbol(
@@ -26,6 +26,6 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 4:6,
+        loc: None:4:6,
     },
 ]

@@ -11,7 +11,6 @@ pub struct SourceId(u64);
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Source {
     File(PathBuf),
-    Mem,
 }
 
 /// An arena of `Source`s.

@@ -18,7 +18,7 @@ Ok(
                                 ),
                             ),
                         ),
-                        loc: 1:1,
+                        loc: None:1:1,
                     },
                     Expr {
                         kind: Literal(
@@ -28,10 +28,10 @@ Ok(
                                 ),
                             ),
                         ),
-                        loc: 1:5,
+                        loc: None:1:5,
                     },
                 ),
-                loc: 1:1,
+                loc: None:1:1,
             },
             Expr {
                 kind: Literal(
@@ -41,9 +41,9 @@ Ok(
                         ),
                     ),
                 ),
-                loc: 1:9,
+                loc: None:1:9,
             },
         ),
-        loc: 1:1,
+        loc: None:1:1,
     },
 )

@@ -14,6 +14,6 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "ONE",
         },
-        loc: 4:1,
+        loc: None:4:1,
     },
 ]

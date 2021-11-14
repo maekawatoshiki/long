@@ -12,7 +12,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 1:1,
+        loc: None:1:1,
     },
     Token {
         kind: Float(
@@ -22,7 +22,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:6,
+        loc: None:1:6,
     },
     Token {
         kind: Int(
@@ -32,7 +32,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:12,
+        loc: None:1:12,
     },
     Token {
         kind: Int(
@@ -42,7 +42,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:21,
+        loc: None:1:21,
     },
     Token {
         kind: Int(
@@ -52,7 +52,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:25,
+        loc: None:1:25,
     },
     Token {
         kind: Float(
@@ -62,7 +62,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:36,
+        loc: None:1:36,
     },
     Token {
         kind: Float(
@@ -72,7 +72,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:41,
+        loc: None:1:41,
     },
     Token {
         kind: Float(
@@ -82,7 +82,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:47,
+        loc: None:1:47,
     },
     Token {
         kind: Float(
@@ -92,7 +92,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:51,
+        loc: None:1:51,
     },
     Token {
         kind: Int(
@@ -102,7 +102,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:54,
+        loc: None:1:54,
     },
     Token {
         kind: Int(
@@ -112,7 +112,7 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:60,
+        loc: None:1:60,
     },
     Token {
         kind: Int(
@@ -122,6 +122,6 @@ expression: read_all_tokens(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 1:66,
+        loc: None:1:66,
     },
 ]

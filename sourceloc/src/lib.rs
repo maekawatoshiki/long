@@ -1,10 +1,14 @@
 pub mod source;
 
+use source::SourceId;
 use std::fmt;
 
 /// A source location of each token, AST node, ...etc.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct SourceLoc {
+    /// The source id.
+    source_id: Option<SourceId>,
+
     /// The line number, starting at 0 for the first line.
     line: u32,
 
@@ -16,7 +20,22 @@ impl SourceLoc {
     /// Creates a new `SourceLoc`. `column` must be greater than 0.
     pub fn new(line: u32, column: u32) -> Self {
         assert!(column > 0);
-        Self { line, column }
+        Self {
+            line,
+            column,
+            source_id: None,
+        }
+    }
+
+    /// Sets the source id.
+    pub fn with_source_id(mut self, source_id: Option<SourceId>) -> Self {
+        self.source_id = source_id;
+        self
+    }
+
+    /// Returns the source id.
+    pub fn source_id(&self) -> Option<SourceId> {
+        self.source_id
     }
 
     /// Returns the line number.
@@ -42,7 +61,7 @@ impl SourceLoc {
 
 impl fmt::Debug for SourceLoc {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}:{}", self.line + 1, self.column)
+        write!(f, "{:?}:{}:{}", self.source_id, self.line + 1, self.column)
     }
 }
 
@@ -55,6 +74,16 @@ fn test() {
     let loc = SourceLoc::new(10, 17);
     assert_eq!(loc.line(), 10);
     assert_eq!(loc.column(), 17);
+}
+
+#[test]
+fn sources() {
+    use source::*;
+    use std::path::PathBuf;
+    let mut sources = Sources::new();
+    let id = sources.add(Source::File(PathBuf::new()));
+    let loc = SourceLoc::new(0, 1).with_source_id(Some(id));
+    assert!(loc.source_id() == Some(id));
 }
 
 #[test]

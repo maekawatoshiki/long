@@ -10,7 +10,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 5:1,
+        loc: None:5:1,
     },
     Token {
         kind: Ident(
@@ -18,7 +18,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 5:5,
+        loc: None:5:5,
     },
     Token {
         kind: Symbol(
@@ -26,7 +26,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 5:6,
+        loc: None:5:6,
     },
     Token {
         kind: Keyword(
@@ -34,7 +34,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 10:1,
+        loc: None:10:1,
     },
     Token {
         kind: Ident(
@@ -42,7 +42,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 10:5,
+        loc: None:10:5,
     },
     Token {
         kind: Symbol(
@@ -50,7 +50,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 10:6,
+        loc: None:10:6,
     },
     Token {
         kind: Keyword(
@@ -58,7 +58,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 14:1,
+        loc: None:14:1,
     },
     Token {
         kind: Ident(
@@ -66,7 +66,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 14:5,
+        loc: None:14:5,
     },
     Token {
         kind: Symbol(
@@ -74,6 +74,6 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 14:6,
+        loc: None:14:6,
     },
 ]

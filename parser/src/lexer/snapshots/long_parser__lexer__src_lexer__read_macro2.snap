@@ -10,7 +10,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:1,
+        loc: None:3:1,
     },
     Token {
         kind: Ident(
@@ -18,7 +18,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:5,
+        loc: None:3:5,
     },
     Token {
         kind: Symbol(
@@ -26,7 +26,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:6,
+        loc: None:3:6,
     },
     Token {
         kind: Keyword(
@@ -34,7 +34,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:7,
+        loc: None:3:7,
     },
     Token {
         kind: Ident(
@@ -42,7 +42,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:11,
+        loc: None:3:11,
     },
     Token {
         kind: Symbol(
@@ -50,7 +50,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:12,
+        loc: None:3:12,
     },
     Token {
         kind: Keyword(
@@ -58,7 +58,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:14,
+        loc: None:3:14,
     },
     Token {
         kind: Ident(
@@ -66,7 +66,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:18,
+        loc: None:3:18,
     },
     Token {
         kind: Symbol(
@@ -74,7 +74,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:19,
+        loc: None:3:19,
     },
     Token {
         kind: Symbol(
@@ -82,7 +82,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:21,
+        loc: None:3:21,
     },
     Token {
         kind: Keyword(
@@ -90,7 +90,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:23,
+        loc: None:3:23,
     },
     Token {
         kind: Symbol(
@@ -100,7 +100,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "F",
         },
-        loc: 3:30,
+        loc: None:3:30,
     },
     Token {
         kind: Ident(
@@ -110,7 +110,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "F",
         },
-        loc: 3:30,
+        loc: None:3:30,
     },
     Token {
         kind: Symbol(
@@ -120,7 +120,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "F",
         },
-        loc: 3:30,
+        loc: None:3:30,
     },
     Token {
         kind: Symbol(
@@ -130,7 +130,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "F",
         },
-        loc: 3:30,
+        loc: None:3:30,
     },
     Token {
         kind: Symbol(
@@ -140,7 +140,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "F",
         },
-        loc: 3:30,
+        loc: None:3:30,
     },
     Token {
         kind: Ident(
@@ -150,7 +150,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "F",
         },
-        loc: 3:30,
+        loc: None:3:30,
     },
     Token {
         kind: Symbol(
@@ -160,7 +160,7 @@ expression: read_all_tokens_expanded(&mut l)
         hideset: {
             "F",
         },
-        loc: 3:30,
+        loc: None:3:30,
     },
     Token {
         kind: Symbol(
@@ -168,7 +168,7 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: false,
         hideset: {},
-        loc: 3:37,
+        loc: None:3:37,
     },
     Token {
         kind: Symbol(
@@ -176,6 +176,6 @@ expression: read_all_tokens_expanded(&mut l)
         ),
         leading_space: true,
         hideset: {},
-        loc: 3:39,
+        loc: None:3:39,
     },
 ]
