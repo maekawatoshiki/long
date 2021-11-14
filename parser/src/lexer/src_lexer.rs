@@ -324,7 +324,10 @@ impl SourceLexer {
                 "elif" => self.read_elif(macros),
                 "else" => self.read_else(),
                 "error" => self.read_error(*tok.loc()),
-                "endif" => Ok(()),
+                "endif" => {
+                    self.cond_stack.pop().unwrap();
+                    Ok(())
+                }
                 e => todo!("Directive {}", e),
             },
             _ => Ok(()),
@@ -882,6 +885,8 @@ int h;
 #ifndef ONE
 int k;
 #endif
+#ifdef TWO
+#endif
 "#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
@@ -924,5 +929,6 @@ fn read_all_tokens_expanded(l: &mut SourceLexer) -> Vec<Token> {
     while let Some(tok) = l.next_preprocessed(&mut macros).unwrap() {
         tokens.push(tok)
     }
+    assert!(l.cond_stack.is_empty());
     tokens
 }
