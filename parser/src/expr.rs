@@ -145,7 +145,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             TokenKind::Symbol(SymbolKind::Not) => {
                 self.lexer.next()?;
                 return Ok(Expr::new(
-                    ExprKind::Unary(UnaryOp::Not, Box::new(self.parse_logand()?)),
+                    ExprKind::Unary(UnaryOp::Not, Box::new(self.parse_unary()?)),
                     *tok.loc(),
                 ));
             }
@@ -201,6 +201,13 @@ fn parse_paren() {
 fn parse_unary() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("!0")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_unary_logand() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("!0 && !1")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
 
