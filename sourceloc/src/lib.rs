@@ -1,3 +1,5 @@
+pub mod source;
+
 use std::fmt;
 
 /// A source location of each token, AST node, ...etc.
