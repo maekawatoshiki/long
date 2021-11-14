@@ -31,7 +31,7 @@ pub(crate) struct SourceLexer {
 pub(crate) enum Error {
     Include(PathBuf, SourceLoc),
     Unexpected(SourceLoc),
-    Message(&'static str, SourceLoc),
+    Message(String, SourceLoc),
     UnexpectedEof,
 }
 
@@ -314,14 +314,14 @@ impl SourceLexer {
                 }
                 "define" => self.read_define(macros),
                 "undef" => self.read_undef(macros),
-                // TODO: The directives below requires parsing constant expression,
-                // TODO: thus we need to create a parser first.
                 "if" => self.read_if(macros),
                 "ifdef" => self.read_ifdef(macros),
                 "ifndef" => self.read_ifndef(macros),
                 "elif" => self.read_elif(macros),
                 "else" => self.read_else(),
-                _ => Ok(()),
+                "error" => self.read_error(*tok.loc()),
+                "endif" => Ok(()),
+                e => todo!("Directive {}", e),
             },
             _ => Ok(()),
         }
@@ -653,7 +653,7 @@ impl SourceLexer {
         if let Some(e) = expr.eval_constexpr() {
             Ok(e != 0)
         } else {
-            Err(Error::Message("The expression is invalid", loc).into())
+            Err(Error::Message("The expression is invalid".into(), loc).into())
         }
     }
 
@@ -693,6 +693,21 @@ impl SourceLexer {
             IntKind::Int(macros.find(name).is_some().into()).into(),
             *tok.loc(),
         ))
+    }
+
+    /// Reads a #error directive.
+    fn read_error(&mut self, loc: SourceLoc) -> Result<()> {
+        let mut tokens = Vec::new();
+        while let Some(tok) = self.next()? {
+            if tok.kind() == &TokenKind::NewLine {
+                break;
+            }
+            tokens.push(tok);
+        }
+        let msg = tokens.into_iter().fold("#error: ".to_string(), |acc, tok| {
+            acc + if tok.leading_space() { " " } else { "" } + tok.kind().to_string().as_str()
+        });
+        Err(Error::Message(msg, loc).into())
     }
 }
 
