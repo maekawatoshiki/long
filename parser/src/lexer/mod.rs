@@ -10,7 +10,7 @@ use anyhow::Result;
 use ast::token::kind::TokenKind;
 use ast::token::Token;
 use macros::Macros;
-use sourceloc::source::Sources;
+use sourceloc::source::{Source, Sources};
 use sourceloc::SourceLoc;
 use src_lexer::SourceLexer;
 use std::fmt;
@@ -132,6 +132,29 @@ impl Lexer {
     /// Pushes `tok` back to the buffer so that it can be read again.
     pub fn unget(&mut self, tok: Token) {
         self.src_lexers.last_mut().unwrap().unget(tok);
+    }
+
+    /// Returns the easy-to-read representation of the given `error`.
+    pub fn readable_error(&self, error: &Error) -> String {
+        let loc_to_string = |loc: SourceLoc| -> String {
+            format!(
+                "{}:{}:{}",
+                loc.source_id().map_or("input", |id| {
+                    let Source::File(path) = self.sources.get(id).unwrap();
+                    path.to_str().expect("Path is not valid UTF-8")
+                }),
+                loc.line(),
+                loc.column()
+            )
+        };
+        match error {
+            Error::UnexpectedEof => "Unexpected end of file".into(),
+            Error::Unexpected(loc) => format!("{}: Unexpected token", loc_to_string(*loc)),
+            Error::Message(msg, loc) => format!("{}{}", loc_to_string(*loc), msg),
+            Error::FileNotFound(filepath, loc) => {
+                format!("{}: File not found '{:?}'", loc_to_string(*loc), filepath)
+            }
+        }
     }
 }
 
