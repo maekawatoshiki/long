@@ -15,3 +15,7 @@ export LONGCCPATH=`pwd`
 rustup override set nightly
 cargo test # --release
 ```
+
+```sh
+cargo run --example lex # panics because the parser is incomplete
+```
