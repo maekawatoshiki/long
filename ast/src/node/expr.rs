@@ -57,6 +57,10 @@ pub enum BinOp {
     Comma,
     LogicalOr,
     LogicalAnd,
+    Gt,
+    Ge,
+    Lt,
+    Le,
 }
 
 impl Expr {
@@ -83,6 +87,26 @@ impl Expr {
                 } else {
                     Some((rhs.eval_constexpr() != Some(0)) as i64)
                 }
+            }
+            ExprKind::Binary(BinOp::Lt, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some((lhs < rhs) as i64)
+            }
+            ExprKind::Binary(BinOp::Le, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some((lhs <= rhs) as i64)
+            }
+            ExprKind::Binary(BinOp::Gt, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some((lhs > rhs) as i64)
+            }
+            ExprKind::Binary(BinOp::Ge, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some((lhs >= rhs) as i64)
             }
             ExprKind::Ternary(ref cond, ref thn, ref els) => {
                 if cond.eval_constexpr() != Some(0) {

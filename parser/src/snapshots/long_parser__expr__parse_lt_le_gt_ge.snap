@@ -1,0 +1,129 @@
+---
+source: parser/src/expr.rs
+expression: node
+
+---
+Ok(
+    Expr {
+        kind: Binary(
+            LogicalAnd,
+            Expr {
+                kind: Binary(
+                    LogicalAnd,
+                    Expr {
+                        kind: Binary(
+                            LogicalAnd,
+                            Expr {
+                                kind: Binary(
+                                    Lt,
+                                    Expr {
+                                        kind: Literal(
+                                            Int(
+                                                Int(
+                                                    0,
+                                                ),
+                                            ),
+                                        ),
+                                        loc: 1:1,
+                                    },
+                                    Expr {
+                                        kind: Literal(
+                                            Int(
+                                                Int(
+                                                    1,
+                                                ),
+                                            ),
+                                        ),
+                                        loc: 1:5,
+                                    },
+                                ),
+                                loc: 1:1,
+                            },
+                            Expr {
+                                kind: Binary(
+                                    Le,
+                                    Expr {
+                                        kind: Literal(
+                                            Int(
+                                                Int(
+                                                    0,
+                                                ),
+                                            ),
+                                        ),
+                                        loc: 1:10,
+                                    },
+                                    Expr {
+                                        kind: Literal(
+                                            Int(
+                                                Int(
+                                                    1,
+                                                ),
+                                            ),
+                                        ),
+                                        loc: 1:15,
+                                    },
+                                ),
+                                loc: 1:10,
+                            },
+                        ),
+                        loc: 1:1,
+                    },
+                    Expr {
+                        kind: Binary(
+                            Gt,
+                            Expr {
+                                kind: Literal(
+                                    Int(
+                                        Int(
+                                            0,
+                                        ),
+                                    ),
+                                ),
+                                loc: 1:20,
+                            },
+                            Expr {
+                                kind: Literal(
+                                    Int(
+                                        Int(
+                                            1,
+                                        ),
+                                    ),
+                                ),
+                                loc: 1:24,
+                            },
+                        ),
+                        loc: 1:20,
+                    },
+                ),
+                loc: 1:1,
+            },
+            Expr {
+                kind: Binary(
+                    Ge,
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    0,
+                                ),
+                            ),
+                        ),
+                        loc: 1:29,
+                    },
+                    Expr {
+                        kind: Literal(
+                            Int(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                        loc: 1:34,
+                    },
+                ),
+                loc: 1:29,
+            },
+        ),
+        loc: 1:1,
+    },
+)
