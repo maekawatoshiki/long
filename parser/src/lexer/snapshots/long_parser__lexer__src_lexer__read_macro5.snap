@@ -5,12 +5,6 @@ expression: read_all_tokens_expanded(&mut l)
 ---
 [
     Token {
-        kind: NewLine,
-        leading_space: false,
-        hideset: {},
-        loc: 2:1,
-    },
-    Token {
         kind: String(
             "hello",
         ),
@@ -49,18 +43,6 @@ expression: read_all_tokens_expanded(&mut l)
         loc: 4:11,
     },
     Token {
-        kind: NewLine,
-        leading_space: false,
-        hideset: {},
-        loc: 5:1,
-    },
-    Token {
-        kind: NewLine,
-        leading_space: false,
-        hideset: {},
-        loc: 6:1,
-    },
-    Token {
         kind: String(
             "hello",
         ),
@@ -93,11 +75,5 @@ expression: read_all_tokens_expanded(&mut l)
         leading_space: false,
         hideset: {},
         loc: 6:11,
-    },
-    Token {
-        kind: NewLine,
-        leading_space: false,
-        hideset: {},
-        loc: 7:1,
     },
 ]

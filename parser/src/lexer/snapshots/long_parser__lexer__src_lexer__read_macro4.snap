@@ -5,12 +5,6 @@ expression: read_all_tokens_expanded(&mut l)
 ---
 [
     Token {
-        kind: NewLine,
-        leading_space: false,
-        hideset: {},
-        loc: 2:1,
-    },
-    Token {
         kind: Keyword(
             Void,
         ),

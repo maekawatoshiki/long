@@ -83,6 +83,7 @@ impl SourceLexer {
                 self.read_cpp_directive(macros)?;
                 return self.next_preprocessed(macros);
             }
+            Some(tok) if tok.kind() == &TokenKind::NewLine => self.next_preprocessed(macros),
             Some(tok) => Ok(Some(to_keyword_if_necessary(self.expand(macros, tok)?))),
             None => return Ok(None),
         }
