@@ -66,10 +66,10 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses a logical and expression.
     fn parse_logand(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_lt_le_gt_ge()?;
+        let mut lhs = self.parse_or()?;
         let loc = *lhs.loc();
         while self.lexer.skip(SymbolKind::LAnd.into()) {
-            let rhs = self.parse_lt_le_gt_ge()?;
+            let rhs = self.parse_or()?;
             lhs = Expr::new(
                 ExprKind::Binary(BinOp::LogicalAnd, Box::new(lhs), Box::new(rhs)),
                 loc,
@@ -78,33 +78,85 @@ impl<'a, L: LexerLike> Parser<'a, L> {
         Ok(lhs)
     }
 
+    /// Parses an or expression.
+    fn parse_or(&mut self) -> Result<Expr> {
+        let mut lhs = self.parse_and()?;
+        let loc = *lhs.loc();
+        while self.lexer.skip(SymbolKind::Or.into()) {
+            let rhs = self.parse_and()?;
+            lhs = Expr::new(
+                ExprKind::Binary(BinOp::Or, Box::new(lhs), Box::new(rhs)),
+                loc,
+            );
+        }
+        Ok(lhs)
+    }
+
+    /// Parses an and expression.
+    fn parse_and(&mut self) -> Result<Expr> {
+        let mut lhs = self.parse_lt_le_gt_ge()?;
+        let loc = *lhs.loc();
+        while self.lexer.skip(SymbolKind::And.into()) {
+            let rhs = self.parse_lt_le_gt_ge()?;
+            lhs = Expr::new(
+                ExprKind::Binary(BinOp::And, Box::new(lhs), Box::new(rhs)),
+                loc,
+            );
+        }
+        Ok(lhs)
+    }
+
     /// Parses a less than, less than or equal, greater than, greater than or equal expression.
     fn parse_lt_le_gt_ge(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_add_sub()?;
+        let mut lhs = self.parse_shl_shr()?;
         let loc = *lhs.loc();
         loop {
             if self.lexer.skip(SymbolKind::Lt.into()) {
-                let rhs = self.parse_add_sub()?;
+                let rhs = self.parse_shl_shr()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Lt, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else if self.lexer.skip(SymbolKind::Le.into()) {
-                let rhs = self.parse_add_sub()?;
+                let rhs = self.parse_shl_shr()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Le, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else if self.lexer.skip(SymbolKind::Gt.into()) {
-                let rhs = self.parse_add_sub()?;
+                let rhs = self.parse_shl_shr()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Gt, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else if self.lexer.skip(SymbolKind::Ge.into()) {
-                let rhs = self.parse_add_sub()?;
+                let rhs = self.parse_shl_shr()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Ge, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else {
+                break;
+            }
+        }
+        Ok(lhs)
+    }
+
+    /// Parses a left-shift or right-shift expression.
+    fn parse_shl_shr(&mut self) -> Result<Expr> {
+        let mut lhs = self.parse_add_sub()?;
+        let loc = *lhs.loc();
+        loop {
+            if self.lexer.skip(SymbolKind::Shl.into()) {
+                let rhs = self.parse_add_sub()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Shl, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else if self.lexer.skip(SymbolKind::Shr.into()) {
+                let rhs = self.parse_add_sub()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Shr, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else {
@@ -222,5 +274,19 @@ fn parse_lt_le_gt_ge() {
 fn parse_add_sub() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("0 + 1 - 2")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_shl_shr() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("0 << 1 >> 2")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_and_or() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("0 & 1 | 2")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }

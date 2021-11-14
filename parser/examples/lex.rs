@@ -6,7 +6,9 @@ fn main() {
 #include <longcc.h>
 #include <stdio.h>
 #include <stdlib.h>
-int main() {}
+int main() {
+    puts("hello");
+}
 "#,
     );
     let mut line = 0;

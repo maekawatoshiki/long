@@ -57,10 +57,14 @@ pub enum BinOp {
     Comma,
     LogicalOr,
     LogicalAnd,
+    And,
+    Or,
     Gt,
     Ge,
     Lt,
     Le,
+    Shl,
+    Shr,
     Add,
     Sub,
 }
@@ -89,6 +93,26 @@ impl Expr {
                 } else {
                     Some((rhs.eval_constexpr() != Some(0)) as i64)
                 }
+            }
+            ExprKind::Binary(BinOp::And, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs & rhs)
+            }
+            ExprKind::Binary(BinOp::Or, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs | rhs)
+            }
+            ExprKind::Binary(BinOp::Shl, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs << rhs)
+            }
+            ExprKind::Binary(BinOp::Shr, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs >> rhs)
             }
             ExprKind::Binary(BinOp::Lt, ref lhs, ref rhs) => {
                 let lhs = lhs.eval_constexpr()?;

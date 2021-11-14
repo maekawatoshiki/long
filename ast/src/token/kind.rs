@@ -154,9 +154,9 @@ pub enum IntKind {
     Int(i32),
     LongInt(i32),
     LongLongInt(i64),
-    UInt(i32),
-    ULongInt(i32),
-    ULongLongInt(i64),
+    UInt(u32),
+    ULongInt(u32),
+    ULongLongInt(u64),
 }
 
 /// The kind of a floating literal.
@@ -191,7 +191,7 @@ impl TokenKind {
         match self {
             Self::Ident(i) => i.clone(),
             Self::Keyword(k) => k.as_str().to_string(),
-            Self::String(s) => s.clone(),
+            Self::String(s) => format!("\"{}\"", s.clone()),
             Self::Symbol(s) => s.as_str().to_string(),
             Self::Int(i) => i.to_string(),
             Self::Float(f) => f.to_string(),

@@ -261,8 +261,12 @@ impl SourceLexer {
         let lit = lit.trim_end_matches(|c| matches!(c, 'u' | 'U' | 'l' | 'L'));
         if let Ok(i) = i32::from_str_radix(lit, radix) {
             Ok(Token::new(TokenKind::Int(IntKind::Int(i)), loc))
+        } else if let Ok(i) = u32::from_str_radix(lit, radix) {
+            Ok(Token::new(TokenKind::Int(IntKind::UInt(i)), loc))
         } else if let Ok(i) = i64::from_str_radix(lit, radix) {
             Ok(Token::new(TokenKind::Int(IntKind::LongLongInt(i)), loc))
+        } else if let Ok(i) = u64::from_str_radix(lit, radix) {
+            Ok(Token::new(TokenKind::Int(IntKind::ULongLongInt(i)), loc))
         } else {
             // Too big integer.
             // TODO: We should have a generous error message.
