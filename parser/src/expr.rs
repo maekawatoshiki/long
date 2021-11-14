@@ -80,31 +80,55 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses a less than, less than or equal, greater than, greater than or equal expression.
     fn parse_lt_le_gt_ge(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_unary()?;
+        let mut lhs = self.parse_add_sub()?;
         let loc = *lhs.loc();
         loop {
             if self.lexer.skip(SymbolKind::Lt.into()) {
-                let rhs = self.parse_unary()?;
+                let rhs = self.parse_add_sub()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Lt, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else if self.lexer.skip(SymbolKind::Le.into()) {
-                let rhs = self.parse_unary()?;
+                let rhs = self.parse_add_sub()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Le, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else if self.lexer.skip(SymbolKind::Gt.into()) {
-                let rhs = self.parse_unary()?;
+                let rhs = self.parse_add_sub()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Gt, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else if self.lexer.skip(SymbolKind::Ge.into()) {
-                let rhs = self.parse_unary()?;
+                let rhs = self.parse_add_sub()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Ge, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else {
+                break;
+            }
+        }
+        Ok(lhs)
+    }
+
+    /// Parses an addition or subtraction expression.
+    fn parse_add_sub(&mut self) -> Result<Expr> {
+        let mut lhs = self.parse_unary()?;
+        let loc = *lhs.loc();
+        loop {
+            if self.lexer.skip(SymbolKind::Add.into()) {
+                let rhs = self.parse_unary()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Add, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else if self.lexer.skip(SymbolKind::Sub.into()) {
+                let rhs = self.parse_unary()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Sub, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else {
@@ -184,5 +208,12 @@ fn parse_unary() {
 fn parse_lt_le_gt_ge() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("0 < 1 && 0 <= 1 && 0 > 1 && 0 >= 1")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_add_sub() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("0 + 1 - 2")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }

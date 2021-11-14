@@ -61,6 +61,8 @@ pub enum BinOp {
     Ge,
     Lt,
     Le,
+    Add,
+    Sub,
 }
 
 impl Expr {
@@ -107,6 +109,16 @@ impl Expr {
                 let lhs = lhs.eval_constexpr()?;
                 let rhs = rhs.eval_constexpr()?;
                 Some((lhs >= rhs) as i64)
+            }
+            ExprKind::Binary(BinOp::Add, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs + rhs)
+            }
+            ExprKind::Binary(BinOp::Sub, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs - rhs)
             }
             ExprKind::Ternary(ref cond, ref thn, ref els) => {
                 if cond.eval_constexpr() != Some(0) {
