@@ -5,6 +5,7 @@ use anyhow::Result;
 use ast::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use ast::token::{stringify, Token};
 use long_sourceloc::SourceLoc;
+use sourceloc::source::{Source, Sources};
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::fmt;
 use std::fs::read_to_string;
@@ -46,12 +47,13 @@ impl SourceLexer {
     }
 
     /// Creates a new `SourceLexer` for a file.
-    pub fn new_from_file<P>(filepath: P) -> Result<Self>
+    pub fn new_from_file<P>(filepath: P, sources: &mut Sources) -> Result<Self>
     where
         P: Into<PathBuf> + Clone,
     {
         Ok(Self {
-            cursor: Cursor::new(read_to_string(filepath.clone().into())?),
+            cursor: Cursor::new(read_to_string(filepath.clone().into())?)
+                .with_source_id(sources.add(Source::File(filepath.clone().into()))),
             filepath: Some(filepath.into()),
             buf: VecDeque::new(),
             cond_stack: Vec::new(),
@@ -710,7 +712,8 @@ fn test() {
 #[test]
 #[should_panic]
 fn cannot_open_file() {
-    let _ = SourceLexer::new_from_file("").unwrap();
+    use sourceloc::source::*;
+    let _ = SourceLexer::new_from_file("", &mut Sources::new()).unwrap();
 }
 
 #[test]

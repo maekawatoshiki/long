@@ -1,4 +1,4 @@
-use sourceloc::SourceLoc;
+use sourceloc::{source::SourceId, SourceLoc};
 
 /// A cursor for a string.
 pub(crate) struct Cursor {
@@ -20,6 +20,12 @@ impl Cursor {
             pos: 0,
             loc: SourceLoc::new(0, 1),
         }
+    }
+
+    /// Sets the source id.
+    pub fn with_source_id(mut self, source_id: SourceId) -> Self {
+        self.loc = self.loc.with_source_id(Some(source_id));
+        self
     }
 
     /// Peeks the character at `self.pos`.

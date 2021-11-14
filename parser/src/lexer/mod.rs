@@ -10,6 +10,7 @@ use anyhow::Result;
 use ast::token::kind::TokenKind;
 use ast::token::Token;
 use macros::Macros;
+use sourceloc::source::Sources;
 use sourceloc::SourceLoc;
 use src_lexer::SourceLexer;
 use std::fmt;
@@ -20,6 +21,9 @@ pub struct Lexer {
     /// The file path of the source file the lexer originally reads.
     /// Set to `None` if the lexer does not read a file but a string.
     filepath: Option<PathBuf>,
+
+    /// The sources in the translation unit.
+    sources: Sources,
 
     /// The source lexers.
     src_lexers: Vec<SourceLexer>,
@@ -41,6 +45,7 @@ impl Lexer {
     pub fn new(source: impl Into<String>) -> Self {
         Self {
             filepath: None,
+            sources: Sources::new(),
             src_lexers: vec![SourceLexer::new(source.into())],
             macros: Macros::new(),
         }
@@ -51,8 +56,13 @@ impl Lexer {
     where
         P: Into<PathBuf> + Clone,
     {
+        let mut sources = Sources::new();
         Ok(Self {
-            src_lexers: vec![SourceLexer::new_from_file(filepath.clone().into())?],
+            src_lexers: vec![SourceLexer::new_from_file(
+                filepath.clone().into(),
+                &mut sources,
+            )?],
+            sources,
             filepath: Some(filepath.into()),
             macros: Macros::new(),
         })
@@ -105,6 +115,7 @@ impl Lexer {
                                         )
                                     }
                                 },
+                                &mut self.sources,
                             )?);
                             self.next()
                         }
