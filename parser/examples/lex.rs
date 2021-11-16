@@ -5,7 +5,8 @@ fn main() {
         r#"
 #include <longcc.h>
 #include <stdio.h>
-#include <stdlib.h>
+// #include <stdlib.h>
+#include <iostream>
 int main() {
     puts("hello");
 }

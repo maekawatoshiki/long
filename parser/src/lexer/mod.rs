@@ -143,14 +143,14 @@ impl Lexer {
                     let Source::File(path) = self.sources.get(id).unwrap();
                     path.to_str().expect("Path is not valid UTF-8")
                 }),
-                loc.line(),
+                loc.line() + 1,
                 loc.column()
             )
         };
         match error {
             Error::UnexpectedEof => "Unexpected end of file".into(),
             Error::Unexpected(loc) => format!("{}: Unexpected token", loc_to_string(*loc)),
-            Error::Message(msg, loc) => format!("{}{}", loc_to_string(*loc), msg),
+            Error::Message(msg, loc) => format!("{}: {}", loc_to_string(*loc), msg),
             Error::FileNotFound(filepath, loc) => {
                 format!("{}: File not found '{:?}'", loc_to_string(*loc), filepath)
             }
@@ -196,6 +196,7 @@ fn try_include(filepath: &PathBuf) -> Option<PathBuf> {
         "/usr/include/linux/",
         "/usr/include/c++/7/",
         "/usr/include/x86_64-linux-gnu/",
+        "/usr/include/x86_64-linux-gnu/c++/7/",
         "",
     ];
     header_paths.iter().find_map(|header_path| {

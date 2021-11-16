@@ -216,7 +216,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
                 self.expect(SymbolKind::ClosingParen)?;
                 Ok(expr)
             }
-            e => todo!("parse_primary: {:?}", e),
+            e => Err(Error::Message(format!("Unimplemented: {:?}", e), *tok.loc()).into()),
         }
     }
 }

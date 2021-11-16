@@ -128,14 +128,18 @@ impl SourceLexer {
                 self.next()
             }
             Some(c) if SymbolKind::at_least_starts_with(c) => Ok(Some(self.read_symbol())),
+            Some(c) => Err(Error::Message(
+                format!("Unsupported character: {:?}", c),
+                self.cursor.loc,
+            )
+            .into()),
             None => return Ok(None),
-            _ => todo!(),
         }
     }
 
     /// Pushes `tok` back to the buffer so that it can be read again.
     pub fn unget(&mut self, tok: Token) {
-        self.buf.push_back(tok);
+        self.buf.push_front(tok);
     }
 
     /// Reads an identifier. Assumes the result of `self.cursor.peek_char()` is alphabetic.
@@ -328,7 +332,7 @@ impl SourceLexer {
                     self.cond_stack.pop().unwrap();
                     Ok(())
                 }
-                "pragma" => self.read_error(*tok.loc()),
+                "pragma" => self.read_pragma(),
                 e => todo!("Directive {}", e),
             },
             _ => Ok(()),
@@ -430,7 +434,7 @@ impl SourceLexer {
         body: &[Token],
         loc: SourceLoc,
     ) -> Result<Token> {
-        for t in body {
+        for t in body.into_iter().rev() {
             self.unget(
                 t.clone()
                     .with_hideset_modified(|s| {
@@ -526,7 +530,7 @@ impl SourceLexer {
             }
         }
 
-        for tok in expanded {
+        for tok in expanded.into_iter().rev() {
             let tok = tok
                 .with_hideset_modified(|s| {
                     s.insert(name.into());
@@ -636,8 +640,8 @@ impl SourceLexer {
                     directive.kind().as_ident().map(String::as_str),
                     Some("else" | "elif" | "endif")
                 ) {
-                    self.unget(tok);
                     self.unget(directive);
+                    self.unget(tok);
                     return Ok(());
                 }
             }
@@ -716,6 +720,19 @@ impl SourceLexer {
             acc + if tok.leading_space() { " " } else { "" } + tok.kind().to_string().as_str()
         });
         Err(Error::Message(msg, loc).into())
+    }
+
+    /// Reads a #pragma directive.
+    fn read_pragma(&mut self) -> Result<()> {
+        // TODO: Don't just ignore the directive.
+        let mut tokens = Vec::new();
+        while let Some(tok) = self.next()? {
+            if tok.kind() == &TokenKind::NewLine {
+                break;
+            }
+            tokens.push(tok);
+        }
+        Ok(())
     }
 }
 
