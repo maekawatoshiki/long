@@ -328,6 +328,7 @@ impl SourceLexer {
                     self.cond_stack.pop().unwrap();
                     Ok(())
                 }
+                "pragma" => self.read_error(*tok.loc()),
                 e => todo!("Directive {}", e),
             },
             _ => Ok(()),
