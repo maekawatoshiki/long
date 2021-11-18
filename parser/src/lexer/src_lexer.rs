@@ -118,6 +118,9 @@ impl SourceLexer {
             {
                 Ok(Some(self.read_number()?))
             }
+            Some(c) if c == '\'' || (c == 'L' && self.cursor.peek_char2() == Some('\'')) => {
+                Ok(Some(self.read_char()?))
+            }
             Some(c) if c == '/' && matches!(self.cursor.peek_char2(), Some('/' | '*')) => {
                 self.read_comment();
                 self.next()
@@ -276,6 +279,13 @@ impl SourceLexer {
             // TODO: We should have a generous error message.
             Err(Error::Unexpected(loc).into())
         }
+    }
+
+    /// Reads a number literal, including integer literals and floating-point literals.
+    fn read_char(&mut self) -> Result<Token> {
+        // TODO: Support prefix
+        assert_eq!(self.cursor.next_char(), Some('\''));
+        todo!()
     }
 
     /// Reads a comment. Returns if the comment is a line comment.
@@ -806,6 +816,12 @@ fn read_ints() {
     let mut l =
         SourceLexer::new(".123 1e+10 34567890 123 4300000000 3.4l 2.71f 1.1 2. 0xfff 01727 33llu");
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
+fn read_chars() {
+    // let mut l = SourceLexer::new("'a' 'b'");
+    // insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
 #[test]

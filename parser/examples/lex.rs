@@ -6,6 +6,7 @@ fn main() {
 #include <longcc.h>
 #include <stdio.h>
 // #include <stdlib.h>
+#define __cplusplus 201103L
 #include <iostream>
 int main() {
     puts("hello");
