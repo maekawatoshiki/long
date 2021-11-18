@@ -6,7 +6,7 @@ use ast::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use ast::token::{stringify, Token};
 use long_sourceloc::SourceLoc;
 use sourceloc::source::{Source, Sources};
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::{HashMap, VecDeque};
 use std::fmt;
 use std::fs::read_to_string;
 use std::path::PathBuf;
@@ -60,6 +60,16 @@ impl SourceLexer {
         })
     }
 
+    /// Creates a new `SourceLexer` from tokens.
+    pub fn new_from_tokens(buf: impl Into<VecDeque<Token>>) -> Self {
+        Self {
+            cursor: Cursor::new("".to_string()),
+            filepath: None,
+            buf: buf.into(),
+            cond_stack: Vec::new(),
+        }
+    }
+
     /// Returns the file path.
     pub fn filepath(&self) -> Option<&PathBuf> {
         self.filepath.as_ref()
@@ -71,9 +81,7 @@ impl SourceLexer {
         fn to_keyword_if_necessary(tok: Token) -> Token {
             match tok.kind() {
                 TokenKind::Ident(ident) => match KeywordKind::from_str(ident.as_str()) {
-                    Some(kind) => tok
-                        .with_kind(TokenKind::Keyword(kind))
-                        .with_hideset(HashSet::new()),
+                    Some(kind) => tok.with_kind(TokenKind::Keyword(kind)).with_empty_hideset(),
                     None => tok,
                 },
                 _ => tok,
@@ -86,7 +94,7 @@ impl SourceLexer {
                 return self.next_preprocessed(macros);
             }
             Some(tok) if tok.kind() == &TokenKind::NewLine => self.next_preprocessed(macros),
-            Some(tok) => Ok(Some(to_keyword_if_necessary(self.expand(macros, tok)?))),
+            Some(tok) => Ok(self.expand(macros, tok)?.map(to_keyword_if_necessary)),
             None => return Ok(None),
         }
     }
@@ -137,6 +145,14 @@ impl SourceLexer {
             )
             .into()),
             None => return Ok(None),
+        }
+    }
+
+    /// Reads a token (new lines are skipped).
+    pub fn next_skipping_newline(&mut self) -> Result<Option<Token>> {
+        match self.next()? {
+            Some(tok) if tok.kind() == &TokenKind::NewLine => self.next_skipping_newline(),
+            tok => Ok(tok),
         }
     }
 
@@ -480,20 +496,20 @@ impl SourceLexer {
 
     /// If `token` is defined as a macro, expands it and returns the first token of the macro.
     /// The remaining macro tokens are pushed back to the buffer.
-    fn expand(&mut self, macros: &Macros, token: Token) -> Result<Token> {
+    fn expand(&mut self, macros: &Macros, token: Token) -> Result<Option<Token>> {
         match token.kind() {
-            TokenKind::Ident(ref name) if token.hideset().contains(name) => return Ok(token),
+            TokenKind::Ident(ref name) if token.hideset().contains(name) => return Ok(Some(token)),
             TokenKind::Ident(ref name) => match macros.find(name) {
                 Some(Macro::Obj(ref body)) => self
                     .expand_obj_macro(macros, name, body, *token.loc())
-                    .map(|t| t.set_leading_space(token.leading_space())),
+                    .map(|t| t.map(|t| t.set_leading_space(token.leading_space()))),
                 Some(Macro::Func(ref body)) => self
                     .expand_func_macro(macros, name, body, *token.loc())
-                    .map(|t| t.set_leading_space(token.leading_space())),
-                None => Ok(token),
+                    .map(|t| t.map(|t| t.set_leading_space(token.leading_space()))),
+                None => Ok(Some(token)),
             },
             TokenKind::Keyword(_) => unreachable!(),
-            _ => return Ok(token),
+            _ => return Ok(Some(token)),
         }
     }
 
@@ -504,7 +520,7 @@ impl SourceLexer {
         name: &str,
         body: &[Token],
         loc: SourceLoc,
-    ) -> Result<Token> {
+    ) -> Result<Option<Token>> {
         for t in body.into_iter().rev() {
             self.unget(
                 t.clone()
@@ -514,8 +530,7 @@ impl SourceLexer {
                     .with_loc(loc),
             );
         }
-        let tok = self.next()?.unwrap();
-        self.expand(macros, tok)
+        self.next()?.map_or(Ok(None), |t| self.expand(macros, t))
     }
 
     /// Expands an function-like macro named `name` (whose body is `body`).
@@ -525,12 +540,12 @@ impl SourceLexer {
         name: &str,
         body: &[FuncMacroToken],
         loc: SourceLoc,
-    ) -> Result<Token> {
+    ) -> Result<Option<Token>> {
         if !matches!(
-            self.next()?,
+            self.next_skipping_newline()?,
             Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::OpeningParen))
         ) {
-            return Err(Error::Unexpected(loc).into());
+            return Ok(Some(Token::new(TokenKind::Ident(name.into()), loc)));
         }
 
         let mut args = vec![];
@@ -549,6 +564,17 @@ impl SourceLexer {
         let mut expanded = vec![];
         let mut subst = Substitution::None;
 
+        fn expand(tokens: Vec<Token>, macros: &Macros) -> Result<Vec<Token>> {
+            let mut lex = SourceLexer::new_from_tokens(tokens);
+            let mut new_tokens = vec![];
+            while let Some(t) = lex.next()? {
+                if let Some(t) = lex.expand(macros, t)? {
+                    new_tokens.push(t)
+                }
+            }
+            Ok(new_tokens)
+        }
+
         fn append_expanded_tokens(
             expanded: &mut Vec<Token>,
             tokens: &[Token],
@@ -564,12 +590,17 @@ impl SourceLexer {
                     );
                 }
                 Substitution::Concat => {
-                    let mut toks = vec![expanded.pop().unwrap()];
+                    let mut toks = vec![];
+                    if let Some(last_tok) = expanded.pop() {
+                        toks.push(last_tok)
+                    }
                     toks.extend(tokens.iter().cloned());
-                    expanded.push(
-                        Token::new(TokenKind::Ident(stringify(&toks, true)), loc)
-                            .set_leading_space(toks[0].leading_space()),
-                    );
+                    if !toks.is_empty() {
+                        expanded.push(
+                            Token::new(TokenKind::Ident(stringify(&toks, true)), loc)
+                                .set_leading_space(toks[0].leading_space()),
+                        );
+                    }
                 }
                 Substitution::None => {
                     expanded.extend(tokens.iter().cloned().enumerate().map(|(i, t)| {
@@ -607,7 +638,14 @@ impl SourceLexer {
                 }
                 FuncMacroToken::Param(leading_space, n) => {
                     if let Some(arg) = args.get(*n) {
-                        append_expanded_tokens(&mut expanded, arg, *leading_space, loc, &mut subst);
+                        // Expand the arg in advance.
+                        append_expanded_tokens(
+                            &mut expanded,
+                            &expand(arg.clone(), macros)?,
+                            *leading_space,
+                            loc,
+                            &mut subst,
+                        );
                     } else {
                         return Err(Error::Unexpected(loc).into());
                     }
@@ -633,14 +671,13 @@ impl SourceLexer {
             self.unget(tok);
         }
 
-        let tok = self.next()?.unwrap();
-        self.expand(macros, tok)
+        self.next()?.map_or(Ok(None), |t| self.expand(macros, t))
     }
 
     fn read_func_macro_arg(&mut self, end: &mut bool) -> Result<Vec<Token>> {
         let mut nest = 0;
         let mut arg = vec![];
-        while let Some(t) = self.next()? {
+        while let Some(t) = self.next_skipping_newline()? {
             match t.kind() {
                 TokenKind::Symbol(SymbolKind::OpeningParen) => {
                     arg.push(t);
@@ -776,15 +813,16 @@ impl SourceLexer {
             if tok.kind() == &TokenKind::NewLine {
                 break;
             }
-            let tok = self.expand(macros, tok)?;
-            match tok.kind() {
-                TokenKind::Ident(ident) if ident == "defined" => {
-                    tokens.push(self.read_defined_op(macros)?)
+            if let Some(tok) = self.expand(macros, tok)? {
+                match tok.kind() {
+                    TokenKind::Ident(ident) if ident == "defined" => {
+                        tokens.push(self.read_defined_op(macros)?)
+                    }
+                    TokenKind::Ident(_) => {
+                        tokens.push(Token::new(IntKind::Int(0).into(), *tok.loc()));
+                    }
+                    _ => tokens.push(tok),
                 }
-                TokenKind::Ident(_) => {
-                    tokens.push(Token::new(IntKind::Int(0).into(), *tok.loc()));
-                }
-                _ => tokens.push(tok),
             }
         }
         // let msg = tokens.iter().fold("#error: ".to_string(), |acc, tok| {
@@ -1068,6 +1106,38 @@ F(int, f, int x, int y)
 "#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro11() {
+    let mut l = SourceLexer::new(
+        r#"
+#define x       3
+#define f(a)    f(x * (a))
+#undef  x
+#define x       2
+#define g       f
+#define z       z[0]
+#define h       g(~
+#define m(a)    a(w)
+#define w       0,1
+#define t(a)    a
+#define p()     int
+#define q(x)    x
+#define r(x,y)  x ## y
+#define str(x)  # x
+
+f(y+1) + f(f(z)) % t(t(g)(0) + t)(1);
+g(x+(3,4)-w) | h 5) & m
+    (f)^m(m);
+p() i[q()] = { q(1), r(2,3), r(4,), r(,5), r(,) };
+char c[2][6] = { str(hello), str() };
+"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l)
+        .into_iter()
+        .map(|t| t.with_empty_hideset())
+        .collect::<Vec<_>>());
 }
 
 #[test]

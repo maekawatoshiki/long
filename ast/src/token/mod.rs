@@ -1,9 +1,8 @@
 pub mod kind;
 
-use std::collections::HashSet;
-
 use kind::TokenKind;
 use long_sourceloc::SourceLoc;
+use rustc_hash::FxHashSet as HashSet;
 
 #[derive(Debug, Clone)]
 pub struct Token {
@@ -29,7 +28,7 @@ impl Token {
         Self {
             kind,
             leading_space: false,
-            hideset: HashSet::new(),
+            hideset: HashSet::default(),
             loc,
         }
     }
@@ -48,10 +47,10 @@ impl Token {
         self
     }
 
-    /// Sets the hideset and returns the token.
+    /// Sets an empty hideset.
     #[inline]
-    pub fn with_hideset(mut self, hideset: HashSet<String>) -> Self {
-        self.hideset = hideset;
+    pub fn with_empty_hideset(mut self) -> Self {
+        self.hideset = HashSet::default();
         self
     }
 

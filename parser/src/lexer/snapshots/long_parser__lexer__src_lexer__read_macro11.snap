@@ -1,0 +1,1031 @@
+---
+source: parser/src/lexer/src_lexer.rs
+expression: "read_all_tokens_expanded(&mut l).into_iter().map(|t|\n                                                     t.with_empty_hideset()).collect::<Vec<_>>()"
+
+---
+[
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Ident(
+            "y",
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Symbol(
+            Add,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:1,
+    },
+    Token {
+        kind: Symbol(
+            Add,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:8,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Ident(
+            "z",
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Int(
+            Int(
+                0,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:10,
+    },
+    Token {
+        kind: Symbol(
+            Mod,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:18,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Int(
+            Int(
+                0,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Symbol(
+            Add,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Ident(
+            "t",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:17:20,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:34,
+    },
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:35,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:36,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:17:37,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            Add,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                3,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                4,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            Sub,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                0,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:1,
+    },
+    Token {
+        kind: Symbol(
+            Or,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:14,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Symbol(
+            BitwiseNot,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Int(
+            Int(
+                5,
+            ),
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:16,
+    },
+    Token {
+        kind: Symbol(
+            And,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:21,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Symbol(
+            Asterisk,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Int(
+            Int(
+                0,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:18:23,
+    },
+    Token {
+        kind: Symbol(
+            Xor,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:8,
+    },
+    Token {
+        kind: Ident(
+            "m",
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:9,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:9,
+    },
+    Token {
+        kind: Int(
+            Int(
+                0,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:9,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:9,
+    },
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:9,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:9,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:19:13,
+    },
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:1,
+    },
+    Token {
+        kind: Ident(
+            "i",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:5,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:6,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:10,
+    },
+    Token {
+        kind: Symbol(
+            Assign,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:12,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBrace,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:14,
+    },
+    Token {
+        kind: Int(
+            Int(
+                1,
+            ),
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:16,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:20,
+    },
+    Token {
+        kind: Ident(
+            "23",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:22,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:28,
+    },
+    Token {
+        kind: Ident(
+            "4",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:30,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:35,
+    },
+    Token {
+        kind: Ident(
+            "5",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:37,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:42,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBrace,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:20:49,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:20:50,
+    },
+    Token {
+        kind: Keyword(
+            Char,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:1,
+    },
+    Token {
+        kind: Ident(
+            "c",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:21:6,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:7,
+    },
+    Token {
+        kind: Int(
+            Int(
+                2,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:8,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:9,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:10,
+    },
+    Token {
+        kind: Int(
+            Int(
+                6,
+            ),
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:11,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBoxBracket,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:12,
+    },
+    Token {
+        kind: Symbol(
+            Assign,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:21:14,
+    },
+    Token {
+        kind: Symbol(
+            OpeningBrace,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:21:16,
+    },
+    Token {
+        kind: String(
+            "hello",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:21:18,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:28,
+    },
+    Token {
+        kind: String(
+            "",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:21:30,
+    },
+    Token {
+        kind: Symbol(
+            ClosingBrace,
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:21:36,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:21:37,
+    },
+]

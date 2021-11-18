@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 long-sourceloc = { path = "../sourceloc" }
+rustc-hash = "= 1.1.0"
