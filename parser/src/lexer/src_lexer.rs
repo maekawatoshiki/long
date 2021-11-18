@@ -434,6 +434,7 @@ impl SourceLexer {
         while let Some(arg) = self.next()? {
             let arg = match arg.kind() {
                 TokenKind::Ident(name) => name.to_owned(),
+                TokenKind::Symbol(SymbolKind::Vararg) => "__VA_ARGS__".into(),
                 TokenKind::Symbol(SymbolKind::ClosingParen) => break,
                 TokenKind::Symbol(SymbolKind::Comma) if !params.is_empty() => continue,
                 _ => return Err(Error::Unexpected(*arg.loc()).into()),
@@ -445,7 +446,11 @@ impl SourceLexer {
             match t.kind() {
                 TokenKind::NewLine => break,
                 TokenKind::Ident(ref i) if params.contains_key(i) => {
-                    body.push(FuncMacroToken::Param(params[i]));
+                    if i == "__VA_ARGS__" {
+                        body.push(FuncMacroToken::Vararg(params[i]));
+                    } else {
+                        body.push(FuncMacroToken::Param(params[i]));
+                    }
                 }
                 _ => body.push(FuncMacroToken::Token(t)),
             }
@@ -582,6 +587,15 @@ impl SourceLexer {
                         append_expanded_tokens(&mut expanded, arg, loc, &mut subst);
                     } else {
                         return Err(Error::Unexpected(loc).into());
+                    }
+                }
+                FuncMacroToken::Vararg(mut n) => {
+                    while let Some(arg) = args.get(n) {
+                        append_expanded_tokens(&mut expanded, arg, loc, &mut subst);
+                        if n < args.len() - 1 {
+                            expanded.push(Token::new(SymbolKind::Comma.into(), loc))
+                        }
+                        n += 1
                     }
                 }
             }
@@ -983,6 +997,19 @@ fn read_macro8() {
 #define ONE 1
 #define one ONE
 one
+"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro9() {
+    let mut l = SourceLexer::new(
+        r#"
+#define F(x, ...) f(x, __VA_ARGS__)
+F(1, 2, 3)
+#define G(...) g(__VA_ARGS__)
+G(1,2,3)
 "#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));

@@ -15,11 +15,14 @@ pub enum Macro {
     Func(Vec<FuncMacroToken>),
 }
 
-/// A function-like macro token. `Param(n)` represents a `n`th parameter.
+/// A function-like macro token.
+/// `Param(n)` represents a `n`th parameter.
+/// `Vararg(n)` represents the `n`th parameter is `...`.
 #[derive(Debug, Clone)]
 pub enum FuncMacroToken {
     Token(Token),
     Param(usize),
+    Vararg(usize),
 }
 
 impl Macros {
