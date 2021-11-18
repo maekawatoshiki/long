@@ -58,6 +58,8 @@ pub enum BinOp {
     LogicalOr,
     LogicalAnd,
     And,
+    Eq,
+    Ne,
     Or,
     Gt,
     Ge,
@@ -113,6 +115,16 @@ impl Expr {
                 let lhs = lhs.eval_constexpr()?;
                 let rhs = rhs.eval_constexpr()?;
                 Some(lhs >> rhs)
+            }
+            ExprKind::Binary(BinOp::Eq, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some((lhs == rhs) as i64)
+            }
+            ExprKind::Binary(BinOp::Ne, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some((lhs != rhs) as i64)
             }
             ExprKind::Binary(BinOp::Lt, ref lhs, ref rhs) => {
                 let lhs = lhs.eval_constexpr()?;

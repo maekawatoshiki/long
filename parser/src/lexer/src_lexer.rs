@@ -758,6 +758,10 @@ impl SourceLexer {
                 _ => tokens.push(tok),
             }
         }
+        // let msg = tokens.iter().fold("#error: ".to_string(), |acc, tok| {
+        //     acc + if tok.leading_space() { " " } else { "" } + tok.kind().to_string().as_str()
+        // });
+        // println!(">> {}", msg);
         Ok(tokens)
     }
 

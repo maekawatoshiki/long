@@ -94,14 +94,38 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses an and expression.
     fn parse_and(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_lt_le_gt_ge()?;
+        let mut lhs = self.parse_eq_ne()?;
         let loc = *lhs.loc();
         while self.lexer.skip(SymbolKind::And.into()) {
-            let rhs = self.parse_lt_le_gt_ge()?;
+            let rhs = self.parse_eq_ne()?;
             lhs = Expr::new(
                 ExprKind::Binary(BinOp::And, Box::new(lhs), Box::new(rhs)),
                 loc,
             );
+        }
+        Ok(lhs)
+    }
+
+    /// Parses an euqal, not equal operator.
+    fn parse_eq_ne(&mut self) -> Result<Expr> {
+        let mut lhs = self.parse_lt_le_gt_ge()?;
+        let loc = *lhs.loc();
+        loop {
+            if self.lexer.skip(SymbolKind::Eq.into()) {
+                let rhs = self.parse_lt_le_gt_ge()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Eq, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else if self.lexer.skip(SymbolKind::Ne.into()) {
+                let rhs = self.parse_lt_le_gt_ge()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Ne, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else {
+                break;
+            }
         }
         Ok(lhs)
     }
@@ -288,5 +312,12 @@ fn parse_shl_shr() {
 fn parse_and_or() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("0 & 1 | 2")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_eq_ne() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("0 == 0 && 0 != 1")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
