@@ -16,13 +16,14 @@ pub enum Macro {
 }
 
 /// A function-like macro token.
-/// `Param(n)` represents a `n`th parameter.
-/// `Vararg(n)` represents the `n`th parameter is `...`.
+/// `Param(leading space, n)` represents a `n`th parameter.
+/// `Vararg(leading space, n)` represents the `n`th parameter is `...`.
+// TODO: Param and Vararg should not have leading space as bool.
 #[derive(Debug, Clone)]
 pub enum FuncMacroToken {
     Token(Token),
-    Param(usize),
-    Vararg(usize),
+    Param(bool, usize),
+    Vararg(bool, usize),
 }
 
 impl Macros {

@@ -146,7 +146,7 @@ expression: read_all_tokens_expanded(&mut l)
         kind: Ident(
             "y",
         ),
-        leading_space: true,
+        leading_space: false,
         hideset: {
             "F",
         },

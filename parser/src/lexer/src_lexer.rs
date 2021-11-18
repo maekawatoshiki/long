@@ -372,7 +372,7 @@ impl SourceLexer {
         };
         match tok.kind() {
             TokenKind::Ident(i) => match i.as_str() {
-                "include" => {
+                "include" | "include_next" => {
                     let loc = self.cursor.loc;
                     let name = self.read_header_name()?;
                     Err(Error::Include(name.into(), loc).into())
@@ -390,7 +390,11 @@ impl SourceLexer {
                     Ok(())
                 }
                 "pragma" => self.read_pragma(),
-                e => todo!("Directive {}", e),
+                e => Err(Error::Message(
+                    format!("Unsupported preprocessor directive {}", e),
+                    *tok.loc(),
+                )
+                .into()),
             },
             _ => Ok(()),
         }
@@ -447,9 +451,9 @@ impl SourceLexer {
                 TokenKind::NewLine => break,
                 TokenKind::Ident(ref i) if params.contains_key(i) => {
                     if i == "__VA_ARGS__" {
-                        body.push(FuncMacroToken::Vararg(params[i]));
+                        body.push(FuncMacroToken::Vararg(t.leading_space(), params[i]));
                     } else {
-                        body.push(FuncMacroToken::Param(params[i]));
+                        body.push(FuncMacroToken::Param(t.leading_space(), params[i]));
                     }
                 }
                 _ => body.push(FuncMacroToken::Token(t)),
@@ -543,20 +547,33 @@ impl SourceLexer {
         fn append_expanded_tokens(
             expanded: &mut Vec<Token>,
             tokens: &[Token],
+            leading_space: bool,
             loc: SourceLoc,
             s: &mut Substitution,
         ) {
             match s {
                 Substitution::Stringify => {
-                    expanded.push(Token::new(TokenKind::String(stringify(tokens, false)), loc));
+                    expanded.push(
+                        Token::new(TokenKind::String(stringify(tokens, false)), loc)
+                            .set_leading_space(leading_space),
+                    );
                 }
                 Substitution::Concat => {
                     let mut toks = vec![expanded.pop().unwrap()];
                     toks.extend(tokens.iter().cloned());
-                    expanded.push(Token::new(TokenKind::Ident(stringify(&toks, true)), loc));
+                    expanded.push(
+                        Token::new(TokenKind::Ident(stringify(&toks, true)), loc)
+                            .set_leading_space(toks[0].leading_space()),
+                    );
                 }
                 Substitution::None => {
-                    expanded.extend(tokens.iter().cloned());
+                    expanded.extend(tokens.iter().cloned().enumerate().map(|(i, t)| {
+                        if i == 0 {
+                            t.set_leading_space(leading_space)
+                        } else {
+                            t
+                        }
+                    }))
                 }
             }
             *s = Substitution::None;
@@ -578,20 +595,21 @@ impl SourceLexer {
                     append_expanded_tokens(
                         &mut expanded,
                         std::slice::from_ref(tok),
+                        tok.leading_space(),
                         loc,
                         &mut subst,
                     );
                 }
-                FuncMacroToken::Param(n) => {
+                FuncMacroToken::Param(leading_space, n) => {
                     if let Some(arg) = args.get(*n) {
-                        append_expanded_tokens(&mut expanded, arg, loc, &mut subst);
+                        append_expanded_tokens(&mut expanded, arg, *leading_space, loc, &mut subst);
                     } else {
                         return Err(Error::Unexpected(loc).into());
                     }
                 }
-                FuncMacroToken::Vararg(mut n) => {
+                FuncMacroToken::Vararg(leading_space, mut n) => {
                     while let Some(arg) = args.get(n) {
-                        append_expanded_tokens(&mut expanded, arg, loc, &mut subst);
+                        append_expanded_tokens(&mut expanded, arg, *leading_space, loc, &mut subst);
                         if n < args.len() - 1 {
                             expanded.push(Token::new(SymbolKind::Comma.into(), loc))
                         }
@@ -619,7 +637,10 @@ impl SourceLexer {
         let mut arg = vec![];
         while let Some(t) = self.next()? {
             match t.kind() {
-                TokenKind::Symbol(SymbolKind::OpeningParen) => nest += 1,
+                TokenKind::Symbol(SymbolKind::OpeningParen) => {
+                    arg.push(t);
+                    nest += 1
+                }
                 TokenKind::Symbol(SymbolKind::Comma) if nest == 0 => {
                     return Ok(arg);
                 }
@@ -627,7 +648,10 @@ impl SourceLexer {
                     *end = true;
                     return Ok(arg);
                 }
-                TokenKind::Symbol(SymbolKind::ClosingParen) => nest -= 1,
+                TokenKind::Symbol(SymbolKind::ClosingParen) => {
+                    arg.push(t);
+                    nest -= 1
+                }
                 _ => {
                     arg.push(t);
                 }
@@ -1014,6 +1038,17 @@ fn read_macro9() {
 F(1, 2, 3)
 #define G(...) g(__VA_ARGS__)
 G(1,2,3)
+"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));
+}
+
+#[test]
+fn read_macro10() {
+    let mut l = SourceLexer::new(
+        r#"
+#define F(ty, name, ...) ty name (__VA_ARGS__)
+F(int, f, int x, int y)
 "#,
     );
     insta::assert_debug_snapshot!(read_all_tokens_expanded(&mut l));

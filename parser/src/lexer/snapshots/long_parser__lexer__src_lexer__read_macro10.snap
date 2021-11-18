@@ -1,0 +1,91 @@
+---
+source: parser/src/lexer/src_lexer.rs
+expression: read_all_tokens_expanded(&mut l)
+
+---
+[
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:3:1,
+    },
+    Token {
+        kind: Ident(
+            "f",
+        ),
+        leading_space: true,
+        hideset: {
+            "F",
+        },
+        loc: None:3:1,
+    },
+    Token {
+        kind: Symbol(
+            OpeningParen,
+        ),
+        leading_space: true,
+        hideset: {
+            "F",
+        },
+        loc: None:3:1,
+    },
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:3:1,
+    },
+    Token {
+        kind: Ident(
+            "x",
+        ),
+        leading_space: true,
+        hideset: {
+            "F",
+        },
+        loc: None:3:1,
+    },
+    Token {
+        kind: Symbol(
+            Comma,
+        ),
+        leading_space: false,
+        hideset: {
+            "F",
+        },
+        loc: None:3:1,
+    },
+    Token {
+        kind: Keyword(
+            Int,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:3:1,
+    },
+    Token {
+        kind: Ident(
+            "y",
+        ),
+        leading_space: true,
+        hideset: {
+            "F",
+        },
+        loc: None:3:1,
+    },
+    Token {
+        kind: Symbol(
+            ClosingParen,
+        ),
+        leading_space: false,
+        hideset: {
+            "F",
+        },
+        loc: None:3:1,
+    },
+]
