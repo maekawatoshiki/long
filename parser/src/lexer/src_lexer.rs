@@ -281,7 +281,7 @@ impl SourceLexer {
         }
     }
 
-    /// Reads a number literal, including integer literals and floating-point literals.
+    /// Reads a character literal.
     fn read_char(&mut self) -> Result<Token> {
         let loc = self.cursor.loc;
         // Just ignore the prefix.
@@ -290,12 +290,49 @@ impl SourceLexer {
             self.cursor.next_char();
         }
         assert_eq!(self.cursor.next_char(), Some('\''));
-        // TODO: Support escape sequences.
-        let c = self.cursor.next_char().ok_or(Error::Unexpected(loc))?;
+        let c = self.read_escaped_char()?;
         if self.cursor.next_char().ok_or(Error::Unexpected(loc))? != '\'' {
             return Err(Error::Unexpected(loc).into());
         }
         Ok(Token::new(TokenKind::Char(c), loc))
+    }
+
+    /// Reads an escaped character.
+    fn read_escaped_char(&mut self) -> Result<char> {
+        let loc = self.cursor.loc;
+        let c = self.cursor.next_char().ok_or(Error::Unexpected(loc))?;
+        if c != '\\' {
+            return Ok(c);
+        }
+        let c = self.cursor.next_char().ok_or(Error::Unexpected(loc))?;
+        match c {
+            '\'' | '"' | '?' | '\\' => Ok(c),
+            'a' => Ok('\x07'),
+            'b' => Ok('\x08'),
+            'f' => Ok('\x0c'),
+            'n' => Ok('\x0a'),
+            'r' => Ok('\x0d'),
+            't' => Ok('\x09'),
+            'v' => Ok('\x0b'),
+            'x' => {
+                let hex = self
+                    .cursor
+                    .take_chars_while(|c| matches!(c, '0'..='9' | 'a'..='f'|'A'..='F'));
+                Ok(
+                    char::from_u32(u32::from_str_radix(&hex, 16).expect("Can't parse as a hex"))
+                        .expect("Can't treat as a char"),
+                )
+            }
+            '0'..='7' => {
+                let mut oct = self.cursor.take_chars_while(|c| matches!(c, '0'..='7'));
+                oct.insert(0, c);
+                Ok(
+                    char::from_u32(u32::from_str_radix(&oct, 8).expect("Can't parse as a oct"))
+                        .expect("Can't treat as a char"),
+                )
+            }
+            _ => Ok(c),
+        }
     }
 
     /// Reads a comment. Returns if the comment is a line comment.
@@ -830,7 +867,10 @@ fn read_ints() {
 
 #[test]
 fn read_chars() {
-    let mut l = SourceLexer::new("'a' 'b'");
+    let mut l = SourceLexer::new(
+        r#"'a' 'b''c' '\\' '\a' '\'' '\"' '\?' '\b' '\b' '\f' '\n' '\r' '\t' '\v'
+        '\xfff' '\x0' '\x1' '\x1Fc' '\0' '\321'"#,
+    );
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 

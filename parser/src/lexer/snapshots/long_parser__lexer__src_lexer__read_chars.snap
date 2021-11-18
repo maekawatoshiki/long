@@ -20,4 +20,162 @@ expression: read_all_tokens(&mut l)
         hideset: {},
         loc: None:1:5,
     },
+    Token {
+        kind: Char(
+            'c',
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:1:8,
+    },
+    Token {
+        kind: Char(
+            '\\',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:12,
+    },
+    Token {
+        kind: Char(
+            '\u{7}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:17,
+    },
+    Token {
+        kind: Char(
+            '\'',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:22,
+    },
+    Token {
+        kind: Char(
+            '"',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:27,
+    },
+    Token {
+        kind: Char(
+            '?',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:32,
+    },
+    Token {
+        kind: Char(
+            '\u{8}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:37,
+    },
+    Token {
+        kind: Char(
+            '\u{8}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:42,
+    },
+    Token {
+        kind: Char(
+            '\u{c}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:47,
+    },
+    Token {
+        kind: Char(
+            '\n',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:52,
+    },
+    Token {
+        kind: Char(
+            '\r',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:57,
+    },
+    Token {
+        kind: Char(
+            '\t',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:62,
+    },
+    Token {
+        kind: Char(
+            '\u{b}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:67,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: None:2:1,
+    },
+    Token {
+        kind: Char(
+            '\u{fff}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:2:9,
+    },
+    Token {
+        kind: Char(
+            '\u{0}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:2:17,
+    },
+    Token {
+        kind: Char(
+            '\u{1}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:2:23,
+    },
+    Token {
+        kind: Char(
+            'Ǽ',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:2:29,
+    },
+    Token {
+        kind: Char(
+            '\u{0}',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:2:37,
+    },
+    Token {
+        kind: Char(
+            'Ñ',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:2:42,
+    },
 ]
