@@ -1,0 +1,23 @@
+---
+source: parser/src/lexer/src_lexer.rs
+expression: read_all_tokens(&mut l)
+
+---
+[
+    Token {
+        kind: Char(
+            'a',
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:1:1,
+    },
+    Token {
+        kind: Char(
+            'b',
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:1:5,
+    },
+]

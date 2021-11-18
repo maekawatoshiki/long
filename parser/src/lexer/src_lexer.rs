@@ -283,9 +283,19 @@ impl SourceLexer {
 
     /// Reads a number literal, including integer literals and floating-point literals.
     fn read_char(&mut self) -> Result<Token> {
-        // TODO: Support prefix
+        let loc = self.cursor.loc;
+        // Just ignore the prefix.
+        // TODO: Support prefix.
+        if self.cursor.peek_char().map_or(false, char::is_alphabetic) {
+            self.cursor.next_char();
+        }
         assert_eq!(self.cursor.next_char(), Some('\''));
-        todo!()
+        // TODO: Support escape sequences.
+        let c = self.cursor.next_char().ok_or(Error::Unexpected(loc))?;
+        if self.cursor.next_char().ok_or(Error::Unexpected(loc))? != '\'' {
+            return Err(Error::Unexpected(loc).into());
+        }
+        Ok(Token::new(TokenKind::Char(c), loc))
     }
 
     /// Reads a comment. Returns if the comment is a line comment.
@@ -820,8 +830,8 @@ fn read_ints() {
 
 #[test]
 fn read_chars() {
-    // let mut l = SourceLexer::new("'a' 'b'");
-    // insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+    let mut l = SourceLexer::new("'a' 'b'");
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }
 
 #[test]
