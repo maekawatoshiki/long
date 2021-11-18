@@ -1,0 +1,49 @@
+---
+source: parser/src/lexer/src_lexer.rs
+expression: read_all_tokens(&mut l)
+
+---
+[
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: None:2:1,
+    },
+    Token {
+        kind: String(
+            "hello world!",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:2:5,
+    },
+    Token {
+        kind: Symbol(
+            Semicolon,
+        ),
+        leading_space: false,
+        hideset: {},
+        loc: None:2:19,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: None:3:1,
+    },
+    Token {
+        kind: String(
+            "new\nline",
+        ),
+        leading_space: true,
+        hideset: {},
+        loc: None:3:5,
+    },
+    Token {
+        kind: NewLine,
+        leading_space: false,
+        hideset: {},
+        loc: None:4:1,
+    },
+]

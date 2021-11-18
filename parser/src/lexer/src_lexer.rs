@@ -163,8 +163,11 @@ impl SourceLexer {
             if c == '\"' {
                 return Ok(Token::new(TokenKind::String(string), loc));
             }
-            // TODO: Support escape sequences.
-            string.push(c);
+            if c != '\\' {
+                string.push(c);
+                continue;
+            }
+            string.push(self.escape_char(c)?);
         }
         Err(Error::Unexpected(loc).into())
     }
@@ -290,20 +293,22 @@ impl SourceLexer {
             self.cursor.next_char();
         }
         assert_eq!(self.cursor.next_char(), Some('\''));
-        let c = self.read_escaped_char()?;
+        let c = self.cursor.next_char().ok_or(Error::Unexpected(loc))?;
+        let c = self.escape_char(c)?;
         if self.cursor.next_char().ok_or(Error::Unexpected(loc))? != '\'' {
             return Err(Error::Unexpected(loc).into());
         }
         Ok(Token::new(TokenKind::Char(c), loc))
     }
 
-    /// Reads an escaped character.
-    fn read_escaped_char(&mut self) -> Result<char> {
-        let loc = self.cursor.loc;
-        let c = self.cursor.next_char().ok_or(Error::Unexpected(loc))?;
+    /// If the given `c` is `\`, reads one or more characters to process the escape sequence.
+    /// Otherwise, just returns the given `c`.
+    fn escape_char(&mut self, c: char) -> Result<char> {
         if c != '\\' {
             return Ok(c);
         }
+
+        let loc = self.cursor.loc;
         let c = self.cursor.next_char().ok_or(Error::Unexpected(loc))?;
         match c {
             '\'' | '"' | '?' | '\\' => Ok(c),
@@ -912,6 +917,17 @@ fn read_chars() {
     let mut l = SourceLexer::new(
         r#"'a' 'b''c' '\\' '\a' '\'' '\"' '\?' '\b' '\b' '\f' '\n' '\r' '\t' '\v'
         '\xfff' '\x0' '\x1' '\x1Fc' '\0' '\321'"#,
+    );
+    insta::assert_debug_snapshot!(read_all_tokens(&mut l));
+}
+
+#[test]
+fn read_string() {
+    let mut l = SourceLexer::new(
+        r#"
+    "hello world!";
+    "new\nline"
+        "#,
     );
     insta::assert_debug_snapshot!(read_all_tokens(&mut l));
 }

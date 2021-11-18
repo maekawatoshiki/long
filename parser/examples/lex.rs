@@ -3,7 +3,7 @@ use long_parser::lexer::{Error, Lexer};
 fn main() {
     let mut l = Lexer::new(
         r#"
-// #include <longcc.h>
+#include <longcc.h>
 // #include <stdio.h>
 // #include <stdlib.h>
 #define __cplusplus 201103L
