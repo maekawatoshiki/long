@@ -1,5 +1,6 @@
 use long_sourceloc::SourceLoc;
 
+pub mod decl;
 pub mod expr;
 pub mod lit;
 pub mod stmt;
