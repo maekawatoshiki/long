@@ -2,13 +2,14 @@ extern crate anyhow;
 extern crate long_ast as ast;
 extern crate long_sourceloc as sourceloc;
 
+mod decl;
 mod expr;
 pub mod lexer;
 mod stmt;
 
 use anyhow::Result;
 use ast::{
-    node::{expr::Expr, Located},
+    node::{decl::Decl, expr::Expr, Located},
     token::kind::TokenKind,
 };
 use lexer::{traits::LexerLike, Error};
@@ -22,6 +23,11 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     /// Create a new `Parser`.
     pub fn new(lexer: &'a mut L) -> Parser<'a, L> {
         Parser { lexer }
+    }
+
+    /// Parses a program.
+    pub fn parse_program(&mut self) -> Result<Located<Decl>> {
+        self.parse_decl_seq()
     }
 
     /// Parses an expression.
