@@ -1,6 +1,7 @@
 use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
+use long_ast::node::ty::Type;
 use long_ast::node::{decl::Decl, Located};
 use long_ast::token::kind::{KeywordKind, TokenKind};
 
@@ -34,9 +35,9 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     fn parse_decl_specifier(&mut self) -> Result<()> {
         let tok = self.lexer.peek()?.ok_or(Error::UnexpectedEof)?;
         match tok.kind() {
-            TokenKind::Keyword(KeywordKind::Int) => {}
+            TokenKind::Keyword(KeywordKind::Int) => Type::Int,
             _ => panic!(),
-        }
+        };
         todo!()
     }
 }

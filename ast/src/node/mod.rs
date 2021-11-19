@@ -4,6 +4,7 @@ pub mod decl;
 pub mod expr;
 pub mod lit;
 pub mod stmt;
+pub mod ty;
 
 /// Any kind of node with source location.
 #[derive(Debug, Clone)]
