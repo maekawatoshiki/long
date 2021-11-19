@@ -10,6 +10,29 @@ use long_ast::{
     token::kind::{SymbolKind, TokenKind},
 };
 
+macro_rules! def_binop {
+    ($name:ident < $child:ident, $($sym:ident -> $op:ident),+) => {
+        fn $name(&mut self) -> Result<Expr> {
+            let mut lhs = self.$child()?;
+            let loc = *lhs.loc();
+            loop {
+                $(
+                    if self.lexer.skip(SymbolKind::$sym.into()) {
+                        let rhs = self.$child()?;
+                        lhs = Expr::new(
+                            ExprKind::Binary(BinOp::$op, Box::new(lhs), Box::new(rhs)),
+                            loc,
+                        );
+                        continue;
+                    }
+                )+;
+                break;
+            }
+            Ok(lhs)
+        }
+    };
+}
+
 impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a comma expression.
     pub(crate) fn parse_comma(&mut self) -> Result<Expr> {
@@ -50,199 +73,15 @@ impl<'a, L: LexerLike> Parser<'a, L> {
         ))
     }
 
-    /// Parses a logical or expression.
-    fn parse_logor(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_logand()?;
-        let loc = *lhs.loc();
-        while self.lexer.skip(SymbolKind::LOr.into()) {
-            let rhs = self.parse_logand()?;
-            lhs = Expr::new(
-                ExprKind::Binary(BinOp::LogicalOr, Box::new(lhs), Box::new(rhs)),
-                loc,
-            );
-        }
-        Ok(lhs)
-    }
-
-    /// Parses a logical and expression.
-    fn parse_logand(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_or()?;
-        let loc = *lhs.loc();
-        while self.lexer.skip(SymbolKind::LAnd.into()) {
-            let rhs = self.parse_or()?;
-            lhs = Expr::new(
-                ExprKind::Binary(BinOp::LogicalAnd, Box::new(lhs), Box::new(rhs)),
-                loc,
-            );
-        }
-        Ok(lhs)
-    }
-
-    /// Parses an or expression.
-    fn parse_or(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_and()?;
-        let loc = *lhs.loc();
-        while self.lexer.skip(SymbolKind::Or.into()) {
-            let rhs = self.parse_and()?;
-            lhs = Expr::new(
-                ExprKind::Binary(BinOp::Or, Box::new(lhs), Box::new(rhs)),
-                loc,
-            );
-        }
-        Ok(lhs)
-    }
-
-    /// Parses an and expression.
-    fn parse_and(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_eq_ne()?;
-        let loc = *lhs.loc();
-        while self.lexer.skip(SymbolKind::And.into()) {
-            let rhs = self.parse_eq_ne()?;
-            lhs = Expr::new(
-                ExprKind::Binary(BinOp::And, Box::new(lhs), Box::new(rhs)),
-                loc,
-            );
-        }
-        Ok(lhs)
-    }
-
-    /// Parses an euqal, not equal operator.
-    fn parse_eq_ne(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_lt_le_gt_ge()?;
-        let loc = *lhs.loc();
-        loop {
-            if self.lexer.skip(SymbolKind::Eq.into()) {
-                let rhs = self.parse_lt_le_gt_ge()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Eq, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Ne.into()) {
-                let rhs = self.parse_lt_le_gt_ge()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Ne, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else {
-                break;
-            }
-        }
-        Ok(lhs)
-    }
-
-    /// Parses a less than, less than or equal, greater than, greater than or equal expression.
-    fn parse_lt_le_gt_ge(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_shl_shr()?;
-        let loc = *lhs.loc();
-        loop {
-            if self.lexer.skip(SymbolKind::Lt.into()) {
-                let rhs = self.parse_shl_shr()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Lt, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Le.into()) {
-                let rhs = self.parse_shl_shr()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Le, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Gt.into()) {
-                let rhs = self.parse_shl_shr()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Gt, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Ge.into()) {
-                let rhs = self.parse_shl_shr()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Ge, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else {
-                break;
-            }
-        }
-        Ok(lhs)
-    }
-
-    /// Parses a left-shift or right-shift expression.
-    fn parse_shl_shr(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_add_sub()?;
-        let loc = *lhs.loc();
-        loop {
-            if self.lexer.skip(SymbolKind::Shl.into()) {
-                let rhs = self.parse_add_sub()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Shl, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Shr.into()) {
-                let rhs = self.parse_add_sub()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Shr, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else {
-                break;
-            }
-        }
-        Ok(lhs)
-    }
-
-    /// Parses an addition or subtraction expression.
-    fn parse_add_sub(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_mul_div_rem()?;
-        let loc = *lhs.loc();
-        loop {
-            if self.lexer.skip(SymbolKind::Add.into()) {
-                let rhs = self.parse_mul_div_rem()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Add, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Sub.into()) {
-                let rhs = self.parse_mul_div_rem()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Sub, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else {
-                break;
-            }
-        }
-        Ok(lhs)
-    }
-
-    /// Parses a multiply, divide and remainder expression.
-    fn parse_mul_div_rem(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_unary()?;
-        let loc = *lhs.loc();
-        loop {
-            if self.lexer.skip(SymbolKind::Asterisk.into()) {
-                let rhs = self.parse_unary()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Mul, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Div.into()) {
-                let rhs = self.parse_unary()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Div, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else if self.lexer.skip(SymbolKind::Mod.into()) {
-                let rhs = self.parse_unary()?;
-                lhs = Expr::new(
-                    ExprKind::Binary(BinOp::Rem, Box::new(lhs), Box::new(rhs)),
-                    loc,
-                );
-            } else {
-                break;
-            }
-        }
-        Ok(lhs)
-    }
+    def_binop!(parse_logor < parse_logand, LOr -> LogicalOr);
+    def_binop!(parse_logand < parse_or, LAnd -> LogicalAnd);
+    def_binop!(parse_or < parse_and, Or -> Or);
+    def_binop!(parse_and < parse_eq_ne, And -> And);
+    def_binop!(parse_eq_ne < parse_lt_le_gt_ge, Eq -> Eq, Ne -> Ne);
+    def_binop!(parse_lt_le_gt_ge < parse_shl_shr, Lt -> Lt, Le -> Le, Gt -> Gt, Ge -> Ge);
+    def_binop!(parse_shl_shr < parse_add_sub, Shl -> Shl, Shr -> Shr);
+    def_binop!(parse_add_sub < parse_mul_div_rem, Add -> Add, Sub -> Sub);
+    def_binop!(parse_mul_div_rem < parse_unary, Asterisk -> Mul, Div -> Div, Mod -> Rem);
 
     /// Parses a unary expression.
     fn parse_unary(&mut self) -> Result<Expr> {
