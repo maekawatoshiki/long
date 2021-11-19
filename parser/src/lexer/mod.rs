@@ -188,7 +188,7 @@ impl traits::LexerLike for Lexer {
     }
 }
 
-fn try_include(filepath: &PathBuf) -> Option<PathBuf> {
+fn try_include(filepath: &Path) -> Option<PathBuf> {
     let header_paths = vec![
         concat!(env!("LONGCCPATH"), "/include"),
         "/include/",

@@ -216,7 +216,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses a unary expression.
     fn parse_unary(&mut self) -> Result<Expr> {
-        let tok = self.lexer.peek()?.ok_or_else(|| Error::UnexpectedEof)?;
+        let tok = self.lexer.peek()?.ok_or(Error::UnexpectedEof)?;
         match tok.kind() {
             TokenKind::Symbol(SymbolKind::Not) => {
                 self.lexer.next()?;
@@ -232,7 +232,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a literal or parenthetical expression.
     pub(crate) fn parse_primary(&mut self) -> Result<Expr> {
         // TODO: Support other than int literals.
-        let tok = self.lexer.next()?.ok_or_else(|| Error::UnexpectedEof)?;
+        let tok = self.lexer.next()?.ok_or(Error::UnexpectedEof)?;
         match tok.kind() {
             TokenKind::Int(i) => Ok(Expr::new(ExprKind::Literal(Literal::Int(*i)), *tok.loc())),
             TokenKind::Symbol(SymbolKind::OpeningParen) => {

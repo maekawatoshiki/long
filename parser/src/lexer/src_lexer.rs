@@ -91,11 +91,11 @@ impl SourceLexer {
         match self.next()? {
             Some(tok) if matches!(tok.kind(), TokenKind::Symbol(SymbolKind::Hash)) => {
                 self.read_cpp_directive(macros)?;
-                return self.next_preprocessed(macros);
+                self.next_preprocessed(macros)
             }
             Some(tok) if tok.kind() == &TokenKind::NewLine => self.next_preprocessed(macros),
             Some(tok) => Ok(self.expand(macros, tok)?.map(to_keyword_if_necessary)),
-            None => return Ok(None),
+            None => Ok(None),
         }
     }
 
@@ -144,7 +144,7 @@ impl SourceLexer {
                 self.cursor.loc,
             )
             .into()),
-            None => return Ok(None),
+            None => Ok(None),
         }
     }
 
@@ -278,7 +278,7 @@ impl SourceLexer {
         }
         let (lit, radix) = if lit.starts_with("0x") || lit.starts_with("0X") {
             (&lit[2..], 16)
-        } else if lit.starts_with("0") {
+        } else if lit.starts_with('0') {
             (&lit[..], 8)
         } else {
             (lit.as_str(), 10)
@@ -498,7 +498,7 @@ impl SourceLexer {
     /// The remaining macro tokens are pushed back to the buffer.
     fn expand(&mut self, macros: &Macros, token: Token) -> Result<Option<Token>> {
         match token.kind() {
-            TokenKind::Ident(ref name) if token.hideset().contains(name) => return Ok(Some(token)),
+            TokenKind::Ident(ref name) if token.hideset().contains(name) => Ok(Some(token)),
             TokenKind::Ident(ref name) => match macros.find(name) {
                 Some(Macro::Obj(ref body)) => self
                     .expand_obj_macro(macros, name, body, *token.loc())
@@ -509,7 +509,7 @@ impl SourceLexer {
                 None => Ok(Some(token)),
             },
             TokenKind::Keyword(_) => unreachable!(),
-            _ => return Ok(Some(token)),
+            _ => Ok(Some(token)),
         }
     }
 
@@ -521,7 +521,7 @@ impl SourceLexer {
         body: &[Token],
         loc: SourceLoc,
     ) -> Result<Option<Token>> {
-        for t in body.into_iter().rev() {
+        for t in body.iter().rev() {
             self.unget(
                 t.clone()
                     .with_hideset_modified(|s| {
@@ -705,7 +705,10 @@ impl SourceLexer {
     /// Reads a #undef directive.
     fn read_undef(&mut self, macros: &mut Macros) -> Result<()> {
         let tok = self.next()?.ok_or(Error::UnexpectedEof)?;
-        let name = tok.kind().as_ident().ok_or(Error::Unexpected(*tok.loc()))?;
+        let name = tok
+            .kind()
+            .as_ident()
+            .ok_or_else(|| Error::Unexpected(*tok.loc()))?;
         macros.remove(name);
         Ok(())
     }
@@ -772,15 +775,15 @@ impl SourceLexer {
                 continue;
             }
             let directive = self.next()?.ok_or(Error::UnexpectedEof)?;
-            if nest == 0 {
-                if matches!(
+            if nest == 0
+                && matches!(
                     directive.kind().as_ident().map(String::as_str),
                     Some("else" | "elif" | "endif")
-                ) {
-                    self.unget(directive);
-                    self.unget(tok);
-                    return Ok(());
-                }
+                )
+            {
+                self.unget(directive);
+                self.unget(tok);
+                return Ok(());
             }
             match directive.kind().as_ident().map(String::as_str) {
                 Some("if" | "ifdef" | "ifndef") => nest += 1,
@@ -842,7 +845,10 @@ impl SourceLexer {
                 return Err(Error::Unexpected(*maybe_closing_paren.loc()).into());
             }
         }
-        let name = tok.kind().as_ident().ok_or(Error::Unexpected(*tok.loc()))?;
+        let name = tok
+            .kind()
+            .as_ident()
+            .ok_or_else(|| Error::Unexpected(*tok.loc()))?;
         Ok(Token::new(
             IntKind::Int(macros.find(name).is_some().into()).into(),
             *tok.loc(),
