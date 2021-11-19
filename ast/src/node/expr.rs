@@ -102,80 +102,29 @@ impl Expr {
                     Some((rhs.eval_constexpr() != Some(0)) as i64)
                 }
             }
-            ExprKind::Binary(BinOp::And, ref lhs, ref rhs) => {
+            ExprKind::Binary(ref op, ref lhs, ref rhs) => {
                 let lhs = lhs.eval_constexpr()?;
                 let rhs = rhs.eval_constexpr()?;
-                Some(lhs & rhs)
-            }
-            ExprKind::Binary(BinOp::Or, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs | rhs)
-            }
-            ExprKind::Binary(BinOp::Shl, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs << rhs)
-            }
-            ExprKind::Binary(BinOp::Shr, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs >> rhs)
-            }
-            ExprKind::Binary(BinOp::Eq, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some((lhs == rhs) as i64)
-            }
-            ExprKind::Binary(BinOp::Ne, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some((lhs != rhs) as i64)
-            }
-            ExprKind::Binary(BinOp::Lt, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some((lhs < rhs) as i64)
-            }
-            ExprKind::Binary(BinOp::Le, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some((lhs <= rhs) as i64)
-            }
-            ExprKind::Binary(BinOp::Gt, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some((lhs > rhs) as i64)
-            }
-            ExprKind::Binary(BinOp::Ge, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some((lhs >= rhs) as i64)
-            }
-            ExprKind::Binary(BinOp::Add, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs + rhs)
-            }
-            ExprKind::Binary(BinOp::Sub, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs - rhs)
-            }
-            ExprKind::Binary(BinOp::Mul, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs * rhs)
-            }
-            ExprKind::Binary(BinOp::Div, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs / rhs)
-            }
-            ExprKind::Binary(BinOp::Rem, ref lhs, ref rhs) => {
-                let lhs = lhs.eval_constexpr()?;
-                let rhs = rhs.eval_constexpr()?;
-                Some(lhs % rhs)
+                match op {
+                    BinOp::And => Some(lhs & rhs),
+                    BinOp::Or => Some(lhs | rhs),
+                    BinOp::Shl => Some(lhs << rhs),
+                    BinOp::Shr => Some(lhs >> rhs),
+                    BinOp::Eq => Some((lhs == rhs) as i64),
+                    BinOp::Ne => Some((lhs != rhs) as i64),
+                    BinOp::Gt => Some((lhs > rhs) as i64),
+                    BinOp::Ge => Some((lhs >= rhs) as i64),
+                    BinOp::Lt => Some((lhs < rhs) as i64),
+                    BinOp::Le => Some((lhs <= rhs) as i64),
+                    BinOp::Add => Some(lhs + rhs),
+                    BinOp::Sub => Some(lhs - rhs),
+                    BinOp::Mul => Some(lhs * rhs),
+                    BinOp::Div => Some(lhs / rhs),
+                    BinOp::Rem => Some(lhs % rhs),
+                    BinOp::Comma => unreachable!(),
+                    BinOp::LogicalAnd => unreachable!(),
+                    BinOp::LogicalOr => unreachable!(),
+                }
             }
             ExprKind::Ternary(ref cond, ref thn, ref els) => {
                 if cond.eval_constexpr() != Some(0) {
