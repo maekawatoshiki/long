@@ -6,7 +6,10 @@ mod expr;
 pub mod lexer;
 
 use anyhow::Result;
-use ast::{node::expr::Expr, token::kind::TokenKind};
+use ast::{
+    node::{expr::Expr, Located},
+    token::kind::TokenKind,
+};
 use lexer::{traits::LexerLike, Error};
 
 /// A parser for C++.
@@ -21,7 +24,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     }
 
     /// Parses an expression.
-    pub fn parse_expr(&mut self) -> Result<Expr> {
+    pub fn parse_expr(&mut self) -> Result<Located<Expr>> {
         self.parse_comma()
     }
 

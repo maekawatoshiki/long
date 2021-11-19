@@ -4,11 +4,11 @@ expression: node
 
 ---
 Ok(
-    Expr {
-        kind: Binary(
+    Located {
+        inner: Binary(
             LogicalAnd,
-            Expr {
-                kind: Literal(
+            Located {
+                inner: Literal(
                     Int(
                         Int(
                             0,
@@ -17,11 +17,11 @@ Ok(
                 ),
                 loc: None:1:1,
             },
-            Expr {
-                kind: Binary(
+            Located {
+                inner: Binary(
                     LogicalOr,
-                    Expr {
-                        kind: Literal(
+                    Located {
+                        inner: Literal(
                             Int(
                                 Int(
                                     1,
@@ -30,8 +30,8 @@ Ok(
                         ),
                         loc: None:1:7,
                     },
-                    Expr {
-                        kind: Literal(
+                    Located {
+                        inner: Literal(
                             Int(
                                 Int(
                                     2,

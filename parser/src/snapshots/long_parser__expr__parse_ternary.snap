@@ -4,10 +4,10 @@ expression: node
 
 ---
 Ok(
-    Expr {
-        kind: Ternary(
-            Expr {
-                kind: Literal(
+    Located {
+        inner: Ternary(
+            Located {
+                inner: Literal(
                     Int(
                         Int(
                             1,
@@ -16,8 +16,8 @@ Ok(
                 ),
                 loc: None:1:1,
             },
-            Expr {
-                kind: Literal(
+            Located {
+                inner: Literal(
                     Int(
                         Int(
                             2,
@@ -26,8 +26,8 @@ Ok(
                 ),
                 loc: None:1:5,
             },
-            Expr {
-                kind: Literal(
+            Located {
+                inner: Literal(
                     Int(
                         Int(
                             3,

@@ -4,20 +4,20 @@ expression: node
 
 ---
 Ok(
-    Expr {
-        kind: Binary(
+    Located {
+        inner: Binary(
             LogicalAnd,
-            Expr {
-                kind: Binary(
+            Located {
+                inner: Binary(
                     LogicalAnd,
-                    Expr {
-                        kind: Binary(
+                    Located {
+                        inner: Binary(
                             LogicalAnd,
-                            Expr {
-                                kind: Binary(
+                            Located {
+                                inner: Binary(
                                     Lt,
-                                    Expr {
-                                        kind: Literal(
+                                    Located {
+                                        inner: Literal(
                                             Int(
                                                 Int(
                                                     0,
@@ -26,8 +26,8 @@ Ok(
                                         ),
                                         loc: None:1:1,
                                     },
-                                    Expr {
-                                        kind: Literal(
+                                    Located {
+                                        inner: Literal(
                                             Int(
                                                 Int(
                                                     1,
@@ -39,11 +39,11 @@ Ok(
                                 ),
                                 loc: None:1:1,
                             },
-                            Expr {
-                                kind: Binary(
+                            Located {
+                                inner: Binary(
                                     Le,
-                                    Expr {
-                                        kind: Literal(
+                                    Located {
+                                        inner: Literal(
                                             Int(
                                                 Int(
                                                     0,
@@ -52,8 +52,8 @@ Ok(
                                         ),
                                         loc: None:1:10,
                                     },
-                                    Expr {
-                                        kind: Literal(
+                                    Located {
+                                        inner: Literal(
                                             Int(
                                                 Int(
                                                     1,
@@ -68,11 +68,11 @@ Ok(
                         ),
                         loc: None:1:1,
                     },
-                    Expr {
-                        kind: Binary(
+                    Located {
+                        inner: Binary(
                             Gt,
-                            Expr {
-                                kind: Literal(
+                            Located {
+                                inner: Literal(
                                     Int(
                                         Int(
                                             0,
@@ -81,8 +81,8 @@ Ok(
                                 ),
                                 loc: None:1:20,
                             },
-                            Expr {
-                                kind: Literal(
+                            Located {
+                                inner: Literal(
                                     Int(
                                         Int(
                                             1,
@@ -97,11 +97,11 @@ Ok(
                 ),
                 loc: None:1:1,
             },
-            Expr {
-                kind: Binary(
+            Located {
+                inner: Binary(
                     Ge,
-                    Expr {
-                        kind: Literal(
+                    Located {
+                        inner: Literal(
                             Int(
                                 Int(
                                     0,
@@ -110,8 +110,8 @@ Ok(
                         ),
                         loc: None:1:29,
                     },
-                    Expr {
-                        kind: Literal(
+                    Located {
+                        inner: Literal(
                             Int(
                                 Int(
                                     1,

@@ -4,11 +4,11 @@ expression: node
 
 ---
 Ok(
-    Expr {
-        kind: Unary(
+    Located {
+        inner: Unary(
             Not,
-            Expr {
-                kind: Literal(
+            Located {
+                inner: Literal(
                     Int(
                         Int(
                             0,

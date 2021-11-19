@@ -4,17 +4,17 @@ expression: node
 
 ---
 Ok(
-    Expr {
-        kind: Binary(
+    Located {
+        inner: Binary(
             Rem,
-            Expr {
-                kind: Binary(
+            Located {
+                inner: Binary(
                     Div,
-                    Expr {
-                        kind: Binary(
+                    Located {
+                        inner: Binary(
                             Mul,
-                            Expr {
-                                kind: Literal(
+                            Located {
+                                inner: Literal(
                                     Int(
                                         Int(
                                             0,
@@ -23,8 +23,8 @@ Ok(
                                 ),
                                 loc: None:1:1,
                             },
-                            Expr {
-                                kind: Literal(
+                            Located {
+                                inner: Literal(
                                     Int(
                                         Int(
                                             1,
@@ -36,8 +36,8 @@ Ok(
                         ),
                         loc: None:1:1,
                     },
-                    Expr {
-                        kind: Literal(
+                    Located {
+                        inner: Literal(
                             Int(
                                 Int(
                                     2,
@@ -49,8 +49,8 @@ Ok(
                 ),
                 loc: None:1:1,
             },
-            Expr {
-                kind: Literal(
+            Located {
+                inner: Literal(
                     Int(
                         Int(
                             3,

@@ -1,51 +1,24 @@
 use super::lit::Literal;
+use super::Located;
 use crate::token::kind::IntKind;
-use long_sourceloc::SourceLoc;
-
-/// An expression node.
-#[derive(Debug, Clone)]
-pub struct Expr {
-    /// The kind of the expression.
-    pub(crate) kind: ExprKind,
-
-    /// The source location of the expression.
-    pub(crate) loc: SourceLoc,
-}
-
-impl Expr {
-    /// Creates a new `Expr`.
-    pub fn new(kind: ExprKind, loc: SourceLoc) -> Self {
-        Self { kind, loc }
-    }
-
-    /// Returns the kind of the token.
-    pub fn kind(&self) -> &ExprKind {
-        &self.kind
-    }
-
-    /// Returns the source location of the token.
-    pub fn loc(&self) -> &SourceLoc {
-        &self.loc
-    }
-}
 
 /// An expression kind.
 #[derive(Debug, Clone)]
-pub enum ExprKind {
+pub enum Expr {
     /// A literal expression.
     Literal(Literal),
 
     /// A unary expression.
-    Unary(UnaryOp, Box<Expr>),
+    Unary(UnaryOp, Box<Located<Expr>>),
 
     /// A binary expression.
-    Binary(BinOp, Box<Expr>, Box<Expr>),
+    Binary(BinOp, Box<Located<Expr>>, Box<Located<Expr>>),
 
     /// A ternary expression.
-    Ternary(Box<Expr>, Box<Expr>, Box<Expr>), // cond, then, else.
+    Ternary(Box<Located<Expr>>, Box<Located<Expr>>, Box<Located<Expr>>), // cond, then, else.
 
     /// An Assign expression.
-    Assign(Box<Expr>, Box<Expr>),
+    Assign(Box<Located<Expr>>, Box<Located<Expr>>),
 }
 
 /// A unary operator kind.
@@ -77,32 +50,30 @@ pub enum BinOp {
     Rem,
 }
 
-impl Expr {
+impl Located<Expr> {
     // TODO: Add tests for this.
     /// Evaluates the constant expression.
     pub fn eval_constexpr(&self) -> Option<i64> {
-        match self.kind {
-            ExprKind::Unary(UnaryOp::Not, ref val) => {
-                Some((val.eval_constexpr() == Some(0)) as i64)
-            }
-            ExprKind::Literal(Literal::Int(IntKind::Int(i))) => Some(i as i64),
-            ExprKind::Literal(Literal::Int(_)) => todo!(),
-            ExprKind::Binary(BinOp::Comma, _, ref rhs) => rhs.eval_constexpr(),
-            ExprKind::Binary(BinOp::LogicalOr, ref lhs, ref rhs) => {
+        match self.inner_ref() {
+            Expr::Unary(UnaryOp::Not, ref val) => Some((val.eval_constexpr() == Some(0)) as i64),
+            Expr::Literal(Literal::Int(IntKind::Int(i))) => Some(*i as i64),
+            Expr::Literal(Literal::Int(_)) => todo!(),
+            Expr::Binary(BinOp::Comma, _, ref rhs) => rhs.eval_constexpr(),
+            Expr::Binary(BinOp::LogicalOr, ref lhs, ref rhs) => {
                 if lhs.eval_constexpr() != Some(0) {
                     Some(1)
                 } else {
                     Some((rhs.eval_constexpr() != Some(0)) as i64)
                 }
             }
-            ExprKind::Binary(BinOp::LogicalAnd, ref lhs, ref rhs) => {
+            Expr::Binary(BinOp::LogicalAnd, ref lhs, ref rhs) => {
                 if lhs.eval_constexpr() == Some(0) {
                     Some(0)
                 } else {
                     Some((rhs.eval_constexpr() != Some(0)) as i64)
                 }
             }
-            ExprKind::Binary(ref op, ref lhs, ref rhs) => {
+            Expr::Binary(ref op, ref lhs, ref rhs) => {
                 let lhs = lhs.eval_constexpr()?;
                 let rhs = rhs.eval_constexpr()?;
                 match op {
@@ -126,14 +97,14 @@ impl Expr {
                     BinOp::LogicalOr => unreachable!(),
                 }
             }
-            ExprKind::Ternary(ref cond, ref thn, ref els) => {
+            Expr::Ternary(ref cond, ref thn, ref els) => {
                 if cond.eval_constexpr() != Some(0) {
                     thn.eval_constexpr()
                 } else {
                     els.eval_constexpr()
                 }
             }
-            ExprKind::Assign(_, ref rhs) => rhs.eval_constexpr(),
+            Expr::Assign(_, ref rhs) => rhs.eval_constexpr(),
         }
     }
 }
