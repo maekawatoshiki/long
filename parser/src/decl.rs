@@ -1,7 +1,8 @@
-use crate::lexer::traits::LexerLike;
+use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
 use long_ast::node::{decl::Decl, Located};
+use long_ast::token::kind::{KeywordKind, TokenKind};
 
 impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a declaration sequence.
@@ -23,19 +24,19 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     fn parse_func_def(&mut self) -> Result<Located<Decl>> {
         // function-definition:
         //     attribute-specifier-seq(opt) decl-specifier-seq(opt) declarator virt-specifier-seq(opt) function-body
-        let _decl_specifier_seq = self.parse_decl_specifier_seq();
+        let _decl_specifier = self.parse_decl_specifier();
         todo!()
     }
 
-    /// Parses a decl specifier sequence.
+    /// Parses declaration specifiers.
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.spec#nt:decl-specifier-seq>
-    fn parse_decl_specifier_seq(&mut self) -> Result<Located<Decl>> {
-        // TODO
-        self.parse_decl_specifier()
-    }
-
-    /// Parses a decl specifier.
-    fn parse_decl_specifier(&mut self) -> Result<Located<Decl>> {
+    // TODO: Implement an enum to represent types. This function should return it.
+    fn parse_decl_specifier(&mut self) -> Result<()> {
+        let tok = self.lexer.peek()?.ok_or(Error::UnexpectedEof)?;
+        match tok.kind() {
+            TokenKind::Keyword(KeywordKind::Int) => {}
+            _ => panic!(),
+        }
         todo!()
     }
 }
