@@ -2,6 +2,7 @@ use long_sourceloc::SourceLoc;
 
 pub mod expr;
 pub mod lit;
+pub mod stmt;
 
 /// Any kind of node with source location.
 #[derive(Debug, Clone)]

@@ -4,6 +4,7 @@ extern crate long_sourceloc as sourceloc;
 
 mod expr;
 pub mod lexer;
+mod stmt;
 
 use anyhow::Result;
 use ast::{
