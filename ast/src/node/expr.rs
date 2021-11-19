@@ -43,6 +43,9 @@ pub enum ExprKind {
 
     /// A ternary expression.
     Ternary(Box<Expr>, Box<Expr>, Box<Expr>), // cond, then, else.
+
+    /// An Assign expression.
+    Assign(Box<Expr>, Box<Expr>),
 }
 
 /// A unary operator kind.
@@ -181,6 +184,7 @@ impl Expr {
                     els.eval_constexpr()
                 }
             }
+            ExprKind::Assign(_, ref rhs) => rhs.eval_constexpr(),
         }
     }
 }

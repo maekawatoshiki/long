@@ -50,13 +50,22 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses an assignment expression.
     pub(crate) fn parse_assign(&mut self) -> Result<Expr> {
-        let lhs = self.parse_logor()?;
+        let mut lhs = self.parse_logor()?;
+        let loc = *lhs.loc();
 
         if self.lexer.skip(SymbolKind::Question.into()) {
             return self.parse_ternary(lhs);
         }
 
-        // TODO: Support assignments.
+        loop {
+            // TODO: Support more assignment operators.
+            if self.lexer.skip(SymbolKind::Assign.into()) {
+                let rhs = self.parse_assign()?;
+                lhs = Expr::new(ExprKind::Assign(Box::new(lhs), Box::new(rhs)), loc);
+                continue;
+            }
+            break;
+        }
 
         Ok(lhs)
     }
@@ -195,5 +204,12 @@ fn parse_eq_ne() {
 fn parse_mul_div_rem() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("0 * 1 / 2 % 3")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_assign() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("0 = 1 = 2")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
