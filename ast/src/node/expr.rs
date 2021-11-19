@@ -74,7 +74,7 @@ impl Located<Expr> {
         match self.inner_ref() {
             Expr::Unary(UnaryOp::Not, ref val) => Some((val.eval_constexpr() == Some(0)) as i64),
             Expr::Literal(Literal::Int(IntKind::Int(i))) => Some(*i as i64),
-            Expr::Literal(Literal::Int(_)) => todo!(),
+            Expr::Literal(_) => todo!(),
             Expr::Binary(BinOp::Comma, _, ref rhs) => rhs.eval_constexpr(),
             Expr::Binary(BinOp::LogicalOr, ref lhs, ref rhs) => {
                 if lhs.eval_constexpr() != Some(0) {

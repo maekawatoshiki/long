@@ -1,0 +1,31 @@
+---
+source: parser/src/expr.rs
+expression: node
+
+---
+Ok(
+    Located {
+        inner: Binary(
+            Comma,
+            Located {
+                inner: Literal(
+                    Ident(
+                        "ident",
+                    ),
+                ),
+                loc: None:1:1,
+            },
+            Located {
+                inner: Literal(
+                    Int(
+                        Int(
+                            1,
+                        ),
+                    ),
+                ),
+                loc: None:1:8,
+            },
+        ),
+        loc: None:1:1,
+    },
+)

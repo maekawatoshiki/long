@@ -4,4 +4,5 @@ use crate::token::kind::IntKind as Int;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Literal {
     Int(Int),
+    Ident(String),
 }

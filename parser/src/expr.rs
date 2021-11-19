@@ -133,6 +133,10 @@ impl<'a, L: LexerLike> Parser<'a, L> {
                 self.expect(SymbolKind::ClosingParen)?;
                 Ok(expr)
             }
+            TokenKind::Ident(i) => Ok(Located::new(
+                Expr::Literal(Literal::Ident(i.into())),
+                *tok.loc(),
+            )),
             e => Err(Error::Message(format!("Unimplemented: {:?}", e), *tok.loc()).into()),
         }
     }
@@ -236,5 +240,12 @@ fn parse_assign_op() {
         "0 += 1 -= 2 *= 3 /= 4 %= 5 <<= 6 >>= 7 &= 8 |= 9 ^= 10",
     ))
     .parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_lit() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("ident, 1")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
