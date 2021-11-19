@@ -6,7 +6,7 @@ use ast::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
 use ast::token::{stringify, Token};
 use long_sourceloc::SourceLoc;
 use sourceloc::source::{Source, Sources};
-use std::collections::{HashMap, VecDeque};
+use std::collections::HashMap;
 use std::fmt;
 use std::fs::read_to_string;
 use std::path::PathBuf;
@@ -21,7 +21,7 @@ pub(crate) struct SourceLexer {
     cursor: Cursor,
 
     /// The buffer for the tokens ungot.
-    buf: VecDeque<Token>,
+    buf: Vec<Token>,
 
     /// The conditions of preprocessor directives.
     cond_stack: Vec<bool>,
@@ -41,7 +41,7 @@ impl SourceLexer {
         Self {
             filepath: None,
             cursor: Cursor::new(source.into()),
-            buf: VecDeque::new(),
+            buf: Vec::new(),
             cond_stack: Vec::new(),
         }
     }
@@ -55,17 +55,17 @@ impl SourceLexer {
             cursor: Cursor::new(read_to_string(filepath.clone().into())?)
                 .with_source_id(sources.add(Source::File(filepath.clone().into()))),
             filepath: Some(filepath.into()),
-            buf: VecDeque::new(),
+            buf: Vec::new(),
             cond_stack: Vec::new(),
         })
     }
 
     /// Creates a new `SourceLexer` from tokens.
-    pub fn new_from_tokens(buf: impl Into<VecDeque<Token>>) -> Self {
+    pub fn new_from_tokens(buf: impl Into<Vec<Token>>) -> Self {
         Self {
             cursor: Cursor::new("".to_string()),
             filepath: None,
-            buf: buf.into(),
+            buf: buf.into().into_iter().rev().collect(),
             cond_stack: Vec::new(),
         }
     }
@@ -102,7 +102,7 @@ impl SourceLexer {
     /// Reads a token.
     pub fn next(&mut self) -> Result<Option<Token>> {
         if !self.buf.is_empty() {
-            return Ok(self.buf.pop_front());
+            return Ok(self.buf.pop());
         }
 
         match self.cursor.peek_char() {
@@ -158,7 +158,16 @@ impl SourceLexer {
 
     /// Pushes `tok` back to the buffer so that it can be read again.
     pub fn unget(&mut self, tok: Token) {
-        self.buf.push_front(tok);
+        self.buf.push(tok);
+    }
+
+    /// Pushes `tokens` back to the buffer so that they can be read again.
+    pub fn unget_tokens<I>(&mut self, tokens: I)
+    where
+        I: IntoIterator<Item = Token>,
+        <I as IntoIterator>::IntoIter: DoubleEndedIterator,
+    {
+        self.buf.extend(tokens.into_iter().rev());
     }
 
     /// Reads an identifier. Assumes the result of `self.cursor.peek_char()` is alphabetic.
@@ -469,11 +478,12 @@ impl SourceLexer {
             match t.kind() {
                 TokenKind::NewLine => break,
                 TokenKind::Ident(ref i) if params.contains_key(i) => {
-                    if i == "__VA_ARGS__" {
-                        body.push(FuncMacroToken::Vararg(t.leading_space(), params[i]));
+                    let idx = params[i];
+                    body.push(if i == "__VA_ARGS__" {
+                        FuncMacroToken::Vararg(t, idx)
                     } else {
-                        body.push(FuncMacroToken::Param(t.leading_space(), params[i]));
-                    }
+                        FuncMacroToken::Param(t, idx)
+                    })
                 }
                 _ => body.push(FuncMacroToken::Token(t)),
             }
@@ -519,15 +529,12 @@ impl SourceLexer {
         body: &[Token],
         loc: SourceLoc,
     ) -> Result<Option<Token>> {
-        for t in body.iter().rev() {
-            self.unget(
-                t.clone()
-                    .with_hideset_modified(|s| {
-                        s.insert(name.into());
-                    })
-                    .with_loc(loc),
-            );
-        }
+        self.unget_tokens(body.iter().cloned().map(|t| {
+            t.with_hideset_modified(|s| {
+                s.insert(name.into());
+            })
+            .with_loc(loc)
+        }));
         self.next()?.map_or(Ok(None), |t| self.expand(macros, t))
     }
 
@@ -575,8 +582,8 @@ impl SourceLexer {
 
         fn append_expanded_tokens(
             expanded: &mut Vec<Token>,
+            tmpl: &Token,
             tokens: &[Token],
-            leading_space: bool,
             loc: SourceLoc,
             s: &mut Substitution,
         ) {
@@ -584,7 +591,7 @@ impl SourceLexer {
                 Substitution::Stringify => {
                     expanded.push(
                         Token::new(TokenKind::String(stringify(tokens, false)), loc)
-                            .set_leading_space(leading_space),
+                            .set_leading_space(tmpl.leading_space()),
                     );
                 }
                 Substitution::Concat => {
@@ -603,7 +610,7 @@ impl SourceLexer {
                 Substitution::None => {
                     expanded.extend(tokens.iter().cloned().enumerate().map(|(i, t)| {
                         if i == 0 {
-                            t.set_leading_space(leading_space)
+                            t.set_leading_space(tmpl.leading_space())
                         } else {
                             t
                         }
@@ -628,19 +635,19 @@ impl SourceLexer {
                 FuncMacroToken::Token(tok) => {
                     append_expanded_tokens(
                         &mut expanded,
+                        tok,
                         std::slice::from_ref(tok),
-                        tok.leading_space(),
                         loc,
                         &mut subst,
                     );
                 }
-                FuncMacroToken::Param(leading_space, n) => {
+                FuncMacroToken::Param(tok, n) => {
                     if let Some(arg) = args.get(*n) {
                         // Expand the arg in advance.
                         append_expanded_tokens(
                             &mut expanded,
+                            tok,
                             &expand(arg.clone(), macros)?,
-                            *leading_space,
                             loc,
                             &mut subst,
                         );
@@ -648,9 +655,9 @@ impl SourceLexer {
                         return Err(Error::Unexpected(loc).into());
                     }
                 }
-                FuncMacroToken::Vararg(leading_space, mut n) => {
+                FuncMacroToken::Vararg(tok, mut n) => {
                     while let Some(arg) = args.get(n) {
-                        append_expanded_tokens(&mut expanded, arg, *leading_space, loc, &mut subst);
+                        append_expanded_tokens(&mut expanded, tok, arg, loc, &mut subst);
                         if n < args.len() - 1 {
                             expanded.push(Token::new(SymbolKind::Comma.into(), loc))
                         }
@@ -660,14 +667,12 @@ impl SourceLexer {
             }
         }
 
-        for tok in expanded.into_iter().rev() {
-            let tok = tok
-                .with_hideset_modified(|s| {
-                    s.insert(name.into());
-                })
-                .with_loc(loc);
-            self.unget(tok);
-        }
+        self.unget_tokens(expanded.iter().cloned().map(|t| {
+            t.with_hideset_modified(|s| {
+                s.insert(name.into());
+            })
+            .with_loc(loc)
+        }));
 
         self.next()?.map_or(Ok(None), |t| self.expand(macros, t))
     }
