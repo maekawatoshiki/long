@@ -6,6 +6,7 @@ expression: node
 Ok(
     Located {
         inner: Assign(
+            None,
             Located {
                 inner: Literal(
                     Int(
@@ -18,6 +19,7 @@ Ok(
             },
             Located {
                 inner: Assign(
+                    None,
                     Located {
                         inner: Literal(
                             Int(

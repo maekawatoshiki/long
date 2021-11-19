@@ -1,0 +1,177 @@
+---
+source: parser/src/expr.rs
+expression: node
+
+---
+Ok(
+    Located {
+        inner: Assign(
+            Add,
+            Located {
+                inner: Literal(
+                    Int(
+                        Int(
+                            0,
+                        ),
+                    ),
+                ),
+                loc: None:1:1,
+            },
+            Located {
+                inner: Assign(
+                    Sub,
+                    Located {
+                        inner: Literal(
+                            Int(
+                                Int(
+                                    1,
+                                ),
+                            ),
+                        ),
+                        loc: None:1:6,
+                    },
+                    Located {
+                        inner: Assign(
+                            Mul,
+                            Located {
+                                inner: Literal(
+                                    Int(
+                                        Int(
+                                            2,
+                                        ),
+                                    ),
+                                ),
+                                loc: None:1:11,
+                            },
+                            Located {
+                                inner: Assign(
+                                    Div,
+                                    Located {
+                                        inner: Literal(
+                                            Int(
+                                                Int(
+                                                    3,
+                                                ),
+                                            ),
+                                        ),
+                                        loc: None:1:16,
+                                    },
+                                    Located {
+                                        inner: Assign(
+                                            Rem,
+                                            Located {
+                                                inner: Literal(
+                                                    Int(
+                                                        Int(
+                                                            4,
+                                                        ),
+                                                    ),
+                                                ),
+                                                loc: None:1:21,
+                                            },
+                                            Located {
+                                                inner: Assign(
+                                                    Shl,
+                                                    Located {
+                                                        inner: Literal(
+                                                            Int(
+                                                                Int(
+                                                                    5,
+                                                                ),
+                                                            ),
+                                                        ),
+                                                        loc: None:1:26,
+                                                    },
+                                                    Located {
+                                                        inner: Assign(
+                                                            Shr,
+                                                            Located {
+                                                                inner: Literal(
+                                                                    Int(
+                                                                        Int(
+                                                                            6,
+                                                                        ),
+                                                                    ),
+                                                                ),
+                                                                loc: None:1:32,
+                                                            },
+                                                            Located {
+                                                                inner: Assign(
+                                                                    And,
+                                                                    Located {
+                                                                        inner: Literal(
+                                                                            Int(
+                                                                                Int(
+                                                                                    7,
+                                                                                ),
+                                                                            ),
+                                                                        ),
+                                                                        loc: None:1:38,
+                                                                    },
+                                                                    Located {
+                                                                        inner: Assign(
+                                                                            Or,
+                                                                            Located {
+                                                                                inner: Literal(
+                                                                                    Int(
+                                                                                        Int(
+                                                                                            8,
+                                                                                        ),
+                                                                                    ),
+                                                                                ),
+                                                                                loc: None:1:43,
+                                                                            },
+                                                                            Located {
+                                                                                inner: Assign(
+                                                                                    Xor,
+                                                                                    Located {
+                                                                                        inner: Literal(
+                                                                                            Int(
+                                                                                                Int(
+                                                                                                    9,
+                                                                                                ),
+                                                                                            ),
+                                                                                        ),
+                                                                                        loc: None:1:48,
+                                                                                    },
+                                                                                    Located {
+                                                                                        inner: Literal(
+                                                                                            Int(
+                                                                                                Int(
+                                                                                                    10,
+                                                                                                ),
+                                                                                            ),
+                                                                                        ),
+                                                                                        loc: None:1:53,
+                                                                                    },
+                                                                                ),
+                                                                                loc: None:1:48,
+                                                                            },
+                                                                        ),
+                                                                        loc: None:1:43,
+                                                                    },
+                                                                ),
+                                                                loc: None:1:38,
+                                                            },
+                                                        ),
+                                                        loc: None:1:32,
+                                                    },
+                                                ),
+                                                loc: None:1:26,
+                                            },
+                                        ),
+                                        loc: None:1:21,
+                                    },
+                                ),
+                                loc: None:1:16,
+                            },
+                        ),
+                        loc: None:1:11,
+                    },
+                ),
+                loc: None:1:6,
+            },
+        ),
+        loc: None:1:1,
+    },
+)

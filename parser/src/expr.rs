@@ -1,7 +1,7 @@
 use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
-use long_ast::node::expr::UnaryOp;
+use long_ast::node::expr::{AssignOp, UnaryOp};
 use long_ast::{
     node::{
         expr::{BinOp, Expr},
@@ -59,10 +59,24 @@ impl<'a, L: LexerLike> Parser<'a, L> {
         }
 
         loop {
-            // TODO: Support more assignment operators.
-            if self.lexer.skip(SymbolKind::Assign.into()) {
+            if let Ok(Some(tok)) = self.lexer.peek() {
+                let op = match tok.kind() {
+                    TokenKind::Symbol(SymbolKind::Assign) => AssignOp::None,
+                    TokenKind::Symbol(SymbolKind::AssignAdd) => AssignOp::Add,
+                    TokenKind::Symbol(SymbolKind::AssignSub) => AssignOp::Sub,
+                    TokenKind::Symbol(SymbolKind::AssignMul) => AssignOp::Mul,
+                    TokenKind::Symbol(SymbolKind::AssignDiv) => AssignOp::Div,
+                    TokenKind::Symbol(SymbolKind::AssignMod) => AssignOp::Rem,
+                    TokenKind::Symbol(SymbolKind::AssignShl) => AssignOp::Shl,
+                    TokenKind::Symbol(SymbolKind::AssignShr) => AssignOp::Shr,
+                    TokenKind::Symbol(SymbolKind::AssignAnd) => AssignOp::And,
+                    TokenKind::Symbol(SymbolKind::AssignOr) => AssignOp::Or,
+                    TokenKind::Symbol(SymbolKind::AssignXor) => AssignOp::Xor,
+                    _ => break,
+                };
+                self.lexer.next()?;
                 let rhs = self.parse_assign()?;
-                lhs = Located::new(Expr::Assign(Box::new(lhs), Box::new(rhs)), loc);
+                lhs = Located::new(Expr::Assign(op, Box::new(lhs), Box::new(rhs)), loc);
                 continue;
             }
             break;
@@ -212,5 +226,15 @@ fn parse_mul_div_rem() {
 fn parse_assign() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("0 = 1 = 2")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_assign_op() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new(
+        "0 += 1 -= 2 *= 3 /= 4 %= 5 <<= 6 >>= 7 &= 8 |= 9 ^= 10",
+    ))
+    .parse_expr();
     insta::assert_debug_snapshot!(node);
 }

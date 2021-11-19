@@ -18,7 +18,7 @@ pub enum Expr {
     Ternary(Box<Located<Expr>>, Box<Located<Expr>>, Box<Located<Expr>>), // cond, then, else.
 
     /// An Assign expression.
-    Assign(Box<Located<Expr>>, Box<Located<Expr>>),
+    Assign(AssignOp, Box<Located<Expr>>, Box<Located<Expr>>),
 }
 
 /// A unary operator kind.
@@ -48,6 +48,23 @@ pub enum BinOp {
     Mul,
     Div,
     Rem,
+}
+/// An assignment operator kind.
+/// `=  *=  /=  %=   +=  -=  >>=  <<=  &=  ^=  |=`
+/// <https://timsong-cpp.github.io/cppwp/n3337/expr.ass#1>
+#[derive(Debug, Clone, PartialEq)]
+pub enum AssignOp {
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Rem,
+    Shl,
+    Shr,
+    And,
+    Or,
+    Xor,
+    None,
 }
 
 impl Located<Expr> {
@@ -104,7 +121,8 @@ impl Located<Expr> {
                     els.eval_constexpr()
                 }
             }
-            Expr::Assign(_, ref rhs) => rhs.eval_constexpr(),
+            Expr::Assign(AssignOp::None, _, ref rhs) => rhs.eval_constexpr(),
+            Expr::Assign(_, _, _) => todo!(),
         }
     }
 }
