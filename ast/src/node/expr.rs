@@ -69,6 +69,9 @@ pub enum BinOp {
     Shr,
     Add,
     Sub,
+    Mul,
+    Div,
+    Rem,
 }
 
 impl Expr {
@@ -155,6 +158,21 @@ impl Expr {
                 let lhs = lhs.eval_constexpr()?;
                 let rhs = rhs.eval_constexpr()?;
                 Some(lhs - rhs)
+            }
+            ExprKind::Binary(BinOp::Mul, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs * rhs)
+            }
+            ExprKind::Binary(BinOp::Div, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs / rhs)
+            }
+            ExprKind::Binary(BinOp::Rem, ref lhs, ref rhs) => {
+                let lhs = lhs.eval_constexpr()?;
+                let rhs = rhs.eval_constexpr()?;
+                Some(lhs % rhs)
             }
             ExprKind::Ternary(ref cond, ref thn, ref els) => {
                 if cond.eval_constexpr() != Some(0) {

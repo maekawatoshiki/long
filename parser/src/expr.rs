@@ -192,19 +192,49 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses an addition or subtraction expression.
     fn parse_add_sub(&mut self) -> Result<Expr> {
-        let mut lhs = self.parse_unary()?;
+        let mut lhs = self.parse_mul_div_rem()?;
         let loc = *lhs.loc();
         loop {
             if self.lexer.skip(SymbolKind::Add.into()) {
-                let rhs = self.parse_unary()?;
+                let rhs = self.parse_mul_div_rem()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Add, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else if self.lexer.skip(SymbolKind::Sub.into()) {
-                let rhs = self.parse_unary()?;
+                let rhs = self.parse_mul_div_rem()?;
                 lhs = Expr::new(
                     ExprKind::Binary(BinOp::Sub, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else {
+                break;
+            }
+        }
+        Ok(lhs)
+    }
+
+    /// Parses a multiply, divide and remainder expression.
+    fn parse_mul_div_rem(&mut self) -> Result<Expr> {
+        let mut lhs = self.parse_unary()?;
+        let loc = *lhs.loc();
+        loop {
+            if self.lexer.skip(SymbolKind::Asterisk.into()) {
+                let rhs = self.parse_unary()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Mul, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else if self.lexer.skip(SymbolKind::Div.into()) {
+                let rhs = self.parse_unary()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Div, Box::new(lhs), Box::new(rhs)),
+                    loc,
+                );
+            } else if self.lexer.skip(SymbolKind::Mod.into()) {
+                let rhs = self.parse_unary()?;
+                lhs = Expr::new(
+                    ExprKind::Binary(BinOp::Rem, Box::new(lhs), Box::new(rhs)),
                     loc,
                 );
             } else {
@@ -319,5 +349,12 @@ fn parse_and_or() {
 fn parse_eq_ne() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("0 == 0 && 0 != 1")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_mul_div_rem() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("0 * 1 / 2 % 3")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
