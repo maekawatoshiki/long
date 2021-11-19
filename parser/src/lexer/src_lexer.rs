@@ -294,9 +294,7 @@ impl SourceLexer {
         } else if let Ok(i) = u64::from_str_radix(lit, radix) {
             Ok(Token::new(TokenKind::Int(IntKind::ULongLongInt(i)), loc))
         } else {
-            // Too big integer.
-            // TODO: We should have a generous error message.
-            Err(Error::Unexpected(loc).into())
+            Err(Error::Message("Too big integer".into(), loc).into())
         }
     }
 
