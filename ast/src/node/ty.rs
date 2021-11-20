@@ -12,9 +12,10 @@ pub enum Type {
     LongLong(Sign),
     Float,
     Double,
+    // TODO: struct, union, enum, class...
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Sign {
     Signed,
     Unsigned,
