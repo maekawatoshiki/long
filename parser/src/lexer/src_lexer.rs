@@ -1,5 +1,6 @@
 use super::cursor::Cursor;
 use super::macros::{FuncMacroToken, Macro, Macros};
+use super::traits::TokenStream;
 use crate::Parser;
 use anyhow::Result;
 use ast::token::kind::{FloatKind, IntKind, KeywordKind, SymbolKind, TokenKind};
@@ -804,7 +805,7 @@ impl SourceLexer {
     fn read_and_eval_constexpr(&mut self, macros: &mut Macros) -> Result<bool> {
         let expr_line = self.read_intexpr_line(macros)?;
         let loc = *expr_line[0].loc();
-        let expr = Parser::new(&mut expr_line.into_iter()).parse_expr()?;
+        let expr = Parser::new(&mut TokenStream::from(expr_line)).parse_expr()?;
         if let Some(e) = expr.eval_constexpr() {
             Ok(e != 0)
         } else {

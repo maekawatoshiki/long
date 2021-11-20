@@ -173,6 +173,10 @@ impl traits::LexerLike for Lexer {
         }
     }
 
+    fn unget(&mut self, token: Token) {
+        self.unget(token)
+    }
+
     fn skip(&mut self, kind: TokenKind) -> bool {
         if let Ok(Some(tok)) = Lexer::next(self) {
             if tok.kind() == &kind {
