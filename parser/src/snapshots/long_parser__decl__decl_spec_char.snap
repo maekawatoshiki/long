@@ -1,0 +1,13 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl_specifier()
+
+---
+Ok(
+    Located {
+        inner: Char(
+            Signed,
+        ),
+        loc: None:1:1,
+    },
+)

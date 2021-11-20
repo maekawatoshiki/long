@@ -1,0 +1,11 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl_specifier()
+
+---
+Ok(
+    Located {
+        inner: Double,
+        loc: None:1:1,
+    },
+)

@@ -1,0 +1,11 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl_specifier()
+
+---
+Err(
+    Message(
+        "Cannot specify 'long'",
+        None:1:11,
+    ),
+)

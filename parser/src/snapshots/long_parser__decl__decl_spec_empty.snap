@@ -1,0 +1,8 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl_specifier()
+
+---
+Err(
+    UnexpectedEof,
+)
