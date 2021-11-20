@@ -31,13 +31,63 @@ impl<'a, L: LexerLike> Parser<'a, L> {
 
     /// Parses declaration specifiers.
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.spec#nt:decl-specifier-seq>
-    // TODO: Implement an enum to represent types. This function should return it.
-    fn parse_decl_specifier(&mut self) -> Result<()> {
-        let tok = self.lexer.peek()?.ok_or(Error::UnexpectedEof)?;
-        match tok.kind() {
-            TokenKind::Keyword(KeywordKind::Int) => Type::Int,
-            _ => panic!(),
-        };
+    fn parse_decl_specifier(&mut self) -> Result<Type> {
+        #[derive(PartialEq, Debug, Clone)]
+        enum Size {
+            Short,
+            Long,
+            LongLong,
+            Unspecified,
+        }
+
+        #[derive(PartialEq, Debug, Clone)]
+        enum PrimitiveType {
+            Void,
+            Bool,
+            Char,
+            Char16,
+            Char32,
+            Int,
+            Float,
+            Double,
+        }
+
+        let mut ty = None;
+        // let mut sign = None;
+
+        loop {
+            let tok = self.lexer.peek()?.ok_or(Error::UnexpectedEof)?;
+            match tok.kind() {
+                TokenKind::Keyword(
+                    KeywordKind::Void
+                    | KeywordKind::Bool
+                    | KeywordKind::Char
+                    | KeywordKind::Char16T
+                    | KeywordKind::Char32T
+                    | KeywordKind::Int
+                    | KeywordKind::Float
+                    | KeywordKind::Double,
+                ) if ty.is_some() => {
+                    return Err(Error::Message(
+                        format!("Cannot specify '{}'", tok.kind().to_string()),
+                        *tok.loc(),
+                    )
+                    .into())
+                }
+                TokenKind::Keyword(KeywordKind::Void) => ty = Some(PrimitiveType::Void),
+                TokenKind::Keyword(KeywordKind::Bool) => ty = Some(PrimitiveType::Bool),
+                TokenKind::Keyword(KeywordKind::Char) => ty = Some(PrimitiveType::Char),
+                TokenKind::Keyword(KeywordKind::Char16T) => ty = Some(PrimitiveType::Char16),
+                TokenKind::Keyword(KeywordKind::Char32T) => ty = Some(PrimitiveType::Char32),
+                TokenKind::Keyword(KeywordKind::Int) => ty = Some(PrimitiveType::Int),
+                TokenKind::Keyword(KeywordKind::Float) => ty = Some(PrimitiveType::Float),
+                TokenKind::Keyword(KeywordKind::Double) => ty = Some(PrimitiveType::Double),
+                _ => break,
+            }
+            self.lexer.next()?;
+        }
+
+        // Ok(ty.unwrap())
         todo!()
     }
 }
