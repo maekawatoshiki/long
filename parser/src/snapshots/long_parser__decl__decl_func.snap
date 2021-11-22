@@ -1,0 +1,22 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl()
+
+---
+Ok(
+    Located {
+        inner: FuncDef(
+            FuncDef {
+                name: Ident(
+                    "f",
+                ),
+                ty: FuncType {
+                    ret: Int(
+                        Signed,
+                    ),
+                },
+            },
+        ),
+        loc: None:1:1,
+    },
+)

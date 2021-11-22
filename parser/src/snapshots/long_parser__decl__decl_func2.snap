@@ -1,0 +1,20 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl()
+
+---
+Ok(
+    Located {
+        inner: FuncDef(
+            FuncDef {
+                name: Ident(
+                    "ggg",
+                ),
+                ty: FuncType {
+                    ret: Void,
+                },
+            },
+        ),
+        loc: None:1:1,
+    },
+)

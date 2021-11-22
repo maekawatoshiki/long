@@ -42,11 +42,11 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.fct.def.general#1>
     // function-definition:
     //     attribute-specifier-seq(opt) decl-specifier-seq(opt) declarator virt-specifier-seq(opt) function-body
-    fn parse_func_def(&mut self, _functy: FuncType, _name: DeclaratorId) -> Result<Decl> {
+    fn parse_func_def(&mut self, ty: FuncType, name: DeclaratorId) -> Result<Decl> {
         // TODO
         // let body = self.parse_function_body()?;
         assert!(self.lexer.skip(SymbolKind::ClosingBrace.into()));
-        Ok(FuncDef {}.into())
+        Ok(FuncDef { name, ty }.into())
     }
 
     /// Parses a declarator.
@@ -291,3 +291,18 @@ declarator_test!(declarator_lvalref, "&");
 declarator_test!(declarator_rvalref, "&&");
 declarator_test!(declarator_id, "var");
 declarator_test!(declarator_func, "f()");
+
+macro_rules! decl_test {
+    ($name:ident, $src:expr) => {
+        #[test]
+        fn $name() {
+            use crate::lexer::Lexer;
+            let mut lexer = Lexer::new($src);
+            let mut parser = Parser::new(&mut lexer);
+            insta::assert_debug_snapshot!(parser.parse_decl());
+        }
+    };
+}
+
+decl_test!(decl_func, "int f() {}");
+decl_test!(decl_func2, "void ggg() {}");
