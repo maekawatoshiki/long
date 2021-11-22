@@ -1,6 +1,7 @@
 use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
+use long_ast::node::decl::DeclaratorId;
 use long_ast::node::ty::{Sign, Type};
 use long_ast::node::{decl::Decl, Located};
 use long_ast::token::kind::{KeywordKind, SymbolKind, TokenKind};
@@ -30,26 +31,44 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             inner: decl_specifier,
             ..
         } = self.parse_decl_specifier()?;
-        let _declarator = self.parse_declarator(decl_specifier);
+        let mut declarator_id = None;
+        let _declarator = self.parse_declarator(decl_specifier, &mut declarator_id);
         todo!()
     }
 
     /// Parses a declarator.
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.decl#4>
-    fn parse_declarator(&mut self, basety: Type) -> Result<Type> {
+    fn parse_declarator(
+        &mut self,
+        basety: Type,
+        declarator_id: &mut Option<DeclaratorId>,
+    ) -> Result<Type> {
         if self.lexer.skip(SymbolKind::Asterisk.into()) {
             // TODO: Parse attribute-specifier-seq(opt) cv-qualifier-seq(opt) here.
-            return self.parse_declarator(Type::Pointer(Box::new(basety)));
+            return self.parse_declarator(Type::Pointer(Box::new(basety)), declarator_id);
         }
 
         if self.lexer.skip(SymbolKind::And.into()) {
             // TODO: Parse attribute-specifier-seq(opt) here.
-            return self.parse_declarator(Type::LValueRef(Box::new(basety)));
+            return self.parse_declarator(Type::LValueRef(Box::new(basety)), declarator_id);
         }
 
         if self.lexer.skip(SymbolKind::LAnd.into()) {
             // TODO: Parse attribute-specifier-seq(opt) here.
-            return self.parse_declarator(Type::RValueRef(Box::new(basety)));
+            return self.parse_declarator(Type::RValueRef(Box::new(basety)), declarator_id);
+        }
+
+        let tok = match self.lexer.next()? {
+            Some(tok) => tok,
+            None => return Ok(basety),
+        };
+
+        match tok.kind() {
+            // TODO: Support more complex declarator-id.
+            TokenKind::Ident(id) => *declarator_id = Some(DeclaratorId::Ident(id.clone())),
+            _ => {
+                self.lexer.unget(tok);
+            }
         }
 
         Ok(basety)
@@ -224,7 +243,17 @@ macro_rules! declarator_test {
             use crate::lexer::Lexer;
             let mut lexer = Lexer::new($src);
             let mut parser = Parser::new(&mut lexer);
-            insta::assert_debug_snapshot!(parser.parse_declarator(Type::Void));
+            #[derive(Debug)]
+            #[allow(dead_code)]
+            struct Result {
+                ty: Type,
+                declarator_id: Option<DeclaratorId>,
+            }
+            let mut declarator_id = None;
+            let ty = parser
+                .parse_declarator(Type::Void, &mut declarator_id)
+                .unwrap();
+            insta::assert_debug_snapshot!(Result { ty, declarator_id })
         }
     };
 }
@@ -233,3 +262,4 @@ declarator_test!(declarator_ptr, "*");
 declarator_test!(declarator_many_ptr, "****");
 declarator_test!(declarator_lvalref, "&");
 declarator_test!(declarator_rvalref, "&&");
+declarator_test!(declarator_id, "var");

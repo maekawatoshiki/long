@@ -1,10 +1,11 @@
 ---
 source: parser/src/decl.rs
-expression: "parser.parse_declarator(Type::Void)"
+expression: "Result{ty, declarator_id,}"
 
 ---
-Ok(
-    RValueRef(
+Result {
+    ty: RValueRef(
         Void,
     ),
-)
+    declarator_id: None,
+}

@@ -4,8 +4,10 @@ expression: "Result{ty, declarator_id,}"
 
 ---
 Result {
-    ty: LValueRef(
-        Void,
+    ty: Void,
+    declarator_id: Some(
+        Ident(
+            "var",
+        ),
     ),
-    declarator_id: None,
 }

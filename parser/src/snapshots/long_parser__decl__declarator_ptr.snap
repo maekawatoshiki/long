@@ -1,10 +1,11 @@
 ---
 source: parser/src/decl.rs
-expression: "parser.parse_declarator(Type::Void)"
+expression: "Result{ty, declarator_id,}"
 
 ---
-Ok(
-    Pointer(
+Result {
+    ty: Pointer(
         Void,
     ),
-)
+    declarator_id: None,
+}
