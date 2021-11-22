@@ -1,7 +1,7 @@
 use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
-use long_ast::node::decl::DeclaratorId;
+use long_ast::node::decl::{DeclaratorId, FuncDef};
 use long_ast::node::ty::{FuncType, Sign, Type};
 use long_ast::node::{decl::Decl, Located};
 use long_ast::token::kind::{KeywordKind, SymbolKind, TokenKind};
@@ -18,22 +18,35 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a declaration.
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.dcl#1>
     pub(crate) fn parse_decl(&mut self) -> Result<Located<Decl>> {
-        // TODO
-        self.parse_func_def()
+        let Located {
+            inner: decl_specifier,
+            loc,
+        } = self.parse_decl_specifier()?;
+        let mut declarator_id = None;
+        let ty = self.parse_declarator(decl_specifier, &mut declarator_id)?;
+
+        if self.lexer.skip(SymbolKind::OpeningBrace.into()) {
+            return Ok(Located::new(
+                self.parse_func_def(
+                    ty.into_func_type().expect("TODO"),
+                    declarator_id.expect("TODO"),
+                )?,
+                loc,
+            ));
+        }
+
+        todo!()
     }
 
     /// Parses a function definition.
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.fct.def.general#1>
-    fn parse_func_def(&mut self) -> Result<Located<Decl>> {
-        // function-definition:
-        //     attribute-specifier-seq(opt) decl-specifier-seq(opt) declarator virt-specifier-seq(opt) function-body
-        let Located {
-            inner: decl_specifier,
-            ..
-        } = self.parse_decl_specifier()?;
-        let mut declarator_id = None;
-        let _declarator = self.parse_declarator(decl_specifier, &mut declarator_id);
-        todo!()
+    // function-definition:
+    //     attribute-specifier-seq(opt) decl-specifier-seq(opt) declarator virt-specifier-seq(opt) function-body
+    fn parse_func_def(&mut self, _functy: FuncType, _name: DeclaratorId) -> Result<Decl> {
+        // TODO
+        // let body = self.parse_function_body()?;
+        assert!(self.lexer.skip(SymbolKind::ClosingBrace.into()));
+        Ok(FuncDef {}.into())
     }
 
     /// Parses a declarator.
@@ -277,3 +290,4 @@ declarator_test!(declarator_many_ptr, "****");
 declarator_test!(declarator_lvalref, "&");
 declarator_test!(declarator_rvalref, "&&");
 declarator_test!(declarator_id, "var");
+declarator_test!(declarator_func, "f()");

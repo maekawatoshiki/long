@@ -1,0 +1,17 @@
+---
+source: parser/src/decl.rs
+expression: "Result{ty, declarator_id,}"
+
+---
+Result {
+    ty: Func(
+        FuncType {
+            ret: Void,
+        },
+    ),
+    declarator_id: Some(
+        Ident(
+            "f",
+        ),
+    ),
+}

@@ -34,6 +34,15 @@ pub struct FuncType {
     // TODO: params
 }
 
+impl Type {
+    pub fn into_func_type(self) -> Option<FuncType> {
+        match self {
+            Type::Func(func) => Some(*func),
+            _ => None,
+        }
+    }
+}
+
 impl From<FuncType> for Type {
     fn from(func: FuncType) -> Self {
         Type::Func(Box::new(func))

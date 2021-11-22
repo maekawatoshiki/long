@@ -16,3 +16,9 @@ pub struct FuncDef {}
 pub enum DeclaratorId {
     Ident(String),
 }
+
+impl From<FuncDef> for Decl {
+    fn from(func_def: FuncDef) -> Self {
+        Decl::FuncDef(func_def)
+    }
+}
