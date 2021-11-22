@@ -7,7 +7,7 @@ use rustc_hash::FxHashSet as HashSet;
 #[derive(Debug, Clone)]
 pub struct Token {
     /// The kind of the token.
-    kind: TokenKind,
+    pub kind: TokenKind,
 
     /// `Some(...)` if any leading spaces occurs before the token.
     /// Line terminator characters are not leading spaces.

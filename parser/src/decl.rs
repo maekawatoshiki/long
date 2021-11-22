@@ -2,7 +2,7 @@ use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
 use long_ast::node::decl::DeclaratorId;
-use long_ast::node::ty::{Sign, Type};
+use long_ast::node::ty::{FuncType, Sign, Type};
 use long_ast::node::{decl::Decl, Located};
 use long_ast::token::kind::{KeywordKind, SymbolKind, TokenKind};
 use long_ast::token::Token;
@@ -63,12 +63,26 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             None => return Ok(basety),
         };
 
-        match tok.kind() {
+        match tok.kind {
             // TODO: Support more complex declarator-id.
-            TokenKind::Ident(id) => *declarator_id = Some(DeclaratorId::Ident(id.clone())),
+            TokenKind::Ident(id) => *declarator_id = Some(DeclaratorId::Ident(id)),
             _ => {
                 self.lexer.unget(tok);
             }
+        }
+
+        let ty = self.parse_declarator_tail(basety)?;
+
+        Ok(ty)
+    }
+
+    /// Parses the tail part of a declarator.
+    fn parse_declarator_tail(&mut self, basety: Type) -> Result<Type> {
+        // parameters-and-qualifiers
+        if self.lexer.skip(SymbolKind::OpeningParen.into()) {
+            // TODO
+            assert!(self.lexer.skip(SymbolKind::ClosingParen.into()));
+            return Ok(FuncType { ret: basety }.into());
         }
 
         Ok(basety)
