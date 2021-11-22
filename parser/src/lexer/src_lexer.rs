@@ -517,7 +517,7 @@ impl SourceLexer {
                     .map(|t| t.map(|t| t.set_leading_space(token.leading_space()))),
                 None => Ok(Some(token)),
             },
-            TokenKind::Keyword(_) => unreachable!(),
+            // TokenKind::Keyword(_) => unreachable!(),
             _ => Ok(Some(token)),
         }
     }
