@@ -1,0 +1,16 @@
+---
+source: parser/src/decl.rs
+expression: "parser.parse_declarator(Type::Void)"
+
+---
+Ok(
+    Pointer(
+        Pointer(
+            Pointer(
+                Pointer(
+                    Void,
+                ),
+            ),
+        ),
+    ),
+)

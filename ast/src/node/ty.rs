@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
 pub enum Type {
     Void,
     Bool,
@@ -12,6 +12,9 @@ pub enum Type {
     LongLong(Sign),
     Float,
     Double,
+    Pointer(Box<Type>),
+    LValueRef(Box<Type>),
+    RValueRef(Box<Type>),
     // TODO: struct, union, enum, class...
 }
 

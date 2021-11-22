@@ -3,7 +3,7 @@ use crate::Parser;
 use anyhow::Result;
 use long_ast::node::ty::{Sign, Type};
 use long_ast::node::{decl::Decl, Located};
-use long_ast::token::kind::{KeywordKind, TokenKind};
+use long_ast::token::kind::{KeywordKind, SymbolKind, TokenKind};
 use long_ast::token::Token;
 
 impl<'a, L: LexerLike> Parser<'a, L> {
@@ -26,8 +26,33 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     fn parse_func_def(&mut self) -> Result<Located<Decl>> {
         // function-definition:
         //     attribute-specifier-seq(opt) decl-specifier-seq(opt) declarator virt-specifier-seq(opt) function-body
-        let _decl_specifier = self.parse_decl_specifier();
+        let Located {
+            inner: decl_specifier,
+            ..
+        } = self.parse_decl_specifier()?;
+        let _declarator = self.parse_declarator(decl_specifier);
         todo!()
+    }
+
+    /// Parses a declarator.
+    /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.decl#4>
+    fn parse_declarator(&mut self, basety: Type) -> Result<Type> {
+        if self.lexer.skip(SymbolKind::Asterisk.into()) {
+            // TODO: Parse attribute-specifier-seq(opt) cv-qualifier-seq(opt) here.
+            return self.parse_declarator(Type::Pointer(Box::new(basety)));
+        }
+
+        if self.lexer.skip(SymbolKind::And.into()) {
+            // TODO: Parse attribute-specifier-seq(opt) here.
+            return self.parse_declarator(Type::LValueRef(Box::new(basety)));
+        }
+
+        if self.lexer.skip(SymbolKind::LAnd.into()) {
+            // TODO: Parse attribute-specifier-seq(opt) here.
+            return self.parse_declarator(Type::RValueRef(Box::new(basety)));
+        }
+
+        Ok(basety)
     }
 
     /// Parses declaration specifiers.
@@ -191,3 +216,20 @@ decl_specifier_test!(decl_spec_long_int, "long int");
 decl_specifier_test!(decl_spec_unsigned_long_int, "unsigned long int");
 decl_specifier_test!(decl_spec_float, "float");
 decl_specifier_test!(decl_spec_double, "double");
+
+macro_rules! declarator_test {
+    ($name:ident, $src:expr) => {
+        #[test]
+        fn $name() {
+            use crate::lexer::Lexer;
+            let mut lexer = Lexer::new($src);
+            let mut parser = Parser::new(&mut lexer);
+            insta::assert_debug_snapshot!(parser.parse_declarator(Type::Void));
+        }
+    };
+}
+
+declarator_test!(declarator_ptr, "*");
+declarator_test!(declarator_many_ptr, "****");
+declarator_test!(declarator_lvalref, "&");
+declarator_test!(declarator_rvalref, "&&");

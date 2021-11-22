@@ -1,0 +1,10 @@
+---
+source: parser/src/decl.rs
+expression: "parser.parse_declarator(Type::Void)"
+
+---
+Ok(
+    LValueRef(
+        Void,
+    ),
+)
