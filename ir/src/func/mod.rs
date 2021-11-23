@@ -1,6 +1,4 @@
-use crate::ty::Type;
-
-pub type NameId = u32; // TODO
+use crate::{name::NameId, ty::Type};
 
 /// A function.
 pub struct Function {
