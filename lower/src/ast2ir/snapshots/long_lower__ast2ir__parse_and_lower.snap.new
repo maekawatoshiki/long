@@ -1,0 +1,17 @@
+---
+source: lower/src/ast2ir/mod.rs
+expression: func_ir
+
+---
+Function {
+    name: Id {
+        idx: 0,
+    },
+    sig: FunctionSignature {
+        ret: Type(
+            0,
+            1,
+        ),
+        params: [],
+    },
+}

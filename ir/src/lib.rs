@@ -12,3 +12,13 @@ pub struct Context {
     pub name_arena: NameArena,
     pub func_arena: Arena<Function>,
 }
+
+impl Context {
+    /// Creates a new `Context`.
+    pub fn new() -> Self {
+        Context {
+            name_arena: NameArena::new(),
+            func_arena: Arena::new(),
+        }
+    }
+}

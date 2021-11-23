@@ -42,3 +42,21 @@ fn resolve_type(_ctx: &mut Context, ty_node: TypeNode) -> IrType {
         _ => todo!(),
     }
 }
+
+#[test]
+fn parse_and_lower() {
+    use long_ast::node::{decl::Decl, Located};
+    use long_parser::lexer::Lexer;
+    use long_parser::Parser;
+    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() {}"))
+        .parse_program()
+        .unwrap();
+    let mut ctx = Context::new();
+    let func_ir = lower_function(
+        &mut ctx,
+        match inner {
+            Decl::FuncDef(funcdef) => funcdef,
+        },
+    );
+    insta::assert_debug_snapshot!(func_ir)
+}
