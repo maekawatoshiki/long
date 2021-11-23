@@ -44,6 +44,21 @@ impl CompoundTypes {
 }
 
 impl Type {
+    #[inline]
+    pub fn void() -> Self {
+        primitive::VOID
+    }
+
+    #[inline]
+    pub fn signed_int() -> Self {
+        primitive::SIGNED_INT
+    }
+
+    #[inline]
+    pub fn unsigned_int() -> Self {
+        primitive::UNSIGNED_INT
+    }
+
     pub fn is_void(&self) -> bool {
         self == &primitive::VOID
     }
