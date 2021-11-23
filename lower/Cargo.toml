@@ -6,6 +6,10 @@ edition = "2021"
 [dependencies]
 long-ast = { path = "../ast" }
 long-ir = { path = "../ir" }
+cranelift = "= 0.78.0"
+cranelift-module = "= 0.78.0"
+cranelift-codegen = "= 0.78.0"
+cranelift-object = "= 0.78.0"
 
 [dev-dependencies]
 insta = "= 1.7.1"
