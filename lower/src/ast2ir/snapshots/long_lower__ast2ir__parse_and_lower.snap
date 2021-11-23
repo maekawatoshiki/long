@@ -8,10 +8,7 @@ Function {
         idx: 0,
     },
     sig: FunctionSignature {
-        ret: Type(
-            0,
-            1,
-        ),
+        ret: Type(signed int),
         params: [],
     },
 }

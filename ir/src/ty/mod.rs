@@ -1,7 +1,10 @@
-use std::sync::atomic::{self, AtomicU32};
+use std::{
+    fmt,
+    sync::atomic::{self, AtomicU32},
+};
 
 /// A type.
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
+#[derive(Clone, Copy, Eq, PartialEq, Hash)]
 pub struct Type(u32, u32);
 
 /// User-defined types.
@@ -79,6 +82,18 @@ pub mod primitive {
     pub const VOID: Type = Type(0, 0);
     pub const SIGNED_INT: Type = Type(0, 1);
     pub const UNSIGNED_INT: Type = Type(0, 2);
+}
+
+impl fmt::Debug for Type {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            &primitive::VOID => write!(f, "Type(void)"),
+            &primitive::SIGNED_INT => write!(f, "Type(signed int)"),
+            &primitive::UNSIGNED_INT => write!(f, "Type(unsigned int)"),
+            &Type(0, _) => todo!(),
+            _ => write!(f, "Type({}, {})", self.0, self.1),
+        }
+    }
 }
 
 #[test]
