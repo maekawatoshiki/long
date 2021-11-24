@@ -50,6 +50,9 @@ fn parse_and_lower() {
     use long_parser::Parser;
     let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() {}"))
         .parse_program()
+        .unwrap()
+        .into_iter()
+        .next()
         .unwrap();
     let mut ctx = Context::new();
     let func_ir = lower_function(

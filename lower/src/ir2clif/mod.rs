@@ -101,6 +101,9 @@ fn parse_and_lower_to_clif() {
     use long_parser::Parser;
     let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() {}"))
         .parse_program()
+        .unwrap()
+        .into_iter()
+        .next()
         .unwrap();
     let mut ctx = IrContext::new();
     let func_ir = ast2ir::lower_function(

@@ -26,7 +26,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     }
 
     /// Parses a program.
-    pub fn parse_program(&mut self) -> Result<Located<Decl>> {
+    pub fn parse_program(&mut self) -> Result<Vec<Located<Decl>>> {
         self.parse_decl_seq()
     }
 
