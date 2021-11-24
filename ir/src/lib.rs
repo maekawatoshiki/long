@@ -1,6 +1,7 @@
 use func::Function;
 use id_arena::Arena;
 use name::NameArena;
+use value::ValueArena;
 
 pub mod func;
 pub mod name;
@@ -11,6 +12,7 @@ pub mod value;
 #[derive(Debug, Clone)]
 pub struct Context {
     pub name_arena: NameArena,
+    pub val_arena: ValueArena,
     pub func_arena: Arena<Function>,
 }
 
@@ -19,6 +21,7 @@ impl Context {
     pub fn new() -> Self {
         Context {
             name_arena: NameArena::new(),
+            val_arena: ValueArena::new(),
             func_arena: Arena::new(),
         }
     }
