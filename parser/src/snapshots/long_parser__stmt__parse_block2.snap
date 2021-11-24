@@ -1,0 +1,15 @@
+---
+source: parser/src/stmt.rs
+expression: node
+
+---
+Ok(
+    Located {
+        inner: Block(
+            BlockStmt(
+                [],
+            ),
+        ),
+        loc: None:1:3,
+    },
+)

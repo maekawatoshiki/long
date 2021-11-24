@@ -13,6 +13,9 @@ Ok(
                 ty: FuncType {
                     ret: Void,
                 },
+                body: BlockStmt(
+                    [],
+                ),
             },
         ),
         loc: None:1:1,

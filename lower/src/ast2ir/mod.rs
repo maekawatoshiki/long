@@ -15,6 +15,7 @@ pub fn lower_function(
     FuncDef {
         name,
         ty: FuncType { ret },
+        body: _, // TODO
     }: FuncDef,
 ) -> Function {
     let name = resolve_declarator_id(ctx, name);

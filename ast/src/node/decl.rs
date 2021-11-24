@@ -1,4 +1,4 @@
-use super::ty::FuncType;
+use super::{stmt::BlockStmt, ty::FuncType};
 
 /// A declaration kind.
 /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.dcl#1>
@@ -13,6 +13,7 @@ pub enum Decl {
 pub struct FuncDef {
     pub name: DeclaratorId,
     pub ty: FuncType,
+    pub body: BlockStmt,
 }
 
 /// A declarator id.

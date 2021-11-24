@@ -43,10 +43,8 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     // function-definition:
     //     attribute-specifier-seq(opt) decl-specifier-seq(opt) declarator virt-specifier-seq(opt) function-body
     fn parse_func_def(&mut self, ty: FuncType, name: DeclaratorId) -> Result<Decl> {
-        // TODO
-        // let body = self.parse_function_body()?;
-        assert!(self.lexer.skip(SymbolKind::ClosingBrace.into()));
-        Ok(FuncDef { name, ty }.into())
+        let body = self.parse_function_body()?;
+        Ok(FuncDef { name, ty, body }.into())
     }
 
     /// Parses a declarator.

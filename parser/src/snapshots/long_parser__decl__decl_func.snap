@@ -15,6 +15,9 @@ Ok(
                         Signed,
                     ),
                 },
+                body: BlockStmt(
+                    [],
+                ),
             },
         ),
         loc: None:1:1,
