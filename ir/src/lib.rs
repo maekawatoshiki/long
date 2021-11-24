@@ -5,6 +5,7 @@ use name::NameArena;
 pub mod func;
 pub mod name;
 pub mod ty;
+pub mod value;
 
 /// A translation unit represented in the IR.
 #[derive(Debug, Clone)]
