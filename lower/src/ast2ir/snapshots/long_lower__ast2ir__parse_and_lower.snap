@@ -4,8 +4,6 @@ expression: module
 
 ---
 Module {
-  name_arena: NameArena(Arena { arena_id: 3, items: [Global(["main"])], _phantom: PhantomData })
-  val_arena: ValueArena(Arena { arena_id: 4, items: [Int(Int32(0))], _phantom: PhantomData })
   Function (::main) {
     sig: FunctionSignature { ret: Type(signed int), params: [] }
     body:

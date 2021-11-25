@@ -1,6 +1,9 @@
+use id_arena::Id;
 use std::fmt;
 
 use crate::{value::ValueId, Module};
+
+pub type InstId = Id<Inst>;
 
 /// An instruction in the program.
 #[derive(Debug, Clone)]
@@ -9,8 +12,7 @@ pub enum Inst {
 }
 
 impl Inst {
-    pub fn debug(&self, module: &Module, f: &mut fmt::Formatter, indent: usize) -> fmt::Result {
-        write!(f, "{:indent$}", "", indent = indent)?;
+    pub fn debug(&self, module: &Module, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Inst::Return(Some(id)) => {
                 let val = module.val_arena.get(*id).unwrap();

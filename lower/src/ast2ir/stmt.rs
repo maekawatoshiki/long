@@ -11,7 +11,7 @@ use long_ast::{
 };
 use long_ir::{
     block::{InstOrBlock, SimpleBlock},
-    inst::Inst,
+    inst::{Inst, InstId},
 };
 
 pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Result<SimpleBlock> {
@@ -29,9 +29,9 @@ pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Res
     Ok(SimpleBlock(seq))
 }
 
-fn lower_return(ctx: &mut Context, expr: Option<Located<Expr>>) -> Result<Inst> {
+fn lower_return(ctx: &mut Context, expr: Option<Located<Expr>>) -> Result<InstId> {
     if expr.is_none() {
-        return Ok(Inst::Return(None));
+        return Ok(ctx.module.inst_arena.alloc(Inst::Return(None)));
     }
 
     // TODO: Implement lower_expr().
@@ -41,5 +41,5 @@ fn lower_return(ctx: &mut Context, expr: Option<Located<Expr>>) -> Result<Inst> 
     ));
 
     let val = ctx.module.val_arena.new_int(0);
-    Ok(Inst::Return(Some(val)))
+    Ok(ctx.module.inst_arena.alloc(Inst::Return(Some(val))))
 }

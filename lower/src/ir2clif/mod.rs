@@ -14,14 +14,13 @@ use long_ir::{func::FunctionId, name::Name, ty as ir_ty, Module as IrModule};
 
 /// A context used in the lowering process from IR to Cranelift IR.
 pub struct Context {
-    pub ir_ctx: IrModule,
     pub clif_ctx: ClifContext,
     pub module: ObjectModule,
 }
 
 impl Context {
     /// Creates a new `Context`.
-    pub fn new(ir_ctx: IrModule) -> Self {
+    pub fn new() -> Self {
         let mut flag_builder = settings::builder();
         flag_builder.enable("is_pic").unwrap();
         let isa_builder = isa::lookup_by_name("x86_64-unknown-unknown-elf").unwrap();
@@ -36,7 +35,6 @@ impl Context {
         let module = ObjectModule::new(builder);
 
         Self {
-            ir_ctx,
             clif_ctx: module.make_context(),
             module,
         }
@@ -44,8 +42,8 @@ impl Context {
 }
 
 /// Converts an IR function into a Cranelift function.
-pub fn lower_function(ctx: &mut Context, func_id: FunctionId) {
-    let f = &ctx.ir_ctx.func_arena[func_id];
+pub fn lower_function(ctx: &mut Context, ir_mod: &IrModule, func_id: FunctionId) {
+    let f = &ir_mod.func_arena[func_id];
     let mut sig = Signature::new(CallConv::SystemV);
     sig.returns.push(AbiParam::new(conv_ty(f.sig.ret)));
     ctx.clif_ctx.func.signature = sig;
@@ -62,7 +60,7 @@ pub fn lower_function(ctx: &mut Context, func_id: FunctionId) {
         builder.finalize();
     }
 
-    let name = mangle_name(ctx.ir_ctx.name_arena.get(f.name).unwrap());
+    let name = mangle_name(ir_mod.name_arena.get(f.name).unwrap());
     let func_id = ctx
         .module
         .declare_function(name.as_str(), Linkage::Export, &ctx.clif_ctx.func.signature)
@@ -100,7 +98,7 @@ fn parse_and_lower_to_clif() {
     use long_ast::node::{decl::Decl, Located};
     use long_parser::lexer::Lexer;
     use long_parser::Parser;
-    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() {}"))
+    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() { }"))
         .parse_program()
         .unwrap()
         .into_iter()
@@ -115,8 +113,8 @@ fn parse_and_lower_to_clif() {
         },
     )
     .unwrap();
-    let mut ctx = Context::new(module);
-    let _clif_func = lower_function(&mut ctx, func_ir);
+    let mut ctx = Context::new();
+    let _clif_func = lower_function(&mut ctx, &module, func_ir);
     let product = ctx.module.finish();
     let obj = product.emit().unwrap();
     insta::assert_debug_snapshot!(obj);
