@@ -3,15 +3,27 @@ source: lower/src/ast2ir/mod.rs
 expression: func_ir
 
 ---
-Function {
-    name: Id {
-        idx: 0,
+Ok(
+    Function {
+        name: Id {
+            idx: 0,
+        },
+        sig: FunctionSignature {
+            ret: Type(signed int),
+            params: [],
+        },
+        body: Block(
+            [
+                Inst(
+                    Return(
+                        Some(
+                            Id {
+                                idx: 0,
+                            },
+                        ),
+                    ),
+                ),
+            ],
+        ),
     },
-    sig: FunctionSignature {
-        ret: Type(signed int),
-        params: [],
-    },
-    body: Block(
-        [],
-    ),
-}
+)

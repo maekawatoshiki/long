@@ -1,5 +1,6 @@
 mod stmt;
 
+use anyhow::Result;
 use long_ast::node::{
     decl::{DeclaratorId, FuncDef},
     ty::{FuncType, Sign, Type as TypeNode},
@@ -20,15 +21,15 @@ pub fn lower_function(
         ty: FuncType { ret },
         body,
     }: FuncDef,
-) -> Function {
+) -> Result<Function> {
     let name = resolve_declarator_id(ctx, name);
     let ret = resolve_type(ctx, ret);
     let sig = FunctionSignature {
         ret,
         params: vec![],
     };
-    let body = lower_block(ctx, body).unwrap();
-    Function { name, sig, body }
+    let body = lower_block(ctx, body)?;
+    Ok(Function { name, sig, body })
 }
 
 fn resolve_declarator_id(ctx: &mut Context, declarator_id: DeclaratorId) -> NameId {
@@ -53,7 +54,7 @@ fn parse_and_lower() {
     use long_ast::node::{decl::Decl, Located};
     use long_parser::lexer::Lexer;
     use long_parser::Parser;
-    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() {}"))
+    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() { return 0; }"))
         .parse_program()
         .unwrap()
         .into_iter()

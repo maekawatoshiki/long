@@ -111,7 +111,8 @@ fn parse_and_lower_to_clif() {
         match inner {
             Decl::FuncDef(funcdef) => funcdef,
         },
-    );
+    )
+    .unwrap();
     let mut ctx = Context::new(ctx);
     let _clif_func = lower_function(&mut ctx, func_ir);
     let product = ctx.module.finish();
