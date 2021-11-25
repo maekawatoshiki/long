@@ -6,7 +6,7 @@ use long_ast::node::{
     ty::{FuncType, Sign, Type as TypeNode},
 };
 use long_ir::{
-    func::{Function, FunctionSignature},
+    func::{Function, FunctionId, FunctionSignature},
     name::NameId,
     ty::Type as IrType,
     Module,
@@ -33,7 +33,7 @@ pub fn lower_function(
         ty: FuncType { ret },
         body,
     }: FuncDef,
-) -> Result<Function> {
+) -> Result<FunctionId> {
     let name = resolve_declarator_id(ctx, name);
     let ret = resolve_type(ctx, ret);
     let sig = FunctionSignature {
@@ -41,7 +41,7 @@ pub fn lower_function(
         params: vec![],
     };
     let body = lower_block(ctx, body)?;
-    Ok(Function { name, sig, body })
+    Ok(ctx.module.func_arena.alloc(Function { name, sig, body }))
 }
 
 fn resolve_declarator_id(ctx: &mut Context, declarator_id: DeclaratorId) -> NameId {
@@ -74,11 +74,11 @@ fn parse_and_lower() {
         .unwrap();
     let mut module = Module::new();
     let mut ctx = Context::new(&mut module);
-    let func_ir = lower_function(
+    let _func_ir = lower_function(
         &mut ctx,
         match inner {
             Decl::FuncDef(funcdef) => funcdef,
         },
     );
-    insta::assert_debug_snapshot!(func_ir)
+    insta::assert_debug_snapshot!(module)
 }

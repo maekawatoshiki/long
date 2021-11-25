@@ -1,29 +1,15 @@
 ---
 source: lower/src/ast2ir/mod.rs
-expression: func_ir
+expression: module
 
 ---
-Ok(
-    Function {
-        name: Id {
-            idx: 0,
-        },
-        sig: FunctionSignature {
-            ret: Type(signed int),
-            params: [],
-        },
-        body: Block(
-            [
-                Inst(
-                    Return(
-                        Some(
-                            Id {
-                                idx: 0,
-                            },
-                        ),
-                    ),
-                ),
-            ],
-        ),
-    },
-)
+Module {
+  name_arena: NameArena(Arena { arena_id: 3, items: [Global(["main"])], _phantom: PhantomData })
+  val_arena: ValueArena(Arena { arena_id: 4, items: [Int(Int32(0))], _phantom: PhantomData })
+  Function (::main) {
+    sig: FunctionSignature { ret: Type(signed int), params: [] }
+    body:
+      Block:
+        return Int(Int32(0))
+  }
+}

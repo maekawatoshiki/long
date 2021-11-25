@@ -10,7 +10,7 @@ use cranelift_codegen::{
 };
 use cranelift_module::{Linkage, Module};
 use cranelift_object::{ObjectBuilder, ObjectModule};
-use long_ir::{func::Function as IrFunction, name::Name, ty as ir_ty, Module as IrModule};
+use long_ir::{func::FunctionId, name::Name, ty as ir_ty, Module as IrModule};
 
 /// A context used in the lowering process from IR to Cranelift IR.
 pub struct Context {
@@ -44,7 +44,8 @@ impl Context {
 }
 
 /// Converts an IR function into a Cranelift function.
-pub fn lower_function(ctx: &mut Context, f: IrFunction) {
+pub fn lower_function(ctx: &mut Context, func_id: FunctionId) {
+    let f = &ctx.ir_ctx.func_arena[func_id];
     let mut sig = Signature::new(CallConv::SystemV);
     sig.returns.push(AbiParam::new(conv_ty(f.sig.ret)));
     ctx.clif_ctx.func.signature = sig;

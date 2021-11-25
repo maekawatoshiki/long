@@ -1,3 +1,5 @@
+use std::fmt;
+
 use id_arena::{Arena, Id};
 
 pub type NameId = Id<Name>;
@@ -134,5 +136,14 @@ impl NameArena {
     /// ```
     pub fn get_mut(&mut self, id: NameId) -> Option<&mut Name> {
         self.0.get_mut(id)
+    }
+}
+
+impl fmt::Display for Name {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Name::Global(name) => write!(f, "::{}", name.join("::")),
+            Name::Local(name) => write!(f, "{}", name),
+        }
     }
 }

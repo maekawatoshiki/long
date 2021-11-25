@@ -10,11 +10,11 @@ use long_ast::{
     token::kind::IntKind,
 };
 use long_ir::{
-    block::{Block, InstOrBlock},
+    block::{InstOrBlock, SimpleBlock},
     inst::Inst,
 };
 
-pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Result<Block> {
+pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Result<SimpleBlock> {
     let mut seq = vec![];
     for Located {
         inner: stmt,
@@ -26,7 +26,7 @@ pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Res
             _ => todo!(),
         }
     }
-    Ok(Block(seq))
+    Ok(SimpleBlock(seq))
 }
 
 fn lower_return(ctx: &mut Context, expr: Option<Located<Expr>>) -> Result<Inst> {
