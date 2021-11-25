@@ -105,7 +105,8 @@ fn parse_and_lower_to_clif() {
         .into_iter()
         .next()
         .unwrap();
-    let mut ctx = IrModule::new();
+    let mut module = IrModule::new();
+    let mut ctx = ast2ir::Context::new(&mut module);
     let func_ir = ast2ir::lower_function(
         &mut ctx,
         match inner {
@@ -113,7 +114,7 @@ fn parse_and_lower_to_clif() {
         },
     )
     .unwrap();
-    let mut ctx = Context::new(ctx);
+    let mut ctx = Context::new(module);
     let _clif_func = lower_function(&mut ctx, func_ir);
     let product = ctx.module.finish();
     let obj = product.emit().unwrap();

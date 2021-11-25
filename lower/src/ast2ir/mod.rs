@@ -13,9 +13,21 @@ use long_ir::{
 };
 use stmt::lower_block;
 
+/// A context used in the lowering process.
+pub struct Context<'a> {
+    module: &'a mut Module,
+}
+
+impl<'a> Context<'a> {
+    /// Creates a new `Context`.
+    pub fn new(module: &'a mut Module) -> Self {
+        Self { module }
+    }
+}
+
 /// Converts the given `FuncDef` into a `Function`.
 pub fn lower_function(
-    ctx: &mut Module,
+    ctx: &mut Context,
     FuncDef {
         name,
         ty: FuncType { ret },
@@ -32,15 +44,15 @@ pub fn lower_function(
     Ok(Function { name, sig, body })
 }
 
-fn resolve_declarator_id(ctx: &mut Module, declarator_id: DeclaratorId) -> NameId {
+fn resolve_declarator_id(ctx: &mut Context, declarator_id: DeclaratorId) -> NameId {
     // TODO
     match declarator_id {
         // TODO: Check if `name` is a fully-qualified name.
-        DeclaratorId::Ident(name) => ctx.name_arena.find_or_create_global(&[name]),
+        DeclaratorId::Ident(name) => ctx.module.name_arena.find_or_create_global(&[name]),
     }
 }
 
-fn resolve_type(_ctx: &mut Module, ty_node: TypeNode) -> IrType {
+fn resolve_type(_ctx: &mut Context, ty_node: TypeNode) -> IrType {
     match ty_node {
         TypeNode::Void => IrType::void(),
         TypeNode::Int(Sign::Signed) => IrType::signed_int(),
@@ -60,7 +72,8 @@ fn parse_and_lower() {
         .into_iter()
         .next()
         .unwrap();
-    let mut ctx = Module::new();
+    let mut module = Module::new();
+    let mut ctx = Context::new(&mut module);
     let func_ir = lower_function(
         &mut ctx,
         match inner {
