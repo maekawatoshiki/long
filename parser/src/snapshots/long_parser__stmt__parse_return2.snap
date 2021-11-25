@@ -1,0 +1,13 @@
+---
+source: parser/src/stmt.rs
+expression: node
+
+---
+Ok(
+    Located {
+        inner: Return(
+            None,
+        ),
+        loc: None:1:1,
+    },
+)

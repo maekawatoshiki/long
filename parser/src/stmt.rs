@@ -5,10 +5,11 @@ use crate::{
 use anyhow::Result;
 use long_ast::{
     node::{
+        expr::Expr,
         stmt::{BlockStmt, Stmt},
         Located,
     },
-    token::kind::{SymbolKind, TokenKind},
+    token::kind::{KeywordKind, SymbolKind, TokenKind},
 };
 
 impl<'a, L: LexerLike> Parser<'a, L> {
@@ -23,6 +24,9 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             TokenKind::Symbol(SymbolKind::OpeningBrace) => self
                 .parse_block()
                 .map(|x| Located::new(Stmt::Block(x), *tok.loc())),
+            TokenKind::Keyword(KeywordKind::Return) => self
+                .parse_return()
+                .map(|x| Located::new(Stmt::Return(x), *tok.loc())),
             _ => todo!(),
         }
     }
@@ -39,6 +43,16 @@ impl<'a, L: LexerLike> Parser<'a, L> {
         }
         Ok(BlockStmt(stmts))
     }
+
+    /// Parses a return statement. Assumes that 'return' has already been skipped.
+    fn parse_return(&mut self) -> Result<Option<Located<Expr>>> {
+        if self.lexer.skip(SymbolKind::Semicolon.into()) {
+            return Ok(None);
+        }
+        let expr = self.parse_expr()?;
+        self.expect(SymbolKind::Semicolon)?;
+        Ok(Some(expr))
+    }
 }
 
 #[test]
@@ -52,5 +66,26 @@ fn parse_block() {
 fn parse_block2() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("  { \n}      ")).parse_stmt();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_return() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("return 0;")).parse_stmt();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_return2() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("return;")).parse_stmt();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_return3() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("return")).parse_stmt();
     insta::assert_debug_snapshot!(node);
 }

@@ -1,0 +1,24 @@
+---
+source: parser/src/stmt.rs
+expression: node
+
+---
+Ok(
+    Located {
+        inner: Return(
+            Some(
+                Located {
+                    inner: Literal(
+                        Int(
+                            Int(
+                                0,
+                            ),
+                        ),
+                    ),
+                    loc: None:1:8,
+                },
+            ),
+        ),
+        loc: None:1:1,
+    },
+)

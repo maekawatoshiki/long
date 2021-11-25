@@ -1,0 +1,8 @@
+---
+source: parser/src/stmt.rs
+expression: node
+
+---
+Err(
+    UnexpectedEof,
+)
