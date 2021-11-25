@@ -44,3 +44,10 @@ impl<'a, L: LexerLike> Parser<'a, L> {
         }
     }
 }
+
+#[test]
+fn parse_program() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("int main() { return 0; }")).parse_program();
+    insta::assert_debug_snapshot!(node);
+}
