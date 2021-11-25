@@ -10,18 +10,18 @@ use cranelift_codegen::{
 };
 use cranelift_module::{Linkage, Module};
 use cranelift_object::{ObjectBuilder, ObjectModule};
-use long_ir::{func::Function as IrFunction, name::Name, ty as ir_ty, Context as IrContext};
+use long_ir::{func::Function as IrFunction, name::Name, ty as ir_ty, Module as IrModule};
 
 /// A context used in the lowering process from IR to Cranelift IR.
 pub struct Context {
-    pub ir_ctx: IrContext,
+    pub ir_ctx: IrModule,
     pub clif_ctx: ClifContext,
     pub module: ObjectModule,
 }
 
 impl Context {
     /// Creates a new `Context`.
-    pub fn new(ir_ctx: IrContext) -> Self {
+    pub fn new(ir_ctx: IrModule) -> Self {
         let mut flag_builder = settings::builder();
         flag_builder.enable("is_pic").unwrap();
         let isa_builder = isa::lookup_by_name("x86_64-unknown-unknown-elf").unwrap();
@@ -105,7 +105,7 @@ fn parse_and_lower_to_clif() {
         .into_iter()
         .next()
         .unwrap();
-    let mut ctx = IrContext::new();
+    let mut ctx = IrModule::new();
     let func_ir = ast2ir::lower_function(
         &mut ctx,
         match inner {

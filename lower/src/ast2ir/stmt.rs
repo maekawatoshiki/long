@@ -11,10 +11,10 @@ use long_ast::{
 use long_ir::{
     block::{Block, InstOrBlock},
     inst::Inst,
-    Context,
+    Module,
 };
 
-pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Result<Block> {
+pub(crate) fn lower_block(ctx: &mut Module, BlockStmt(stmts): BlockStmt) -> Result<Block> {
     let mut seq = vec![];
     for Located {
         inner: stmt,
@@ -29,7 +29,7 @@ pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Res
     Ok(Block(seq))
 }
 
-fn lower_return(ctx: &mut Context, expr: Option<Located<Expr>>) -> Result<Inst> {
+fn lower_return(ctx: &mut Module, expr: Option<Located<Expr>>) -> Result<Inst> {
     if expr.is_none() {
         return Ok(Inst::Return(None));
     }

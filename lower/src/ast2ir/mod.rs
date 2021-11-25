@@ -9,13 +9,13 @@ use long_ir::{
     func::{Function, FunctionSignature},
     name::NameId,
     ty::Type as IrType,
-    Context,
+    Module,
 };
 use stmt::lower_block;
 
 /// Converts the given `FuncDef` into a `Function`.
 pub fn lower_function(
-    ctx: &mut Context,
+    ctx: &mut Module,
     FuncDef {
         name,
         ty: FuncType { ret },
@@ -32,7 +32,7 @@ pub fn lower_function(
     Ok(Function { name, sig, body })
 }
 
-fn resolve_declarator_id(ctx: &mut Context, declarator_id: DeclaratorId) -> NameId {
+fn resolve_declarator_id(ctx: &mut Module, declarator_id: DeclaratorId) -> NameId {
     // TODO
     match declarator_id {
         // TODO: Check if `name` is a fully-qualified name.
@@ -40,7 +40,7 @@ fn resolve_declarator_id(ctx: &mut Context, declarator_id: DeclaratorId) -> Name
     }
 }
 
-fn resolve_type(_ctx: &mut Context, ty_node: TypeNode) -> IrType {
+fn resolve_type(_ctx: &mut Module, ty_node: TypeNode) -> IrType {
     match ty_node {
         TypeNode::Void => IrType::void(),
         TypeNode::Int(Sign::Signed) => IrType::signed_int(),
@@ -60,7 +60,7 @@ fn parse_and_lower() {
         .into_iter()
         .next()
         .unwrap();
-    let mut ctx = Context::new();
+    let mut ctx = Module::new();
     let func_ir = lower_function(
         &mut ctx,
         match inner {

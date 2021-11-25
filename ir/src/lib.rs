@@ -12,16 +12,16 @@ pub mod value;
 
 /// A translation unit represented in the IR.
 #[derive(Debug, Clone)]
-pub struct Context {
+pub struct Module {
     pub name_arena: NameArena,
     pub val_arena: ValueArena,
     pub func_arena: Arena<Function>,
 }
 
-impl Context {
-    /// Creates a new `Context`.
+impl Module {
+    /// Creates a new `Module`.
     pub fn new() -> Self {
-        Context {
+        Self {
             name_arena: NameArena::new(),
             val_arena: ValueArena::new(),
             func_arena: Arena::new(),
