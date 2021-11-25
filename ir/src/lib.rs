@@ -3,7 +3,9 @@ use id_arena::Arena;
 use name::NameArena;
 use value::ValueArena;
 
+pub mod block;
 pub mod func;
+pub mod inst;
 pub mod name;
 pub mod ty;
 pub mod value;

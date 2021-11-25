@@ -11,4 +11,7 @@ Function {
         ret: Type(signed int),
         params: [],
     },
+    body: Block(
+        [],
+    ),
 }

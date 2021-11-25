@@ -1,10 +1,11 @@
-use crate::{name::NameId, ty::Type};
+use crate::{block::Block, name::NameId, ty::Type};
 
 /// A function.
 #[derive(Debug, Clone)]
 pub struct Function {
     pub name: NameId,
     pub sig: FunctionSignature,
+    pub body: Block,
 }
 
 /// A function signature (i.e. the return type and parameters of a function).

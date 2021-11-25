@@ -1,3 +1,5 @@
+mod stmt;
+
 use long_ast::node::{
     decl::{DeclaratorId, FuncDef},
     ty::{FuncType, Sign, Type as TypeNode},
@@ -8,6 +10,7 @@ use long_ir::{
     ty::Type as IrType,
     Context,
 };
+use stmt::lower_block;
 
 /// Converts the given `FuncDef` into a `Function`.
 pub fn lower_function(
@@ -15,7 +18,7 @@ pub fn lower_function(
     FuncDef {
         name,
         ty: FuncType { ret },
-        body: _, // TODO
+        body,
     }: FuncDef,
 ) -> Function {
     let name = resolve_declarator_id(ctx, name);
@@ -24,7 +27,8 @@ pub fn lower_function(
         ret,
         params: vec![],
     };
-    Function { name, sig }
+    let body = lower_block(ctx, body).unwrap();
+    Function { name, sig, body }
 }
 
 fn resolve_declarator_id(ctx: &mut Context, declarator_id: DeclaratorId) -> NameId {
