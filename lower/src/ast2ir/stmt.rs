@@ -1,13 +1,9 @@
-use crate::ast2ir::Context;
+use crate::ast2ir::{expr::lower_expr, Context};
 use anyhow::Result;
-use long_ast::{
-    node::{
-        expr::Expr,
-        lit::Literal,
-        stmt::{BlockStmt, Stmt},
-        Located,
-    },
-    token::kind::IntKind,
+use long_ast::node::{
+    expr::Expr,
+    stmt::{BlockStmt, Stmt},
+    Located,
 };
 use long_ir::{
     block::{InstOrBlock, SimpleBlock},
@@ -34,12 +30,7 @@ fn lower_return(ctx: &mut Context, expr: Option<Located<Expr>>) -> Result<InstId
         return Ok(ctx.module.inst_arena.alloc(Inst::Return(None)));
     }
 
-    // TODO: Implement lower_expr().
-    assert!(matches!(
-        expr.unwrap().inner,
-        Expr::Literal(Literal::Int(IntKind::Int(0)))
-    ));
-
-    let val = ctx.module.val_arena.new_int(0);
+    let expr = expr.unwrap();
+    let val = lower_expr(ctx, &expr.inner);
     Ok(ctx.module.inst_arena.alloc(Inst::Return(Some(val))))
 }

@@ -1,6 +1,10 @@
+mod inst;
+mod stmt;
+mod value;
+
 use cranelift::{
     frontend::{FunctionBuilder, FunctionBuilderContext},
-    prelude::{AbiParam, Configurable, InstBuilder, Signature},
+    prelude::{AbiParam, Configurable, Signature},
 };
 use cranelift_codegen::{
     binemit::{NullStackMapSink, NullTrapSink},
@@ -12,14 +16,16 @@ use cranelift_module::{Linkage, Module};
 use cranelift_object::{ObjectBuilder, ObjectModule};
 use long_ir::{func::FunctionId, name::Name, ty as ir_ty, Module as IrModule};
 
+use self::stmt::lower_function_body;
+
 /// A context used in the lowering process from IR to Cranelift IR.
-pub struct Context {
+pub struct LowerCtx {
     pub clif_ctx: ClifContext,
     pub module: ObjectModule,
 }
 
-impl Context {
-    /// Creates a new `Context`.
+impl LowerCtx {
+    /// Creates a new `LowerCtx`.
     pub fn new() -> Self {
         let mut flag_builder = settings::builder();
         flag_builder.enable("is_pic").unwrap();
@@ -42,25 +48,18 @@ impl Context {
 }
 
 /// Converts an IR function into a Cranelift function.
-pub fn lower_function(ctx: &mut Context, ir_mod: &IrModule, func_id: FunctionId) {
-    let f = &ir_mod.func_arena[func_id];
+pub fn lower_function(ctx: &mut LowerCtx, ir_mod: &IrModule, func_id: FunctionId) {
+    let func = &ir_mod.func_arena[func_id];
     let mut sig = Signature::new(CallConv::SystemV);
-    sig.returns.push(AbiParam::new(conv_ty(f.sig.ret)));
+    sig.returns.push(AbiParam::new(conv_ty(func.sig.ret)));
     ctx.clif_ctx.func.signature = sig;
 
     let mut fn_builder_ctx = FunctionBuilderContext::new();
-    {
-        let mut builder = FunctionBuilder::new(&mut ctx.clif_ctx.func, &mut fn_builder_ctx);
-        let entry = builder.create_block();
-        builder.append_block_params_for_function_params(entry);
-        builder.switch_to_block(entry);
-        builder.seal_block(entry);
-        let ret = builder.ins().iconst(clif_ty::I32, 0);
-        builder.ins().return_(&[ret]);
-        builder.finalize();
-    }
+    let mut builder = FunctionBuilder::new(&mut ctx.clif_ctx.func, &mut fn_builder_ctx);
+    lower_function_body(&mut builder, ir_mod, func, &func.body);
+    builder.finalize();
 
-    let name = mangle_name(ir_mod.name_arena.get(f.name).unwrap());
+    let name = mangle_name(ir_mod.name_arena.get(func.name).unwrap());
     let func_id = ctx
         .module
         .declare_function(name.as_str(), Linkage::Export, &ctx.clif_ctx.func.signature)
@@ -98,7 +97,7 @@ fn parse_and_lower_to_clif() {
     use long_ast::node::{decl::Decl, Located};
     use long_parser::lexer::Lexer;
     use long_parser::Parser;
-    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() { }"))
+    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() { return 42; }"))
         .parse_program()
         .unwrap()
         .into_iter()
@@ -113,7 +112,7 @@ fn parse_and_lower_to_clif() {
         },
     )
     .unwrap();
-    let mut ctx = Context::new();
+    let mut ctx = LowerCtx::new();
     let _clif_func = lower_function(&mut ctx, &module, func_ir);
     let product = ctx.module.finish();
     let obj = product.emit().unwrap();

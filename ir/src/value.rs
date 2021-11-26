@@ -10,7 +10,7 @@ pub enum Value {
 
 /// An arena for `Value`.
 #[derive(Debug, Clone)]
-pub struct ValueArena(Arena<Value>);
+pub struct ValueArena(pub Arena<Value>);
 
 /// An integer value in the IR.
 #[derive(Debug, Clone, Copy, PartialEq)]

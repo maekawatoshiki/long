@@ -1,3 +1,4 @@
+mod expr;
 mod stmt;
 
 use anyhow::Result;
