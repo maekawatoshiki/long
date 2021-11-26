@@ -16,6 +16,7 @@ pub fn lower_value(
     value: &IrValue,
 ) -> Value {
     match value {
+        IrValue::Inst(id) => todo!(),
         IrValue::Int(IntValue::Int32(i)) => builder.ins().iconst(clif_ty::I32, *i as i64),
     }
 }

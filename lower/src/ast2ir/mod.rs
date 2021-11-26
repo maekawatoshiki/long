@@ -67,7 +67,7 @@ fn parse_and_lower() {
     use long_ast::node::{decl::Decl, Located};
     use long_parser::lexer::Lexer;
     use long_parser::Parser;
-    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() { return 0; }"))
+    let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() { return 1+1; }"))
         .parse_program()
         .unwrap()
         .into_iter()

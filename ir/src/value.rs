@@ -1,10 +1,13 @@
 use id_arena::{Arena, Id};
 
+use crate::inst::InstId;
+
 pub type ValueId = Id<Value>;
 
 /// A value in the IR.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value {
+    Inst(InstId),
     Int(IntValue),
 }
 

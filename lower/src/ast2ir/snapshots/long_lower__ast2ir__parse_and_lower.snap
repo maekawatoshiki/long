@@ -8,6 +8,7 @@ Module {
     sig: FunctionSignature { ret: Type(signed int), params: [] }
     body:
       Block:
-        return Int(Int32(0))
+        Inst(Id { idx: 0 }) = add Int(Int32(1)), Int(Int32(1))
+        return Inst(Id { idx: 0 })
   }
 }
