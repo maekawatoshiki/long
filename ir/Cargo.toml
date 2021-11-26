@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 id-arena = "= 2.2.1"
+typed-arena = "= 2.0.1"
