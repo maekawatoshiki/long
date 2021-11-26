@@ -14,7 +14,9 @@ use typed_arena::Arena as TypedArena;
 pub mod decl;
 // pub mod func;
 // pub mod inst;
+pub mod expr;
 pub mod name;
+pub mod stmt;
 pub mod ty;
 // pub mod value;
 
