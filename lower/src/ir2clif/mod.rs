@@ -1,7 +1,8 @@
-mod inst;
+mod expr;
 mod stmt;
-mod value;
 
+use self::stmt::lower_block_stmt;
+use anyhow::Result;
 use cranelift::{
     frontend::{FunctionBuilder, FunctionBuilderContext},
     prelude::{AbiParam, Configurable, Signature},
@@ -14,11 +15,8 @@ use cranelift_codegen::{
 };
 use cranelift_module::{Linkage, Module};
 use cranelift_object::{ObjectBuilder, ObjectModule};
-use long_ir::{func::FunctionId, name::Name, ty as ir_ty, Module as IrModule};
+use long_ir::{decl::FuncDef, name::Name, ty as ir_ty};
 
-use self::stmt::lower_function_body;
-
-/// A context used in the lowering process from IR to Cranelift IR.
 pub struct LowerCtx {
     pub clif_ctx: ClifContext,
     pub module: ObjectModule,
@@ -47,19 +45,24 @@ impl LowerCtx {
     }
 }
 
-/// Converts an IR function into a Cranelift function.
-pub fn lower_function(ctx: &mut LowerCtx, ir_mod: &IrModule, func_id: FunctionId) {
-    let func = &ir_mod.func_arena[func_id];
+pub fn lower_funcdef(ctx: &mut LowerCtx, funcdef: &FuncDef<'_>) -> Result<()> {
     let mut sig = Signature::new(CallConv::SystemV);
-    sig.returns.push(AbiParam::new(conv_ty(func.sig.ret)));
+    sig.returns
+        .push(AbiParam::new(convert_type(ctx, funcdef.sig.ret)));
     ctx.clif_ctx.func.signature = sig;
 
     let mut fn_builder_ctx = FunctionBuilderContext::new();
     let mut builder = FunctionBuilder::new(&mut ctx.clif_ctx.func, &mut fn_builder_ctx);
-    lower_function_body(&mut builder, ir_mod, func, &func.body);
+    {
+        let entry = builder.create_block();
+        builder.append_block_params_for_function_params(entry);
+        builder.switch_to_block(entry);
+        builder.seal_block(entry);
+        lower_block_stmt(&mut builder, &funcdef.body)?;
+    }
     builder.finalize();
 
-    let name = mangle_name(ir_mod.name_arena.get(func.name).unwrap());
+    let name = mangle_name(funcdef.name);
     let func_id = ctx
         .module
         .declare_function(name.as_str(), Linkage::Export, &ctx.clif_ctx.func.signature)
@@ -73,28 +76,29 @@ pub fn lower_function(ctx: &mut LowerCtx, ir_mod: &IrModule, func_id: FunctionId
         )
         .unwrap();
     ctx.module.clear_context(&mut ctx.clif_ctx);
+
+    Ok(())
 }
 
-fn conv_ty(from: ir_ty::Type) -> clif_ty::Type {
+fn convert_type(_ctx: &LowerCtx, from: &ir_ty::Type) -> clif_ty::Type {
     match from {
-        ir_ty::primitive::VOID => clif_ty::I8,
-        ir_ty::primitive::SIGNED_INT | ir_ty::primitive::UNSIGNED_INT => clif_ty::I32,
+        ir_ty::Type::Void => clif_ty::I8,
+        ir_ty::Type::Int(_) => clif_ty::I32,
         _ => todo!(),
     }
 }
 
 fn mangle_name(name: &Name) -> String {
     // TODO: Names not mangled yet.
-    match name {
-        Name::Global(names) => names.join("."),
-        Name::Local(name) => name.to_owned(),
-    }
+    format!("{}", name).trim_start_matches("::").to_owned()
 }
 
 #[test]
 fn parse_and_lower_to_clif() {
     use crate::ast2ir;
-    use long_ast::node::{decl::Decl, Located};
+    use long_ast::node::Located;
+    use long_ir::decl::Decl;
+    use long_ir::Context as IrContext;
     use long_parser::lexer::Lexer;
     use long_parser::Parser;
     let Located { inner, .. } = Parser::new(&mut Lexer::new("int main() { return 42; }"))
@@ -103,17 +107,16 @@ fn parse_and_lower_to_clif() {
         .into_iter()
         .next()
         .unwrap();
-    let mut module = IrModule::new();
-    let mut ctx = ast2ir::Context::new(&mut module);
-    let func_ir = ast2ir::lower_function(
+    let ctx = IrContext::new();
+    let mut ctx = ast2ir::LowerCtx::new(&ctx);
+    let decl = ast2ir::lower_decl(&mut ctx, &inner).unwrap();
+    let mut ctx = LowerCtx::new();
+    let _clif_func = lower_funcdef(
         &mut ctx,
-        match inner {
+        match decl {
             Decl::FuncDef(funcdef) => funcdef,
         },
-    )
-    .unwrap();
-    let mut ctx = LowerCtx::new();
-    let _clif_func = lower_function(&mut ctx, &module, func_ir);
+    );
     let product = ctx.module.finish();
     let obj = product.emit().unwrap();
     insta::assert_debug_snapshot!(obj);
