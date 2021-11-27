@@ -2,25 +2,13 @@ use decl::Decl;
 use expr::Expr;
 use name::Name;
 use ty::Type;
-// use std::fmt;
-//
-// use block::Block;
-// use func::Function;
-// use id_arena::Arena;
-// use inst::Inst;
-// use name::NameArena;
 use typed_arena::Arena as TypedArena;
 
-// use value::ValueArena;
-
 pub mod decl;
-// pub mod func;
-// pub mod inst;
 pub mod expr;
 pub mod name;
 pub mod stmt;
 pub mod ty;
-// pub mod value;
 
 /// A translation unit represented in the IR.
 pub struct Context<'a> {
@@ -45,14 +33,20 @@ impl<'a> Context<'a> {
 #[test]
 fn test() {
     use decl::FuncDef;
+    use decl::FuncSignature;
     use stmt::BlockStmt;
     use ty::Sign;
     let module = Context::new();
     let name = module.name_arena.alloc(Name::global(vec!["x", "y"]));
     let ty = module.type_arena.alloc(Type::Int(Sign::Signed));
     let body = BlockStmt(vec![]);
-    let f = module
-        .decl_arena
-        .alloc(Decl::FuncDef(FuncDef { name, ty, body }));
+    let f = module.decl_arena.alloc(Decl::FuncDef(FuncDef {
+        name,
+        sig: FuncSignature {
+            ret: ty,
+            params: vec![],
+        },
+        body,
+    }));
     let _decl_seq = vec![f];
 }
