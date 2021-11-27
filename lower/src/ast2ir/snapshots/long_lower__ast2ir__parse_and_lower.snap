@@ -1,13 +1,43 @@
 ---
 source: lower/src/ast2ir/mod.rs
-expression: module
+expression: decl
 
 ---
-Module {
-  Function (::main) {
-    sig: FunctionSignature { ret: Type(signed int), params: [] }
-    body:
-      Block:
-        return Int(Int32(0))
-  }
-}
+Ok(
+    FuncDef(
+        FuncDef {
+            name: Global(
+                [
+                    "main",
+                ],
+            ),
+            sig: FuncSignature {
+                ret: Int(
+                    Signed,
+                ),
+                params: [],
+            },
+            body: BlockStmt(
+                [
+                    Located {
+                        inner: Return(
+                            Some(
+                                Located {
+                                    inner: Literal(
+                                        Int(
+                                            Int(
+                                                0,
+                                            ),
+                                        ),
+                                    ),
+                                    loc: None:1:21,
+                                },
+                            ),
+                        ),
+                        loc: None:1:14,
+                    },
+                ],
+            ),
+        },
+    ),
+)

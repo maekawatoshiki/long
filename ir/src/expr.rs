@@ -5,6 +5,7 @@ use long_ast::node::{
 };
 
 /// An expression kind.
+#[derive(Debug)]
 pub enum Expr<'a> {
     /// A literal expression.
     Literal(Literal),

@@ -1,14 +1,11 @@
-use long_ast::{
-    node::{expr::Expr, lit::Literal},
-    token::kind::IntKind,
-};
-use long_ir::value::ValueId;
+use super::LowerCtx;
+use anyhow::Result;
+use long_ast::node::expr::Expr as AstExpr;
+use long_ir::expr::Expr as IrExpr;
 
-use super::Context;
-
-pub(crate) fn lower_expr(ctx: &mut Context, expr: &Expr) -> ValueId {
+pub fn lower_expr<'a>(ctx: &mut LowerCtx<'a>, expr: &AstExpr) -> Result<&'a IrExpr<'a>> {
     match expr {
-        Expr::Literal(Literal::Int(IntKind::Int(i))) => ctx.module.val_arena.new_int(*i),
+        AstExpr::Literal(lit) => Ok(ctx.ir_ctx.expr_arena.alloc(IrExpr::Literal(lit.to_owned()))),
         _ => todo!(),
     }
 }

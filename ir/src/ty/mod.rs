@@ -1,4 +1,5 @@
 /// A type node.
+#[derive(Debug)]
 pub enum Type<'a> {
     Void,
     Bool,
@@ -27,6 +28,7 @@ pub enum Sign {
 }
 
 /// A function type.
+#[derive(Debug)]
 pub struct FuncType<'a> {
     pub ret: &'a Type<'a>,
     // TODO: params

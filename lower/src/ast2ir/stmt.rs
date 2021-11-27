@@ -1,36 +1,34 @@
-use crate::ast2ir::{expr::lower_expr, Context};
+use crate::ast2ir::expr::lower_expr;
+
+use super::LowerCtx;
 use anyhow::Result;
 use long_ast::node::{
-    expr::Expr,
-    stmt::{BlockStmt, Stmt},
+    stmt::{BlockStmt as AstBlockStmt, Stmt as AstStmt},
     Located,
 };
-use long_ir::{
-    block::{InstOrBlock, SimpleBlock},
-    inst::{Inst, InstId},
-};
+use long_ir::stmt::{BlockStmt as IrBlockStmt, Stmt as IrStmt};
 
-pub(crate) fn lower_block(ctx: &mut Context, BlockStmt(stmts): BlockStmt) -> Result<SimpleBlock> {
-    let mut seq = vec![];
-    for Located {
-        inner: stmt,
-        loc: _, // TODO: We should not ignore this.
-    } in stmts
-    {
-        match stmt {
-            Stmt::Return(expr) => seq.push(InstOrBlock::Inst(lower_return(ctx, expr)?)),
-            _ => todo!(),
+pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<&'a IrStmt<'a>> {
+    match stmt {
+        AstStmt::Block(_) => todo!(),
+        AstStmt::Return(None) => Ok(ctx.ir_ctx.stmt_arena.alloc(IrStmt::Return(None))),
+        AstStmt::Return(Some(Located { inner: e, loc })) => {
+            let e = lower_expr(ctx, e)?;
+            Ok(ctx
+                .ir_ctx
+                .stmt_arena
+                .alloc(IrStmt::Return(Some(Located::new(e, *loc)))))
         }
     }
-    Ok(SimpleBlock(seq))
 }
 
-fn lower_return(ctx: &mut Context, expr: Option<Located<Expr>>) -> Result<InstId> {
-    if expr.is_none() {
-        return Ok(ctx.module.inst_arena.alloc(Inst::Return(None)));
+pub fn lower_block_stmt<'a>(
+    ctx: &mut LowerCtx<'a>,
+    stmt: &AstBlockStmt,
+) -> Result<IrBlockStmt<'a>> {
+    let mut stmts = Vec::new();
+    for Located { inner, loc } in stmt.0.iter() {
+        stmts.push(Located::new(lower_stmt(ctx, inner)?, *loc));
     }
-
-    let expr = expr.unwrap();
-    let val = lower_expr(ctx, &expr.inner);
-    Ok(ctx.module.inst_arena.alloc(Inst::Return(Some(val))))
+    Ok(IrBlockStmt(stmts))
 }

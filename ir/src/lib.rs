@@ -1,6 +1,7 @@
 use decl::Decl;
 use expr::Expr;
 use name::Name;
+use stmt::Stmt;
 use ty::Type;
 use typed_arena::Arena as TypedArena;
 
@@ -13,6 +14,7 @@ pub mod ty;
 /// A translation unit represented in the IR.
 pub struct Context<'a> {
     pub decl_arena: TypedArena<Decl<'a>>,
+    pub stmt_arena: TypedArena<Stmt<'a>>,
     pub type_arena: TypedArena<Type<'a>>,
     pub name_arena: TypedArena<Name>,
     pub expr_arena: TypedArena<Expr<'a>>,
@@ -23,6 +25,7 @@ impl<'a> Context<'a> {
     pub fn new() -> Self {
         Self {
             decl_arena: TypedArena::new(),
+            stmt_arena: TypedArena::new(),
             type_arena: TypedArena::new(),
             name_arena: TypedArena::new(),
             expr_arena: TypedArena::new(),
