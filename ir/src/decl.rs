@@ -7,5 +7,5 @@ pub enum Decl<'a> {
 pub struct FuncDef<'a> {
     pub name: &'a Name,
     pub ty: &'a Type<'a>,
-    pub body: &'a BlockStmt<'a>,
+    pub body: BlockStmt<'a>,
 }
