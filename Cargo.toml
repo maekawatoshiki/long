@@ -5,4 +5,5 @@ members = [
   "ast",
   "ir",
   "lower",
+  "longcc",
 ]

@@ -63,18 +63,17 @@ pub fn lower_funcdef(ctx: &mut LowerCtx, funcdef: &FuncDef<'_>) -> Result<()> {
     builder.finalize();
 
     let name = mangle_name(funcdef.name);
-    let func_id = ctx
-        .module
-        .declare_function(name.as_str(), Linkage::Export, &ctx.clif_ctx.func.signature)
-        .unwrap();
-    ctx.module
-        .define_function(
-            func_id,
-            &mut ctx.clif_ctx,
-            &mut NullTrapSink {},
-            &mut NullStackMapSink {},
-        )
-        .unwrap();
+    let func_id = ctx.module.declare_function(
+        name.as_str(),
+        Linkage::Export,
+        &ctx.clif_ctx.func.signature,
+    )?;
+    ctx.module.define_function(
+        func_id,
+        &mut ctx.clif_ctx,
+        &mut NullTrapSink {},
+        &mut NullStackMapSink {},
+    )?;
     ctx.module.clear_context(&mut ctx.clif_ctx);
 
     Ok(())
