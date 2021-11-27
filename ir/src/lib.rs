@@ -1,4 +1,5 @@
 use decl::Decl;
+use expr::Expr;
 use name::Name;
 use ty::Type;
 // use std::fmt;
@@ -26,6 +27,7 @@ pub struct Context<'a> {
     pub decl_arena: TypedArena<Decl<'a>>,
     pub type_arena: TypedArena<Type<'a>>,
     pub name_arena: TypedArena<Name>,
+    pub expr_arena: TypedArena<Expr<'a>>,
 }
 
 impl<'a> Context<'a> {
@@ -35,6 +37,7 @@ impl<'a> Context<'a> {
             decl_arena: TypedArena::new(),
             type_arena: TypedArena::new(),
             name_arena: TypedArena::new(),
+            expr_arena: TypedArena::new(),
         }
     }
 }

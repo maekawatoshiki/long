@@ -1,12 +1,14 @@
 use long_ast::node::{
     expr::{AssignOp, BinOp, UnaryOp},
+    lit::Literal,
     Located,
 };
 
 /// An expression kind.
 pub enum Expr<'a> {
-    // /// A literal expression.
-    // Literal(Literal),
+    /// A literal expression.
+    Literal(Literal),
+
     /// A unary expression.
     Unary(UnaryOp, Located<&'a Expr<'a>>),
 
