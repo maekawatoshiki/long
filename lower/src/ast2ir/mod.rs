@@ -1,4 +1,5 @@
 mod decl;
+mod env;
 mod expr;
 mod name;
 mod stmt;
@@ -8,6 +9,7 @@ use crate::ast2ir::{
     decl::lower_simple_decl, name::resolve_declarator_id, stmt::lower_block_stmt, ty::resolve_type,
 };
 use anyhow::Result;
+use env::Envs;
 use long_ast::node::decl::{Decl as AstDecl, FuncDef as AstFuncDef};
 use long_ir::{
     decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature},
@@ -16,11 +18,15 @@ use long_ir::{
 
 pub struct LowerCtx<'a> {
     pub ir_ctx: &'a Context<'a>,
+    pub envs: Envs<'a>,
 }
 
 impl<'a> LowerCtx<'a> {
     pub fn new(ir_ctx: &'a Context<'a>) -> Self {
-        Self { ir_ctx }
+        Self {
+            ir_ctx,
+            envs: Envs::new(),
+        }
     }
 }
 

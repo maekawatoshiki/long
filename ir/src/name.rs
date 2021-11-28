@@ -1,7 +1,7 @@
 use std::fmt;
 
 /// A name used in the IR.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Name {
     /// A fully-qualified name for global variables, functions, namespaces, etc.
     Global(Vec<String>),
