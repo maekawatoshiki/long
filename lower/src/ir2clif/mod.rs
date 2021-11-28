@@ -1,7 +1,9 @@
+mod decl;
 mod expr;
+mod name;
 mod stmt;
 
-use self::stmt::lower_block_stmt;
+use self::{decl::lower_simple_decl, name::mangle_name, stmt::lower_block_stmt};
 use anyhow::Result;
 use cranelift::{
     frontend::{FunctionBuilder, FunctionBuilderContext},
@@ -13,12 +15,16 @@ use cranelift_codegen::{
     isa::{self, CallConv},
     settings, Context as ClifContext,
 };
-use cranelift_module::{Linkage, Module};
+use cranelift_module::{DataContext, Linkage, Module};
 use cranelift_object::{ObjectBuilder, ObjectModule};
-use long_ir::{decl::FuncDef, name::Name, ty as ir_ty};
+use long_ir::{
+    decl::{Decl, FuncDef},
+    ty as ir_ty,
+};
 
 pub struct LowerCtx {
     pub clif_ctx: ClifContext,
+    pub data_ctx: DataContext,
     pub module: ObjectModule,
 }
 
@@ -40,7 +46,20 @@ impl LowerCtx {
 
         Self {
             clif_ctx: module.make_context(),
+            data_ctx: DataContext::new(),
             module,
+        }
+    }
+}
+
+pub fn lower_decl(ctx: &mut LowerCtx, decl: &Decl) -> Result<()> {
+    match decl {
+        Decl::FuncDef(funcdef) => lower_funcdef(ctx, funcdef),
+        Decl::SimpleDecl(decls) => {
+            for decl in decls {
+                lower_simple_decl(ctx, decl)?;
+            }
+            Ok(())
         }
     }
 }
@@ -87,11 +106,6 @@ fn convert_type(_ctx: &LowerCtx, from: &ir_ty::Type) -> clif_ty::Type {
     }
 }
 
-fn mangle_name(name: &Name) -> String {
-    // TODO: Names not mangled yet.
-    format!("{}", name).trim_start_matches("::").to_owned()
-}
-
 #[test]
 fn parse_and_lower_to_clif() {
     use crate::ast2ir;
@@ -117,6 +131,29 @@ fn parse_and_lower_to_clif() {
             _ => todo!(),
         },
     );
+    let product = ctx.module.finish();
+    let obj = product.emit().unwrap();
+    insta::assert_debug_snapshot!(obj);
+}
+
+#[test]
+fn parse_and_lower_to_clif2() {
+    use crate::ast2ir;
+    use long_ast::node::Located;
+    use long_ir::Context as IrContext;
+    use long_parser::lexer::Lexer;
+    use long_parser::Parser;
+    let Located { inner, .. } = Parser::new(&mut Lexer::new("int i;"))
+        .parse_program()
+        .unwrap()
+        .into_iter()
+        .next()
+        .unwrap();
+    let ctx = IrContext::new();
+    let mut ctx = ast2ir::LowerCtx::new(&ctx);
+    let decl = ast2ir::lower_decl(&mut ctx, &inner).unwrap();
+    let mut ctx = LowerCtx::new();
+    let _clif_func = lower_decl(&mut ctx, decl);
     let product = ctx.module.finish();
     let obj = product.emit().unwrap();
     insta::assert_debug_snapshot!(obj);
