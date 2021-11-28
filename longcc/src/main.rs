@@ -17,27 +17,21 @@ fn main() {
     // Parse
     let toplevel = Parser::new(&mut Lexer::new_from_file(&opt.file).expect("failed to open file"))
         .parse_program()
-        .expect("failed to parse program")
-        .into_iter()
-        .next()
-        .expect("the program is empty")
-        .inner;
+        .expect("failed to parse program");
 
     // Lower to IR
     let ctx = Context::new();
     let mut ctx = ast2ir::LowerCtx::new(&ctx);
-    let decl = ast2ir::lower_decl(&mut ctx, &toplevel).expect("failed to lower AST");
+    let mut decls = vec![];
+    for decl in toplevel {
+        decls.push(ast2ir::lower_decl(&mut ctx, &decl.inner).expect("failed to lower AST"));
+    }
 
     // Lower to Clif
     let mut ctx = ir2clif::LowerCtx::new();
-    let _ = ir2clif::lower_funcdef(
-        &mut ctx,
-        match decl {
-            Decl::FuncDef(funcdef) => funcdef,
-            _ => todo!(),
-        },
-    )
-    .expect("failed to lower IR");
+    for decl in decls {
+        let _ = ir2clif::lower_decl(&mut ctx, decl).expect("failed to lower IR");
+    }
 
     // Generate object code
     let product = ctx.module.finish();
