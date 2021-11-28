@@ -1,10 +1,15 @@
-use super::{stmt::BlockStmt, ty::FuncType};
+use super::{
+    expr::Expr,
+    stmt::BlockStmt,
+    ty::{FuncType, Type},
+};
 
 /// A declaration kind.
 /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.dcl#1>
 #[derive(Debug, Clone)]
 pub enum Decl {
     FuncDef(FuncDef),
+    SimpleDecl(SimpleDecl),
 }
 
 /// A function definition.
@@ -14,6 +19,15 @@ pub struct FuncDef {
     pub name: DeclaratorId,
     pub ty: FuncType,
     pub body: BlockStmt,
+}
+
+/// A simple declaration.
+/// <https://timsong-cpp.github.io/cppwp/n3337/dcl.dcl#nt:simple-declaration>
+#[derive(Debug, Clone)]
+pub struct SimpleDecl {
+    pub names: Vec<DeclaratorId>,
+    pub types: Vec<Type>,
+    pub inits: Vec<Option<Expr>>,
 }
 
 /// A declarator id.

@@ -31,6 +31,7 @@ pub fn lower_decl<'a>(ctx: &mut LowerCtx<'a>, decl: &AstDecl) -> Result<&'a IrDe
             let ir_funcdef = lower_funcdef(ctx, funcdef)?;
             Ok(ir_funcdef)
         }
+        _ => todo!(),
     }
 }
 
