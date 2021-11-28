@@ -1,4 +1,4 @@
-use long_ir::{decl::Decl, Context};
+use long_ir::Context;
 use long_lower::{ast2ir, ir2clif};
 use long_parser::{lexer::Lexer, Parser};
 use std::{fs::File, io::Write, path::PathBuf};

@@ -11,8 +11,11 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     /// Parses a declaration sequence.
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.dcl#1>
     pub(crate) fn parse_decl_seq(&mut self) -> Result<Vec<Located<Decl>>> {
-        // TODO
-        self.parse_decl().map(|d| vec![d])
+        let mut decls = Vec::new();
+        while let Some(_) = self.lexer.peek()? {
+            decls.push(self.parse_decl()?);
+        }
+        Ok(decls)
     }
 
     /// Parses a declaration.
