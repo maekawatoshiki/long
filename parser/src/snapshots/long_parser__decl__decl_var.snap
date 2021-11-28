@@ -1,0 +1,23 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl()
+
+---
+Ok(
+    Located {
+        inner: SimpleDecl(
+            [
+                SimpleDecl {
+                    name: Ident(
+                        "var",
+                    ),
+                    ty: Int(
+                        Signed,
+                    ),
+                    init: None,
+                },
+            ],
+        ),
+        loc: None:1:1,
+    },
+)

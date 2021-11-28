@@ -1,7 +1,7 @@
 use crate::lexer::{traits::LexerLike, Error};
 use crate::Parser;
 use anyhow::Result;
-use long_ast::node::decl::{DeclaratorId, FuncDef};
+use long_ast::node::decl::{DeclaratorId, FuncDef, SimpleDecl};
 use long_ast::node::ty::{FuncType, Sign, Type};
 use long_ast::node::{decl::Decl, Located};
 use long_ast::token::kind::{KeywordKind, SymbolKind, TokenKind};
@@ -22,20 +22,48 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             inner: decl_specifier,
             loc,
         } = self.parse_decl_specifier()?;
-        let mut declarator_id = None;
-        let ty = self.parse_declarator(decl_specifier, &mut declarator_id)?;
 
-        if self.lexer.skip(SymbolKind::OpeningBrace.into()) {
-            return Ok(Located::new(
-                self.parse_func_def(
-                    ty.into_func_type().expect("TODO"),
-                    declarator_id.expect("TODO"),
-                )?,
-                loc,
-            ));
+        let mut decls = vec![];
+
+        loop {
+            let mut declarator_id = None;
+            let ty = self.parse_declarator(decl_specifier.clone(), &mut declarator_id)?;
+
+            if self.lexer.skip(SymbolKind::OpeningBrace.into()) {
+                return Ok(Located::new(
+                    self.parse_func_def(
+                        ty.into_func_type().expect("TODO"),
+                        declarator_id.expect("TODO"),
+                    )?,
+                    loc,
+                ));
+            }
+
+            let loc = self
+                .lexer
+                .peek()?
+                .map_or_else(|| Err(Error::UnexpectedEof), |t| Ok(*t.loc()))?;
+
+            let declarator_id = declarator_id.map_or_else(
+                || Err(Error::Message("Expected variable name".to_string(), loc)),
+                |x| Ok(x),
+            )?;
+
+            decls.push(SimpleDecl {
+                name: declarator_id,
+                ty,
+                init: None, // TODO
+            });
+
+            if self.lexer.skip(SymbolKind::Comma.into()) {
+                continue;
+            }
+
+            self.expect(SymbolKind::Semicolon)?;
+            break;
         }
 
-        todo!()
+        Ok(Located::new(Decl::SimpleDecl(decls), loc))
     }
 
     /// Parses a function definition.
@@ -304,3 +332,6 @@ macro_rules! decl_test {
 
 decl_test!(decl_func, "int f() {}");
 decl_test!(decl_func2, "void ggg() {}");
+decl_test!(decl_var, "int var;");
+decl_test!(decl_var2, "int var, var2;");
+decl_test!(decl_var3, "int *ptr, i;");

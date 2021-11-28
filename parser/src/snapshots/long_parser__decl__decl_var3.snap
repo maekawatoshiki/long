@@ -1,0 +1,34 @@
+---
+source: parser/src/decl.rs
+expression: parser.parse_decl()
+
+---
+Ok(
+    Located {
+        inner: SimpleDecl(
+            [
+                SimpleDecl {
+                    name: Ident(
+                        "ptr",
+                    ),
+                    ty: Pointer(
+                        Int(
+                            Signed,
+                        ),
+                    ),
+                    init: None,
+                },
+                SimpleDecl {
+                    name: Ident(
+                        "i",
+                    ),
+                    ty: Int(
+                        Signed,
+                    ),
+                    init: None,
+                },
+            ],
+        ),
+        loc: None:1:1,
+    },
+)

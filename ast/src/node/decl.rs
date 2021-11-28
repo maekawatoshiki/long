@@ -9,7 +9,7 @@ use super::{
 #[derive(Debug, Clone)]
 pub enum Decl {
     FuncDef(FuncDef),
-    SimpleDecl(SimpleDecl),
+    SimpleDecl(Vec<SimpleDecl>),
 }
 
 /// A function definition.
@@ -25,9 +25,9 @@ pub struct FuncDef {
 /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.dcl#nt:simple-declaration>
 #[derive(Debug, Clone)]
 pub struct SimpleDecl {
-    pub names: Vec<DeclaratorId>,
-    pub types: Vec<Type>,
-    pub inits: Vec<Option<Expr>>,
+    pub name: DeclaratorId,
+    pub ty: Type,
+    pub init: Option<Expr>,
 }
 
 /// A declarator id.
