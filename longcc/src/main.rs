@@ -34,6 +34,7 @@ fn main() {
         &mut ctx,
         match decl {
             Decl::FuncDef(funcdef) => funcdef,
+            _ => todo!(),
         },
     )
     .expect("failed to lower IR");

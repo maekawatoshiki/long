@@ -114,6 +114,7 @@ fn parse_and_lower_to_clif() {
         &mut ctx,
         match decl {
             Decl::FuncDef(funcdef) => funcdef,
+            _ => todo!(),
         },
     );
     let product = ctx.module.finish();
