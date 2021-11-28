@@ -17,7 +17,7 @@ pub struct FuncDef<'a> {
 pub struct SimpleDecl<'a> {
     pub name: &'a Name,
     pub ty: &'a Type<'a>,
-    pub init: &'a Expr<'a>,
+    pub init: Option<&'a Expr<'a>>,
 }
 
 /// A function signature (i.e. the return type and parameters of a function).

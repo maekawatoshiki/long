@@ -1,0 +1,22 @@
+---
+source: lower/src/ast2ir/mod.rs
+expression: decl
+
+---
+Ok(
+    SimpleDecl(
+        [
+            SimpleDecl {
+                name: Global(
+                    [
+                        "i",
+                    ],
+                ),
+                ty: Int(
+                    Signed,
+                ),
+                init: None,
+            },
+        ],
+    ),
+)
