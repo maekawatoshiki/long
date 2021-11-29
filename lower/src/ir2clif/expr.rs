@@ -1,4 +1,4 @@
-use crate::ir2clif::FuncLowerCtx;
+use crate::ir2clif::{ty::convert_type, FuncLowerCtx};
 use anyhow::Result;
 use cranelift::prelude::{InstBuilder, Value};
 use cranelift_codegen::ir::types as clif_ty;
@@ -9,6 +9,12 @@ pub fn lower_expr(ctx: &mut FuncLowerCtx, expr: &Expr) -> Result<Value> {
     match expr {
         Expr::Literal(Literal::Int(IntKind::Int(i))) => {
             Ok(ctx.builder.ins().iconst(clif_ty::I32, *i as i64))
+        }
+        Expr::Literal(Literal::Local(id)) => {
+            let ty = convert_type(ctx.func.locals.get(*id).unwrap().ty);
+            let slot = *ctx.locals.get(id).unwrap();
+            let val = ctx.builder.ins().stack_load(ty, slot, 0);
+            Ok(val)
         }
         Expr::Assign(AssignOp::None, lhs, rhs) => {
             let rhs = lower_expr(ctx, &rhs.inner)?;

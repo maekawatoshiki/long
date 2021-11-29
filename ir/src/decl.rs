@@ -55,6 +55,10 @@ impl<'a> Locals<'a> {
         self.0.alloc(Local { name, ty })
     }
 
+    pub fn get(&self, id: Id<Local<'a>>) -> Option<&Local<'a>> {
+        self.0.get(id)
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = (Id<Local<'a>>, &Local<'a>)> {
         self.0.iter()
     }

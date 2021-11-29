@@ -1,3 +1,4 @@
+use crate::decl::Local;
 use id_arena::Id;
 use long_ast::{
     node::{
@@ -6,8 +7,6 @@ use long_ast::{
     },
     token::kind::IntKind,
 };
-
-use crate::decl::Local;
 
 /// An expression kind.
 #[derive(Debug)]
