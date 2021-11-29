@@ -1,4 +1,5 @@
 use crate::{expr::Expr, name::Name, stmt::BlockStmt, ty::Type};
+use id_arena::Arena;
 
 #[derive(Debug)]
 pub enum Decl<'a> {
@@ -11,6 +12,13 @@ pub struct FuncDef<'a> {
     pub name: &'a Name,
     pub sig: FuncSignature<'a>,
     pub body: BlockStmt<'a>,
+    pub locals: Arena<Local<'a>>,
+}
+
+#[derive(Debug)]
+pub struct Local<'a> {
+    pub name: &'a Name,
+    pub ty: &'a Type<'a>,
 }
 
 #[derive(Debug)]

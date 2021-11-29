@@ -37,6 +37,7 @@ impl<'a> Context<'a> {
 fn test() {
     use decl::FuncDef;
     use decl::FuncSignature;
+    use id_arena::Arena;
     use stmt::BlockStmt;
     use ty::Sign;
     let module = Context::new();
@@ -50,6 +51,7 @@ fn test() {
             params: vec![],
         },
         body,
+        locals: Arena::new(),
     }));
     let _decl_seq = vec![f];
 }

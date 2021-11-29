@@ -10,6 +10,7 @@ use crate::ast2ir::{
 };
 use anyhow::Result;
 use env::Envs;
+use id_arena::Arena;
 use long_ast::node::decl::{Decl as AstDecl, FuncDef as AstFuncDef};
 use long_ir::{
     decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature},
@@ -47,16 +48,21 @@ pub fn lower_decl<'a>(ctx: &mut LowerCtx<'a>, decl: &AstDecl) -> Result<&'a IrDe
 }
 
 fn lower_funcdef<'a>(ctx: &mut LowerCtx<'a>, funcdef: &AstFuncDef) -> Result<&'a IrDecl<'a>> {
+    let locals = Arena::new();
     let name = resolve_declarator_id(ctx, &funcdef.name)?;
     let sig = FuncSignature {
         ret: resolve_type(ctx, &funcdef.ty.ret)?,
         params: vec![],
     };
+    ctx.envs.push_function();
     let body = lower_block_stmt(ctx, &funcdef.body)?;
-    Ok(ctx
-        .ir_ctx
-        .decl_arena
-        .alloc(IrDecl::FuncDef(IrFuncDef { name, sig, body })))
+    ctx.envs.pop();
+    Ok(ctx.ir_ctx.decl_arena.alloc(IrDecl::FuncDef(IrFuncDef {
+        name,
+        sig,
+        body,
+        locals,
+    })))
 }
 
 macro_rules! parse_and_lower_test {

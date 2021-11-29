@@ -38,6 +38,11 @@ Ok(
                     },
                 ],
             ),
+            locals: Arena {
+                arena_id: 0,
+                items: [],
+                _phantom: PhantomData,
+            },
         },
     ),
 )

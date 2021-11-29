@@ -12,7 +12,9 @@ pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<&'a IrSt
     match stmt {
         AstStmt::Expr(_) => todo!(),
         AstStmt::Block(_) => todo!(),
-        AstStmt::SimpleDecl(_) => todo!(),
+        AstStmt::SimpleDecl(_decls) => {
+            todo!()
+        }
         AstStmt::Return(None) => Ok(ctx.ir_ctx.stmt_arena.alloc(IrStmt::Return(None))),
         AstStmt::Return(Some(Located { inner: e, loc })) => {
             let e = lower_expr(ctx, e)?;
