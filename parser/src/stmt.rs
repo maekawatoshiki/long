@@ -5,6 +5,7 @@ use crate::{
 use anyhow::Result;
 use long_ast::{
     node::{
+        decl::Decl,
         expr::Expr,
         stmt::{BlockStmt, Stmt},
         Located,
@@ -27,6 +28,13 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             TokenKind::Keyword(KeywordKind::Return) => self
                 .parse_return()
                 .map(|x| Located::new(Stmt::Return(x), *tok.loc())),
+            TokenKind::Keyword(kwd) if kwd.is_type() => match self.parse_decl(false)? {
+                Located {
+                    inner: Decl::SimpleDecl(decls),
+                    loc,
+                } => Ok(Located::new(Stmt::SimpleDecl(decls), loc)),
+                _ => unreachable!(),
+            },
             _ => {
                 let loc = *tok.loc();
                 self.lexer.unget(tok);
@@ -93,5 +101,19 @@ fn parse_return2() {
 fn parse_return3() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("return")).parse_stmt();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_vardecl() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("int i;")).parse_stmt();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_vardecl2() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("int i, j;")).parse_stmt();
     insta::assert_debug_snapshot!(node);
 }

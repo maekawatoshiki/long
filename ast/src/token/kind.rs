@@ -354,6 +354,33 @@ impl From<SymbolKind> for TokenKind {
 }
 
 impl KeywordKind {
+    /// Returns if the keyword represents a type.
+    pub fn is_type(&self) -> bool {
+        matches!(
+            self,
+            Self::Typedef
+                | Self::Extern
+                | Self::Static
+                | Self::Auto
+                | Self::Register
+                | Self::Const
+                | Self::Volatile
+                | Self::Void
+                | Self::Signed
+                | Self::Unsigned
+                | Self::Char
+                | Self::Int
+                | Self::Short
+                | Self::Long
+                | Self::Float
+                | Self::Double
+                | Self::Struct
+                | Self::Enum
+                | Self::Union
+                | Self::Inline
+        )
+    }
+
     /// Returns the kind of the keyword if `kwd` is a keyword.
     pub fn from_str(kwd: impl AsRef<str>) -> Option<Self> {
         match kwd.as_ref() {

@@ -13,14 +13,14 @@ impl<'a, L: LexerLike> Parser<'a, L> {
     pub(crate) fn parse_decl_seq(&mut self) -> Result<Vec<Located<Decl>>> {
         let mut decls = Vec::new();
         while let Some(_) = self.lexer.peek()? {
-            decls.push(self.parse_decl()?);
+            decls.push(self.parse_decl(true)?);
         }
         Ok(decls)
     }
 
     /// Parses a declaration.
     /// <https://timsong-cpp.github.io/cppwp/n3337/dcl.dcl#1>
-    pub(crate) fn parse_decl(&mut self) -> Result<Located<Decl>> {
+    pub(crate) fn parse_decl(&mut self, accept_funcdef: bool) -> Result<Located<Decl>> {
         let Located {
             inner: decl_specifier,
             loc,
@@ -32,7 +32,7 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             let mut declarator_id = None;
             let ty = self.parse_declarator(decl_specifier.clone(), &mut declarator_id)?;
 
-            if self.lexer.skip(SymbolKind::OpeningBrace.into()) {
+            if accept_funcdef && self.lexer.skip(SymbolKind::OpeningBrace.into()) {
                 return Ok(Located::new(
                     self.parse_func_def(
                         ty.into_func_type().expect("TODO"),
@@ -328,7 +328,7 @@ macro_rules! decl_test {
             use crate::lexer::Lexer;
             let mut lexer = Lexer::new($src);
             let mut parser = Parser::new(&mut lexer);
-            insta::assert_debug_snapshot!(parser.parse_decl());
+            insta::assert_debug_snapshot!(parser.parse_decl(true));
         }
     };
 }

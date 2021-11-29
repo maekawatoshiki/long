@@ -1,0 +1,23 @@
+---
+source: parser/src/stmt.rs
+expression: node
+
+---
+Ok(
+    Located {
+        inner: SimpleDecl(
+            [
+                SimpleDecl {
+                    name: Ident(
+                        "i",
+                    ),
+                    ty: Int(
+                        Signed,
+                    ),
+                    init: None,
+                },
+            ],
+        ),
+        loc: None:1:5,
+    },
+)
