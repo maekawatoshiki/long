@@ -28,13 +28,16 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             TokenKind::Keyword(KeywordKind::Return) => self
                 .parse_return()
                 .map(|x| Located::new(Stmt::Return(x), *tok.loc())),
-            TokenKind::Keyword(kwd) if kwd.is_type() => match self.parse_decl(false)? {
-                Located {
-                    inner: Decl::SimpleDecl(decls),
-                    loc,
-                } => Ok(Located::new(Stmt::SimpleDecl(decls), loc)),
-                _ => unreachable!(),
-            },
+            TokenKind::Keyword(ref kwd) if kwd.is_type() => {
+                self.lexer.unget(tok);
+                match self.parse_decl(false)? {
+                    Located {
+                        inner: Decl::SimpleDecl(decls),
+                        loc,
+                    } => Ok(Located::new(Stmt::SimpleDecl(decls), loc)),
+                    _ => unreachable!(),
+                }
+            }
             _ => {
                 let loc = *tok.loc();
                 self.lexer.unget(tok);
