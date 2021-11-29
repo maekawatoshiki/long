@@ -13,13 +13,15 @@ use env::Envs;
 use id_arena::Arena;
 use long_ast::node::decl::{Decl as AstDecl, FuncDef as AstFuncDef};
 use long_ir::{
-    decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature},
+    decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature, Local},
     Context,
 };
+use std::mem::replace;
 
 pub struct LowerCtx<'a> {
     pub ir_ctx: &'a Context<'a>,
     pub envs: Envs<'a>,
+    pub locals: Arena<Local<'a>>,
 }
 
 impl<'a> LowerCtx<'a> {
@@ -27,6 +29,7 @@ impl<'a> LowerCtx<'a> {
         Self {
             ir_ctx,
             envs: Envs::new(),
+            locals: Arena::new(),
         }
     }
 }
@@ -48,20 +51,19 @@ pub fn lower_decl<'a>(ctx: &mut LowerCtx<'a>, decl: &AstDecl) -> Result<&'a IrDe
 }
 
 fn lower_funcdef<'a>(ctx: &mut LowerCtx<'a>, funcdef: &AstFuncDef) -> Result<&'a IrDecl<'a>> {
-    let locals = Arena::new();
     let name = resolve_declarator_id(ctx, &funcdef.name)?;
     let sig = FuncSignature {
         ret: resolve_type(ctx, &funcdef.ty.ret)?,
         params: vec![],
     };
-    ctx.envs.push_function();
+    ctx.envs.push_block();
     let body = lower_block_stmt(ctx, &funcdef.body)?;
     ctx.envs.pop();
     Ok(ctx.ir_ctx.decl_arena.alloc(IrDecl::FuncDef(IrFuncDef {
         name,
         sig,
         body,
-        locals,
+        locals: replace(&mut ctx.locals, Arena::new()),
     })))
 }
 

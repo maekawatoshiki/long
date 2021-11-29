@@ -1,4 +1,5 @@
-use long_ir::{name::Name, ty::Type};
+use id_arena::Id;
+use long_ir::{decl::Local, name::Name, ty::Type};
 use rustc_hash::FxHashMap as HashMap;
 
 /// A stack of environments.
@@ -10,17 +11,16 @@ pub struct Envs<'a> {
 /// Maps names to types.
 #[derive(Debug)]
 pub struct Env<'a> {
-    pub kind: EnvKind,
+    pub kind: EnvKind<'a>,
     pub map: HashMap<&'a Name, &'a Type<'a>>,
 }
 
 /// The kind of an environment.
 #[derive(Debug)]
-pub enum EnvKind {
+pub enum EnvKind<'a> {
     Global,
     NameSpace(String),
-    Function,
-    Block,
+    Block(HashMap<&'a Name, Id<Local<'a>>>),
 }
 
 impl<'a> Envs<'a> {
@@ -42,18 +42,10 @@ impl<'a> Envs<'a> {
         })
     }
 
-    /// Pushes a new `Function` environment.
-    pub fn push_function(&mut self) {
-        self.env_stack.push(Env {
-            kind: EnvKind::Function,
-            map: HashMap::default(),
-        });
-    }
-
     /// Pushes a new `Block` environment.
     pub fn push_block(&mut self) {
         self.env_stack.push(Env {
-            kind: EnvKind::Block,
+            kind: EnvKind::Block(HashMap::default()),
             map: HashMap::default(),
         });
     }
@@ -68,11 +60,42 @@ impl<'a> Envs<'a> {
         self.env_stack.last_mut().unwrap().map.insert(name, ty);
     }
 
+    /// Adds the given pair of `name` and `id` to the current environment.
+    pub fn add_local_to_cur_env(&mut self, name: &'a Name, id: Id<Local<'a>>) {
+        match self.env_stack.last_mut().unwrap() {
+            Env {
+                kind: EnvKind::Block(map),
+                ..
+            } => {
+                map.insert(name, id);
+            }
+            _ => panic!(),
+        }
+    }
+
     /// Returns the corresponding type of the given `name`.
     pub fn lookup(&self, name: &'a Name) -> Option<&'a Type<'a>> {
         for env in self.env_stack.iter().rev() {
             if let Some(ty) = env.map.get(name) {
                 return Some(ty);
+            }
+        }
+        None
+    }
+
+    /// Returns the corresponding type of the given `name`.
+    pub fn lookup_local(&self, name: &'a Name) -> Option<Id<Local<'a>>> {
+        for env in self.env_stack.iter().rev() {
+            match env {
+                Env {
+                    kind: EnvKind::Block(map),
+                    ..
+                } => {
+                    if let Some(&id) = map.get(name) {
+                        return Some(id);
+                    }
+                }
+                _ => {}
             }
         }
         None
