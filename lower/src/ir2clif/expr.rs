@@ -11,16 +11,20 @@ pub fn lower_expr(ctx: &mut FuncLowerCtx, expr: &Expr) -> Result<Value> {
             Ok(ctx.builder.ins().iconst(clif_ty::I32, *i as i64))
         }
         Expr::Assign(AssignOp::None, lhs, rhs) => {
-            todo!()
+            let rhs = lower_expr(ctx, &rhs.inner)?;
+            assign(ctx, &lhs.inner, rhs)
         }
         _ => todo!(),
     }
 }
 
-fn lvalue(ctx: &mut FuncLowerCtx, expr: &Expr) -> Result<Value> {
-    match expr {
+fn assign(ctx: &mut FuncLowerCtx<'_, '_>, lvalue: &Expr<'_>, rvalue: Value) -> Result<Value> {
+    match lvalue {
         Expr::Literal(Literal::Local(id)) => {
-            todo!()
+            ctx.builder
+                .ins()
+                .stack_store(rvalue, *ctx.locals.get(id).unwrap(), 0);
+            Ok(rvalue)
         }
         _ => todo!(),
     }

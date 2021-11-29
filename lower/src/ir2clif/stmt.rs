@@ -1,6 +1,6 @@
 use crate::ir2clif::{expr::lower_expr, FuncLowerCtx};
 use anyhow::Result;
-use cranelift::{frontend::FunctionBuilder, prelude::InstBuilder};
+use cranelift::prelude::InstBuilder;
 use cranelift_codegen::ir::types as clif_ty;
 use long_ast::node::Located;
 use long_ir::stmt::{BlockStmt, Stmt};
@@ -26,7 +26,10 @@ pub fn lower_stmt(ctx: &mut FuncLowerCtx, stmt: &Stmt) -> Result<()> {
     Ok(())
 }
 
-pub fn lower_block_stmt(ctx: &mut FuncLowerCtx, block: &BlockStmt) -> Result<()> {
+pub fn lower_block_stmt<'a>(
+    ctx: &'a mut FuncLowerCtx<'a, '_>,
+    block: &'a BlockStmt<'a>,
+) -> Result<()> {
     for stmt in block.0.iter() {
         lower_stmt(ctx, stmt.inner)?;
     }
