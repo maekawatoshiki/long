@@ -1,0 +1,59 @@
+---
+source: lower/src/ast2ir/mod.rs
+expression: decl
+
+---
+Ok(
+    FuncDef(
+        FuncDef {
+            name: Global(
+                [
+                    "main",
+                ],
+            ),
+            sig: FuncSignature {
+                ret: Int(
+                    Signed,
+                ),
+                params: [],
+            },
+            body: BlockStmt(
+                [
+                    Located {
+                        inner: Return(
+                            Some(
+                                Located {
+                                    inner: Literal(
+                                        Int(
+                                            Int(
+                                                0,
+                                            ),
+                                        ),
+                                    ),
+                                    loc: None:1:28,
+                                },
+                            ),
+                        ),
+                        loc: None:1:21,
+                    },
+                ],
+            ),
+            locals: Arena {
+                arena_id: 2,
+                items: [
+                    Local {
+                        name: Global(
+                            [
+                                "i",
+                            ],
+                        ),
+                        ty: Int(
+                            Signed,
+                        ),
+                    },
+                ],
+                _phantom: PhantomData,
+            },
+        },
+    ),
+)

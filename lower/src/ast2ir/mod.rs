@@ -91,3 +91,4 @@ macro_rules! parse_and_lower_test {
 parse_and_lower_test!(parse_and_lower, "int main() { return 0; }");
 parse_and_lower_test!(parse_and_lower_simple_decl, "int i;");
 parse_and_lower_test!(parse_and_lower_simple_decl2, "int i, j;");
+parse_and_lower_test!(parse_and_lower_func, "int main() { int i; return 0; }");
