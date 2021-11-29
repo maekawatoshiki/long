@@ -17,15 +17,22 @@ use cranelift_codegen::{
 };
 use cranelift_module::{DataContext, Linkage, Module};
 use cranelift_object::{ObjectBuilder, ObjectModule};
+use id_arena::Id;
 use long_ir::{
-    decl::{Decl, FuncDef},
+    decl::{Decl, FuncDef, Local},
     ty as ir_ty,
 };
+use rustc_hash::FxHashMap as HashMap;
 
 pub struct LowerCtx {
     pub clif_ctx: ClifContext,
     pub data_ctx: DataContext,
     pub module: ObjectModule,
+}
+
+pub struct FuncLowerCtx<'a, 'b: 'a> {
+    pub builder: &'a mut FunctionBuilder<'b>,
+    pub locals: HashMap<Id<Local<'a>>, ()>,
 }
 
 impl LowerCtx {
@@ -77,7 +84,13 @@ pub fn lower_funcdef(ctx: &mut LowerCtx, funcdef: &FuncDef<'_>) -> Result<()> {
         builder.append_block_params_for_function_params(entry);
         builder.switch_to_block(entry);
         builder.seal_block(entry);
-        lower_block_stmt(&mut builder, &funcdef.body)?;
+        lower_block_stmt(
+            &mut FuncLowerCtx {
+                builder: &mut builder,
+                locals: HashMap::default(),
+            },
+            &funcdef.body,
+        )?;
     }
     builder.finalize();
 
