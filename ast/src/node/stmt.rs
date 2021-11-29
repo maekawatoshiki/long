@@ -3,6 +3,7 @@ use super::{expr::Expr, Located};
 /// A statement kind.
 #[derive(Debug, Clone)]
 pub enum Stmt {
+    Expr(Located<Expr>),
     Block(BlockStmt),
     Return(Option<Located<Expr>>),
 }

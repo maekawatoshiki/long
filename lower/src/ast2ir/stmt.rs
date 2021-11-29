@@ -10,6 +10,7 @@ use long_ir::stmt::{BlockStmt as IrBlockStmt, Stmt as IrStmt};
 
 pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<&'a IrStmt<'a>> {
     match stmt {
+        AstStmt::Expr(_) => todo!(),
         AstStmt::Block(_) => todo!(),
         AstStmt::Return(None) => Ok(ctx.ir_ctx.stmt_arena.alloc(IrStmt::Return(None))),
         AstStmt::Return(Some(Located { inner: e, loc })) => {

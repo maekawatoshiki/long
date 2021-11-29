@@ -27,7 +27,13 @@ impl<'a, L: LexerLike> Parser<'a, L> {
             TokenKind::Keyword(KeywordKind::Return) => self
                 .parse_return()
                 .map(|x| Located::new(Stmt::Return(x), *tok.loc())),
-            _ => todo!(),
+            _ => {
+                let loc = *tok.loc();
+                self.lexer.unget(tok);
+                let expr = self.parse_expr()?;
+                self.expect(SymbolKind::Semicolon)?;
+                Ok(Located::new(Stmt::Expr(expr), loc))
+            }
         }
     }
 

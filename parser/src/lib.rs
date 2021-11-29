@@ -51,3 +51,10 @@ fn parse_program() {
     let node = Parser::new(&mut Lexer::new("int main() { return 0; }")).parse_program();
     insta::assert_debug_snapshot!(node);
 }
+
+#[test]
+fn parse_program2() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("int main() { 1 + 2; return 3 * 4; }")).parse_program();
+    insta::assert_debug_snapshot!(node);
+}

@@ -1,0 +1,92 @@
+---
+source: parser/src/lib.rs
+expression: node
+
+---
+Ok(
+    [
+        Located {
+            inner: FuncDef(
+                FuncDef {
+                    name: Ident(
+                        "main",
+                    ),
+                    ty: FuncType {
+                        ret: Int(
+                            Signed,
+                        ),
+                    },
+                    body: BlockStmt(
+                        [
+                            Located {
+                                inner: Expr(
+                                    Located {
+                                        inner: Binary(
+                                            Add,
+                                            Located {
+                                                inner: Literal(
+                                                    Int(
+                                                        Int(
+                                                            1,
+                                                        ),
+                                                    ),
+                                                ),
+                                                loc: None:1:14,
+                                            },
+                                            Located {
+                                                inner: Literal(
+                                                    Int(
+                                                        Int(
+                                                            2,
+                                                        ),
+                                                    ),
+                                                ),
+                                                loc: None:1:18,
+                                            },
+                                        ),
+                                        loc: None:1:14,
+                                    },
+                                ),
+                                loc: None:1:14,
+                            },
+                            Located {
+                                inner: Return(
+                                    Some(
+                                        Located {
+                                            inner: Binary(
+                                                Mul,
+                                                Located {
+                                                    inner: Literal(
+                                                        Int(
+                                                            Int(
+                                                                3,
+                                                            ),
+                                                        ),
+                                                    ),
+                                                    loc: None:1:28,
+                                                },
+                                                Located {
+                                                    inner: Literal(
+                                                        Int(
+                                                            Int(
+                                                                4,
+                                                            ),
+                                                        ),
+                                                    ),
+                                                    loc: None:1:32,
+                                                },
+                                            ),
+                                            loc: None:1:28,
+                                        },
+                                    ),
+                                ),
+                                loc: None:1:21,
+                            },
+                        ],
+                    ),
+                },
+            ),
+            loc: None:1:1,
+        },
+    ],
+)
