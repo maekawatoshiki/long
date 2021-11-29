@@ -10,10 +10,9 @@ use crate::ast2ir::{
 };
 use anyhow::Result;
 use env::Envs;
-use id_arena::Arena;
 use long_ast::node::decl::{Decl as AstDecl, FuncDef as AstFuncDef};
 use long_ir::{
-    decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature, Local},
+    decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature, Locals},
     Context,
 };
 use std::mem::replace;
@@ -21,7 +20,7 @@ use std::mem::replace;
 pub struct LowerCtx<'a> {
     pub ir_ctx: &'a Context<'a>,
     pub envs: Envs<'a>,
-    pub locals: Arena<Local<'a>>,
+    pub locals: Locals<'a>,
 }
 
 impl<'a> LowerCtx<'a> {
@@ -29,7 +28,7 @@ impl<'a> LowerCtx<'a> {
         Self {
             ir_ctx,
             envs: Envs::new(),
-            locals: Arena::new(),
+            locals: Locals::new(),
         }
     }
 }
@@ -63,7 +62,7 @@ fn lower_funcdef<'a>(ctx: &mut LowerCtx<'a>, funcdef: &AstFuncDef) -> Result<&'a
         name,
         sig,
         body,
-        locals: replace(&mut ctx.locals, Arena::new()),
+        locals: replace(&mut ctx.locals, Locals::new()),
     })))
 }
 

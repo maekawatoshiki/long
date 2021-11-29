@@ -6,10 +6,7 @@ use long_ast::node::{
     stmt::{BlockStmt as AstBlockStmt, Stmt as AstStmt},
     Located,
 };
-use long_ir::{
-    decl::Local,
-    stmt::{BlockStmt as IrBlockStmt, Stmt as IrStmt},
-};
+use long_ir::stmt::{BlockStmt as IrBlockStmt, Stmt as IrStmt};
 
 pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<Option<&'a IrStmt<'a>>> {
     match stmt {
@@ -26,7 +23,7 @@ pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<Option<&
             for decl in decls {
                 let name = resolve_declarator_id(ctx, &decl.name, true)?;
                 let ty = resolve_type(ctx, &decl.ty)?;
-                let id = ctx.locals.alloc(Local { name, ty });
+                let id = ctx.locals.alloc(name, ty);
                 ctx.envs.add_to_cur_env(name, ty);
                 ctx.envs.add_local_to_cur_env(name, id);
             }

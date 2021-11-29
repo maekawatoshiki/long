@@ -85,7 +85,7 @@ pub fn lower_funcdef(ctx: &mut LowerCtx, funcdef: &FuncDef<'_>) -> Result<()> {
         builder.switch_to_block(entry);
         builder.seal_block(entry);
         let mut locals = HashMap::default();
-        for (id, local) in &funcdef.locals {
+        for (id, local) in funcdef.locals.iter() {
             let ty = convert_type(local.ty);
             let slot = builder
                 .create_stack_slot(StackSlotData::new(StackSlotKind::ExplicitSlot, ty.bytes()));
