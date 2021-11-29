@@ -27,6 +27,8 @@ fn main() {
         decls.push(ast2ir::lower_decl(&mut ctx, &decl.inner).expect("failed to lower AST"));
     }
 
+    // println!("{:#?}", decls);
+
     // Lower to Clif
     let mut ctx = ir2clif::LowerCtx::new();
     for decl in decls {

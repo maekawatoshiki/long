@@ -4,8 +4,8 @@ use cranelift::{
     prelude::{InstBuilder, Value},
 };
 use cranelift_codegen::ir::types as clif_ty;
-use long_ast::{node::lit::Literal, token::kind::IntKind};
-use long_ir::expr::Expr;
+use long_ast::token::kind::IntKind;
+use long_ir::expr::{Expr, Literal};
 
 pub fn lower_expr(builder: &mut FunctionBuilder, expr: &Expr) -> Result<Value> {
     match expr {

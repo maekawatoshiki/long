@@ -7,7 +7,7 @@ pub fn lower_simple_decl<'a>(
     ctx: &mut LowerCtx<'a>,
     decl: &AstSimpleDecl,
 ) -> Result<IrSimpleDecl<'a>> {
-    let name = resolve_declarator_id(ctx, &decl.name)?;
+    let name = resolve_declarator_id(ctx, &decl.name, false)?;
     let ty = resolve_type(ctx, &decl.ty)?;
     ctx.envs.add_to_cur_env(name, ty);
     Ok(IrSimpleDecl {

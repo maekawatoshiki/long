@@ -24,7 +24,7 @@ pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<Option<&
         AstStmt::Block(_) => todo!(),
         AstStmt::SimpleDecl(decls) => {
             for decl in decls {
-                let name = resolve_declarator_id(ctx, &decl.name)?;
+                let name = resolve_declarator_id(ctx, &decl.name, true)?;
                 let ty = resolve_type(ctx, &decl.ty)?;
                 let id = ctx.locals.alloc(Local { name, ty });
                 ctx.envs.add_to_cur_env(name, ty);

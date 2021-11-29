@@ -51,7 +51,7 @@ pub fn lower_decl<'a>(ctx: &mut LowerCtx<'a>, decl: &AstDecl) -> Result<&'a IrDe
 }
 
 fn lower_funcdef<'a>(ctx: &mut LowerCtx<'a>, funcdef: &AstFuncDef) -> Result<&'a IrDecl<'a>> {
-    let name = resolve_declarator_id(ctx, &funcdef.name)?;
+    let name = resolve_declarator_id(ctx, &funcdef.name, false)?;
     let sig = FuncSignature {
         ret: resolve_type(ctx, &funcdef.ty.ret)?,
         params: vec![],

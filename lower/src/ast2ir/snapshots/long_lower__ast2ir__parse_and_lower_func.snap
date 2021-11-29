@@ -42,10 +42,8 @@ Ok(
                 arena_id: 2,
                 items: [
                     Local {
-                        name: Global(
-                            [
-                                "i",
-                            ],
+                        name: Local(
+                            "i",
                         ),
                         ty: Int(
                             Signed,
