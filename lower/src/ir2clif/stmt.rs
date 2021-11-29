@@ -9,6 +9,9 @@ use crate::ir2clif::expr::lower_expr;
 pub fn lower_stmt(builder: &mut FunctionBuilder, stmt: &Stmt) -> Result<()> {
     match stmt {
         Stmt::Block(_) => todo!(),
+        Stmt::Expr(e) => {
+            let _expr = lower_expr(builder, &e.inner)?;
+        }
         Stmt::Return(None) => {
             let ret = builder.ins().iconst(clif_ty::I32, 0);
             builder.ins().return_(&[ret]);

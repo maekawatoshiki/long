@@ -13,7 +13,14 @@ use long_ir::{
 
 pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<Option<&'a IrStmt<'a>>> {
     match stmt {
-        AstStmt::Expr(_) => todo!(),
+        AstStmt::Expr(Located { inner: expr, loc }) => {
+            let e = lower_expr(ctx, expr)?;
+            let stmt = ctx
+                .ir_ctx
+                .stmt_arena
+                .alloc(IrStmt::Expr(Located::new(e, *loc)));
+            Ok(Some(stmt))
+        }
         AstStmt::Block(_) => todo!(),
         AstStmt::SimpleDecl(decls) => {
             for decl in decls {
