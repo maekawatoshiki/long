@@ -22,13 +22,13 @@ pub enum Expr {
 }
 
 /// A unary operator kind.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum UnaryOp {
     Not,
 }
 
 /// A binary operator kind.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum BinOp {
     Comma,
     LogicalOr,
@@ -49,10 +49,11 @@ pub enum BinOp {
     Div,
     Rem,
 }
+
 /// An assignment operator kind.
 /// `=  *=  /=  %=   +=  -=  >>=  <<=  &=  ^=  |=`
 /// <https://timsong-cpp.github.io/cppwp/n3337/expr.ass#1>
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AssignOp {
     Add,
     Sub,

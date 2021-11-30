@@ -2,7 +2,10 @@ use crate::ir2clif::{ty::convert_type, FuncLowerCtx};
 use anyhow::Result;
 use cranelift::prelude::{InstBuilder, Value};
 use cranelift_codegen::ir::types as clif_ty;
-use long_ast::{node::expr::AssignOp, token::kind::IntKind};
+use long_ast::{
+    node::expr::{AssignOp, BinOp},
+    token::kind::IntKind,
+};
 use long_ir::expr::{Expr, Literal};
 
 pub fn lower_expr(ctx: &mut FuncLowerCtx, expr: &Expr) -> Result<Value> {
@@ -14,6 +17,12 @@ pub fn lower_expr(ctx: &mut FuncLowerCtx, expr: &Expr) -> Result<Value> {
             let ty = convert_type(ctx.func.locals.get(*id).unwrap().ty);
             let slot = *ctx.locals.get(id).unwrap();
             let val = ctx.builder.ins().stack_load(ty, slot, 0);
+            Ok(val)
+        }
+        Expr::Binary(BinOp::Add, lhs, rhs) => {
+            let lhs = lower_expr(ctx, &lhs.inner)?;
+            let rhs = lower_expr(ctx, &rhs.inner)?;
+            let val = ctx.builder.ins().iadd(lhs, rhs);
             Ok(val)
         }
         Expr::Assign(AssignOp::None, lhs, rhs) => {
