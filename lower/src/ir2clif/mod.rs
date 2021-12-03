@@ -40,7 +40,10 @@ impl LowerCtx {
     pub fn new() -> Self {
         let mut flag_builder = settings::builder();
         flag_builder.enable("is_pic").unwrap();
+        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
         let isa_builder = isa::lookup_by_name("x86_64-unknown-unknown-elf").unwrap();
+        #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+        let isa_builder = isa::lookup_by_name("aarch64-apple-darwin").unwrap();
         let isa = isa_builder.finish(settings::Flags::new(flag_builder));
 
         let builder = ObjectBuilder::new(
@@ -119,6 +122,7 @@ pub fn lower_funcdef(ctx: &mut LowerCtx, funcdef: &FuncDef<'_>) -> Result<()> {
     Ok(())
 }
 
+#[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
 #[test]
 fn parse_and_lower_to_clif() {
     use crate::ast2ir;
@@ -149,6 +153,7 @@ fn parse_and_lower_to_clif() {
     insta::assert_debug_snapshot!(obj);
 }
 
+#[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
 #[test]
 fn parse_and_lower_to_clif2() {
     use crate::ast2ir;
