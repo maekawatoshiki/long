@@ -1,4 +1,5 @@
-use crate::ir2clif::{ty::convert_type, FuncLowerCtx};
+use super::decl::FuncLowerCtx;
+use crate::ir2clif::ty::convert_type;
 use anyhow::Result;
 use cranelift::prelude::{InstBuilder, Value};
 use cranelift_codegen::ir::types as clif_ty;

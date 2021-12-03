@@ -32,7 +32,7 @@ fn main() {
     // Lower to Clif
     let mut ctx = ir2clif::LowerCtx::new();
     for decl in decls {
-        let _ = ir2clif::lower_decl(&mut ctx, decl).expect("failed to lower IR");
+        let _ = ir2clif::decl::lower_decl(&mut ctx, decl).expect("failed to lower IR");
     }
 
     // Generate object code

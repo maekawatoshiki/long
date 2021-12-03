@@ -1,4 +1,5 @@
-use crate::ir2clif::{expr::lower_expr, FuncLowerCtx};
+use super::decl::FuncLowerCtx;
+use crate::ir2clif::expr::lower_expr;
 use anyhow::Result;
 use cranelift::prelude::InstBuilder;
 use cranelift_codegen::ir::types as clif_ty;
