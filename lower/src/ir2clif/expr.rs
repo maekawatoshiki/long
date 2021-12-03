@@ -19,10 +19,20 @@ pub fn lower_expr(ctx: &mut FuncLowerCtx, expr: &Expr) -> Result<Value> {
             let val = ctx.builder.ins().stack_load(ty, slot, 0);
             Ok(val)
         }
-        Expr::Binary(BinOp::Add, lhs, rhs) => {
+        Expr::Binary(
+            op @ BinOp::Add | op @ BinOp::Sub | op @ BinOp::Mul | op @ BinOp::Div,
+            lhs,
+            rhs,
+        ) => {
             let lhs = lower_expr(ctx, &lhs.inner)?;
             let rhs = lower_expr(ctx, &rhs.inner)?;
-            let val = ctx.builder.ins().iadd(lhs, rhs);
+            let val = match op {
+                BinOp::Add => ctx.builder.ins().iadd(lhs, rhs),
+                BinOp::Sub => ctx.builder.ins().isub(lhs, rhs),
+                BinOp::Mul => ctx.builder.ins().imul(lhs, rhs),
+                BinOp::Div => ctx.builder.ins().sdiv(lhs, rhs), // TODO
+                _ => unreachable!(),
+            };
             Ok(val)
         }
         Expr::Assign(AssignOp::None, lhs, rhs) => {
