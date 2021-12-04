@@ -3,7 +3,7 @@ source: lower/src/ir2clif/decl.rs
 expression: clif_func.display()
 
 ---
-function u0:0() -> i32 apple_aarch64 {
+function u0:0() -> i32 fast {
     ss0 = explicit_slot 4
 
 block0:

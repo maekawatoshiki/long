@@ -5,10 +5,7 @@ mod stmt;
 mod ty;
 
 use cranelift::prelude::Configurable;
-use cranelift_codegen::{
-    isa::{self},
-    settings, Context as ClifContext,
-};
+use cranelift_codegen::{isa, settings, Context as ClifContext};
 use cranelift_module::{DataContext, Module};
 use cranelift_object::{ObjectBuilder, ObjectModule};
 
@@ -20,13 +17,10 @@ pub struct LowerCtx {
 
 impl LowerCtx {
     /// Creates a new `LowerCtx`.
-    pub fn new() -> Self {
+    pub fn new(triple_str: &str) -> Self {
         let mut flag_builder = settings::builder();
         flag_builder.enable("is_pic").unwrap();
-        #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
-        let isa_builder = isa::lookup_by_name("x86_64-unknown-unknown-elf").unwrap();
-        #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-        let isa_builder = isa::lookup_by_name("aarch64-apple-darwin").unwrap();
+        let isa_builder = isa::lookup_by_name(triple_str).unwrap();
         let isa = isa_builder.finish(settings::Flags::new(flag_builder));
 
         let builder = ObjectBuilder::new(
@@ -63,7 +57,10 @@ fn parse_and_lower_to_clif() {
     let ctx = IrContext::new();
     let mut ctx = ast2ir::LowerCtx::new(&ctx);
     let decl = ast2ir::lower_decl(&mut ctx, &inner).unwrap();
-    let mut ctx = LowerCtx::new();
+    #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+    let mut ctx = LowerCtx::new("x86_64-unknown-unknown-elf");
+    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+    let mut ctx = LowerCtx::new("aarch64-apple-darwin");
     let _clif_func = decl::lower_funcdef(
         &mut ctx,
         match decl {
@@ -93,7 +90,10 @@ fn parse_and_lower_to_clif2() {
     let ctx = IrContext::new();
     let mut ctx = ast2ir::LowerCtx::new(&ctx);
     let decl = ast2ir::lower_decl(&mut ctx, &inner).unwrap();
-    let mut ctx = LowerCtx::new();
+    #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+    let mut ctx = LowerCtx::new("x86_64-unknown-unknown-elf");
+    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+    let mut ctx = LowerCtx::new("aarch64-apple-darwin");
     let _clif_func = decl::lower_decl(&mut ctx, decl);
     let product = ctx.module.finish();
     let obj = product.emit().unwrap();

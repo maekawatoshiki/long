@@ -10,7 +10,6 @@ use cranelift_codegen::ir::Function;
 use cranelift_codegen::{
     binemit::{NullStackMapSink, NullTrapSink},
     ir::StackSlot,
-    isa::CallConv,
 };
 use cranelift_module::{Linkage, Module};
 use id_arena::Id;
@@ -68,11 +67,11 @@ pub fn lower_funcdef(ctx: &mut LowerCtx, funcdef: &FuncDef<'_>) -> Result<()> {
     Ok(())
 }
 
-pub fn lower_funcdef_sub<'a>(ctx: &'a mut LowerCtx, funcdef: &FuncDef<'_>) -> Result<&'a Function> {
-    #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
-    let mut sig = Signature::new(CallConv::SystemV);
-    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-    let mut sig = Signature::new(CallConv::AppleAarch64);
+pub fn lower_funcdef_sub<'a>(
+    ctx: &'a mut LowerCtx,
+    funcdef: &FuncDef<'_>,
+) -> Result<&'a mut Function> {
+    let mut sig = Signature::new(ctx.module.isa().default_call_conv());
     sig.returns
         .push(AbiParam::new(convert_type(funcdef.sig.ret)));
     ctx.clif_ctx.func.signature = sig;
@@ -102,7 +101,7 @@ pub fn lower_funcdef_sub<'a>(ctx: &'a mut LowerCtx, funcdef: &FuncDef<'_>) -> Re
     }
     builder.finalize();
 
-    Ok(&ctx.clif_ctx.func)
+    Ok(&mut ctx.clif_ctx.func)
 }
 
 macro_rules! lower_func {
@@ -110,6 +109,7 @@ macro_rules! lower_func {
         #[test]
         fn $name() {
             use crate::ast2ir;
+            use cranelift_codegen::isa::CallConv;
             use long_ast::node::Located;
             use long_ir::decl::Decl;
             use long_ir::Context as IrContext;
@@ -124,7 +124,10 @@ macro_rules! lower_func {
             let ctx = IrContext::new();
             let mut ctx = ast2ir::LowerCtx::new(&ctx);
             let decl = ast2ir::lower_decl(&mut ctx, &inner).unwrap();
-            let mut ctx = LowerCtx::new();
+            #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+            let mut ctx = LowerCtx::new("x86_64-unknown-unknown-elf");
+            #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+            let mut ctx = LowerCtx::new("aarch64-apple-darwin");
             let clif_func = lower_funcdef_sub(
                 &mut ctx,
                 match decl {
@@ -133,6 +136,11 @@ macro_rules! lower_func {
                 },
             )
             .unwrap();
+            // TODO: FIXME: Depending on OS and ISA, the calling convention may vary.
+            // This makes it difficult to do testing using insta because the text representation
+            // of a cranelift function contains the name of calling convention.
+            // So we have to reset the calling convention here.
+            clif_func.signature.call_conv = CallConv::Fast;
             insta::assert_display_snapshot!(clif_func.display());
         }
     };

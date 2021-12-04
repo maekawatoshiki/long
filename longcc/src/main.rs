@@ -27,10 +27,11 @@ fn main() {
         decls.push(ast2ir::lower_decl(&mut ctx, &decl.inner).expect("failed to lower AST"));
     }
 
-    // println!("{:#?}", decls);
-
     // Lower to Clif
-    let mut ctx = ir2clif::LowerCtx::new();
+    #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
+    let mut ctx = ir2clif::LowerCtx::new("x86_64-unknown-unknown-elf");
+    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+    let mut ctx = ir2clif::LowerCtx::new("aarch64-apple-darwin");
     for decl in decls {
         let _ = ir2clif::decl::lower_decl(&mut ctx, decl).expect("failed to lower IR");
     }
