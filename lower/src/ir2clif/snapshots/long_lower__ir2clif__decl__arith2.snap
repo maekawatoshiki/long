@@ -1,0 +1,31 @@
+---
+source: lower/src/ir2clif/decl.rs
+expression: clif_func.display()
+
+---
+function u0:0() -> i32 apple_aarch64 {
+    ss0 = explicit_slot 4
+
+block0:
+    v0 = iconst.i32 1
+    stack_store v0, ss0
+    v1 = stack_load.i32 ss0
+    v2 = iconst.i32 2
+    v3 = iadd v1, v2
+    stack_store v3, ss0
+    v4 = stack_load.i32 ss0
+    v5 = iconst.i32 3
+    v6 = isub v4, v5
+    stack_store v6, ss0
+    v7 = stack_load.i32 ss0
+    v8 = iconst.i32 4
+    v9 = imul v7, v8
+    stack_store v9, ss0
+    v10 = stack_load.i32 ss0
+    v11 = iconst.i32 5
+    v12 = sdiv v10, v11
+    stack_store v12, ss0
+    v13 = stack_load.i32 ss0
+    return v13
+}
+
