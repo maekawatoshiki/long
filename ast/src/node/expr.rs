@@ -19,6 +19,9 @@ pub enum Expr {
 
     /// An Assign expression.
     Assign(AssignOp, Box<Located<Expr>>, Box<Located<Expr>>),
+
+    /// A call expression.
+    Call(Box<Located<Expr>>, Vec<Located<Expr>>),
 }
 
 /// A unary operator kind.
@@ -124,6 +127,7 @@ impl Located<Expr> {
             }
             Expr::Assign(AssignOp::None, _, ref rhs) => rhs.eval_constexpr(),
             Expr::Assign(_, _, _) => todo!(),
+            Expr::Call(_, _) => todo!(),
         }
     }
 }

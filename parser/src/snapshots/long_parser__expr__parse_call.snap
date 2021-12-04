@@ -1,0 +1,21 @@
+---
+source: parser/src/expr.rs
+expression: node
+
+---
+Ok(
+    Located {
+        inner: Call(
+            Located {
+                inner: Literal(
+                    Ident(
+                        "f",
+                    ),
+                ),
+                loc: None:1:1,
+            },
+            [],
+        ),
+        loc: None:1:1,
+    },
+)

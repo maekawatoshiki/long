@@ -118,8 +118,40 @@ impl<'a, L: LexerLike> Parser<'a, L> {
                     *tok.loc(),
                 ));
             }
-            _ => self.parse_primary(),
+            _ => self.parse_postfix(),
         }
+    }
+
+    /// Parses a postfix expression.
+    fn parse_postfix(&mut self) -> Result<Located<Expr>> {
+        let mut base = self.parse_primary()?;
+        loop {
+            if self.lexer.skip(SymbolKind::OpeningParen.into()) {
+                base = self.parse_func_call(base)?;
+                continue;
+            }
+            break;
+        }
+        Ok(base)
+    }
+
+    /// Parses a function call expression.
+    fn parse_func_call(
+        &mut self,
+        Located { inner: base, loc }: Located<Expr>,
+    ) -> Result<Located<Expr>> {
+        let mut args = vec![];
+        while !self.lexer.skip(SymbolKind::ClosingParen.into()) {
+            args.push(self.parse_assign()?);
+            if self.lexer.skip(SymbolKind::ClosingParen.into()) {
+                break;
+            }
+            self.expect(SymbolKind::Comma)?;
+        }
+        Ok(Located::new(
+            Expr::Call(Box::new(Located::new(base, loc)), args),
+            loc,
+        ))
     }
 
     /// Parses a literal or parenthetical expression.
@@ -247,5 +279,26 @@ fn parse_assign_op() {
 fn parse_lit() {
     use crate::lexer::Lexer;
     let node = Parser::new(&mut Lexer::new("ident, 1")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_call() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("f()")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_call2() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("f(1)")).parse_expr();
+    insta::assert_debug_snapshot!(node);
+}
+
+#[test]
+fn parse_call3() {
+    use crate::lexer::Lexer;
+    let node = Parser::new(&mut Lexer::new("f(1, 2)")).parse_expr();
     insta::assert_debug_snapshot!(node);
 }
