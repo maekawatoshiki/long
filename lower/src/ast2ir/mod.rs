@@ -12,7 +12,7 @@ use anyhow::Result;
 use env::Envs;
 use long_ast::node::decl::{Decl as AstDecl, DeclaratorId, FuncDef as AstFuncDef};
 use long_ir::{
-    decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature, Locals},
+    decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature, Globals, Locals},
     Context,
 };
 use std::mem::replace;
@@ -23,6 +23,7 @@ pub struct LowerCtx<'a> {
     pub ir_ctx: &'a Context<'a>,
     pub envs: Envs<'a>,
     pub locals: Locals<'a>,
+    pub globals: Globals<'a>,
 }
 
 impl<'a> LowerCtx<'a> {
@@ -31,6 +32,7 @@ impl<'a> LowerCtx<'a> {
             ir_ctx,
             envs: Envs::new(),
             locals: Locals::new(),
+            globals: Globals::new(),
         }
     }
 }

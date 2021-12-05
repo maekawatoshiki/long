@@ -39,7 +39,7 @@ expression: decls
                         },
                     ],
                 ),
-                locals: Locals { (Id { idx: 0 }, Local { name: "i", ty: Int(Signed) }) },
+                locals: Variables { (Id { idx: 0 }, Local { name: "i", ty: Int(Signed) }) },
             },
         ),
     ),

@@ -39,7 +39,7 @@ expression: decls
                         },
                     ],
                 ),
-                locals: Locals {  },
+                locals: Variables {  },
             },
         ),
     ),
