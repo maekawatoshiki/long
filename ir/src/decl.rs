@@ -21,7 +21,7 @@ pub struct Locals<'a>(Arena<Local<'a>>);
 
 #[derive(Debug)]
 pub struct Local<'a> {
-    pub name: &'a Name,
+    pub name: String,
     pub ty: &'a Type<'a>,
 }
 
@@ -51,8 +51,11 @@ impl<'a> Locals<'a> {
         Locals(Arena::new())
     }
 
-    pub fn alloc(&mut self, name: &'a Name, ty: &'a Type<'a>) -> Id<Local<'a>> {
-        self.0.alloc(Local { name, ty })
+    pub fn alloc(&mut self, name: impl Into<String>, ty: &'a Type<'a>) -> Id<Local<'a>> {
+        self.0.alloc(Local {
+            name: name.into(),
+            ty,
+        })
     }
 
     pub fn get(&self, id: Id<Local<'a>>) -> Option<&Local<'a>> {

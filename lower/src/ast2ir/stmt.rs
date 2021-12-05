@@ -1,8 +1,9 @@
-use crate::ast2ir::{expr::lower_expr, name::resolve_declarator_id, ty::resolve_type};
+use crate::ast2ir::{expr::lower_expr, ty::resolve_type};
 
 use super::LowerCtx;
 use anyhow::Result;
 use long_ast::node::{
+    decl::DeclaratorId,
     stmt::{BlockStmt as AstBlockStmt, Stmt as AstStmt},
     Located,
 };
@@ -21,7 +22,9 @@ pub fn lower_stmt<'a>(ctx: &mut LowerCtx<'a>, stmt: &AstStmt) -> Result<Option<&
         AstStmt::Block(_) => todo!(),
         AstStmt::SimpleDecl(decls) => {
             for decl in decls {
-                let name = resolve_declarator_id(ctx, &decl.name, true)?;
+                let name = match &decl.name {
+                    DeclaratorId::Ident(ident) => ident,
+                };
                 let ty = resolve_type(ctx, &decl.ty)?;
                 let id = ctx.locals.alloc(name, ty);
                 ctx.envs.add_to_cur_env(name, ty);

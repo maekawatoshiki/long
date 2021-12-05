@@ -10,12 +10,14 @@ use crate::ast2ir::{
 };
 use anyhow::Result;
 use env::Envs;
-use long_ast::node::decl::{Decl as AstDecl, FuncDef as AstFuncDef};
+use long_ast::node::decl::{Decl as AstDecl, DeclaratorId, FuncDef as AstFuncDef};
 use long_ir::{
     decl::{Decl as IrDecl, FuncDef as IrFuncDef, FuncSignature, Locals},
     Context,
 };
 use std::mem::replace;
+
+use self::ty::resolve_func_type;
 
 pub struct LowerCtx<'a> {
     pub ir_ctx: &'a Context<'a>,
@@ -55,6 +57,13 @@ fn lower_funcdef<'a>(ctx: &mut LowerCtx<'a>, funcdef: &AstFuncDef) -> Result<&'a
         ret: resolve_type(ctx, &funcdef.ty.ret)?,
         params: vec![],
     };
+    let fty = resolve_func_type(ctx, &funcdef.ty)?;
+    ctx.envs.add_to_cur_env(
+        match &funcdef.name {
+            DeclaratorId::Ident(name) => name,
+        },
+        fty,
+    );
     ctx.envs.push_block();
     let body = lower_block_stmt(ctx, &funcdef.body)?;
     ctx.envs.pop();

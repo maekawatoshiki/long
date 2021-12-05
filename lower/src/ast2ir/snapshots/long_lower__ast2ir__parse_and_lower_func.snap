@@ -38,7 +38,7 @@ Ok(
                     },
                 ],
             ),
-            locals: Locals { (Id { idx: 0 }, Local { name: Local("i"), ty: Int(Signed) }) },
+            locals: Locals { (Id { idx: 0 }, Local { name: "i", ty: Int(Signed) }) },
         },
     ),
 )

@@ -8,10 +8,7 @@ use long_ast::{
     },
     token::kind::IntKind,
 };
-use long_ir::{
-    expr::{Expr as IrExpr, Literal as IrLiteral},
-    name::Name,
-};
+use long_ir::expr::{Expr as IrExpr, Literal as IrLiteral};
 
 pub fn lower_expr<'a>(ctx: &mut LowerCtx<'a>, expr: &AstExpr) -> Result<&'a IrExpr<'a>> {
     match expr {
@@ -20,8 +17,7 @@ pub fn lower_expr<'a>(ctx: &mut LowerCtx<'a>, expr: &AstExpr) -> Result<&'a IrEx
             .expr_arena
             .alloc(IrExpr::Literal(IrLiteral::Int(IntKind::Int(*i))))),
         AstExpr::Literal(AstLiteral::Ident(ident)) => {
-            let name = ctx.ir_ctx.name_arena.alloc(Name::local(ident));
-            let var = ctx.envs.lookup_local(name).expect("TODO");
+            let var = ctx.envs.lookup_local(ident).expect("TODO");
             Ok(ctx
                 .ir_ctx
                 .expr_arena
