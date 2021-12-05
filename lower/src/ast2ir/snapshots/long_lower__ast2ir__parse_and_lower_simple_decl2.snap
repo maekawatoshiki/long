@@ -1,33 +1,35 @@
 ---
 source: lower/src/ast2ir/mod.rs
-expression: decl
+expression: decls
 
 ---
-Ok(
-    SimpleDecl(
-        [
-            SimpleDecl {
-                name: Global(
-                    [
-                        "i",
-                    ],
-                ),
-                ty: Int(
-                    Signed,
-                ),
-                init: None,
-            },
-            SimpleDecl {
-                name: Global(
-                    [
-                        "j",
-                    ],
-                ),
-                ty: Int(
-                    Signed,
-                ),
-                init: None,
-            },
-        ],
+[
+    Ok(
+        SimpleDecl(
+            [
+                SimpleDecl {
+                    name: Global(
+                        [
+                            "i",
+                        ],
+                    ),
+                    ty: Int(
+                        Signed,
+                    ),
+                    init: None,
+                },
+                SimpleDecl {
+                    name: Global(
+                        [
+                            "j",
+                        ],
+                    ),
+                    ty: Int(
+                        Signed,
+                    ),
+                    init: None,
+                },
+            ],
+        ),
     ),
-)
+]

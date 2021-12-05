@@ -82,16 +82,14 @@ macro_rules! parse_and_lower_test {
             use long_ast::node::Located;
             use long_parser::lexer::Lexer;
             use long_parser::Parser;
-            let Located { inner, .. } = Parser::new(&mut Lexer::new($src))
-                .parse_program()
-                .unwrap()
-                .into_iter()
-                .next()
-                .unwrap();
+            let list = Parser::new(&mut Lexer::new($src)).parse_program().unwrap();
             let ir_ctx = Context::new();
             let mut ctx = LowerCtx::new(&ir_ctx);
-            let decl = lower_decl(&mut ctx, &inner);
-            insta::assert_debug_snapshot!(decl)
+            let mut decls = vec![];
+            for Located { inner, .. } in list {
+                decls.push(lower_decl(&mut ctx, &inner));
+            }
+            insta::assert_debug_snapshot!(decls)
         }
     };
 }
@@ -100,7 +98,15 @@ parse_and_lower_test!(parse_and_lower, "int main() { return 0; }");
 parse_and_lower_test!(parse_and_lower_simple_decl, "int i;");
 parse_and_lower_test!(parse_and_lower_simple_decl2, "int i, j;");
 parse_and_lower_test!(parse_and_lower_func, "int main() { int i; return 0; }");
-// parse_and_lower_test!(
-//     parse_and_lower_func2,
-//     "int main() { int i; i = 10; return 0; }"
-// );
+parse_and_lower_test!(
+    parse_and_lower_func2,
+    "int main() { int i; i = 10; return 0; }"
+);
+parse_and_lower_test!(
+    parse_and_lower_funcs,
+    r#"
+int f() { return 1; }
+int main() {
+    return f();
+}"#
+);

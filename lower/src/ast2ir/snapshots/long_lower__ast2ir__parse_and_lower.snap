@@ -1,44 +1,46 @@
 ---
 source: lower/src/ast2ir/mod.rs
-expression: decl
+expression: decls
 
 ---
-Ok(
-    FuncDef(
-        FuncDef {
-            name: Global(
-                [
-                    "main",
-                ],
-            ),
-            sig: FuncSignature {
-                ret: Int(
-                    Signed,
+[
+    Ok(
+        FuncDef(
+            FuncDef {
+                name: Global(
+                    [
+                        "main",
+                    ],
                 ),
-                params: [],
-            },
-            body: BlockStmt(
-                [
-                    Located {
-                        inner: Return(
-                            Some(
-                                Located {
-                                    inner: Literal(
-                                        Int(
+                sig: FuncSignature {
+                    ret: Int(
+                        Signed,
+                    ),
+                    params: [],
+                },
+                body: BlockStmt(
+                    [
+                        Located {
+                            inner: Return(
+                                Some(
+                                    Located {
+                                        inner: Literal(
                                             Int(
-                                                0,
+                                                Int(
+                                                    0,
+                                                ),
                                             ),
                                         ),
-                                    ),
-                                    loc: None:1:21,
-                                },
+                                        loc: None:1:21,
+                                    },
+                                ),
                             ),
-                        ),
-                        loc: None:1:14,
-                    },
-                ],
-            ),
-            locals: Locals {  },
-        },
+                            loc: None:1:14,
+                        },
+                    ],
+                ),
+                locals: Locals {  },
+            },
+        ),
     ),
-)
+]

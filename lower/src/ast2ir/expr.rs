@@ -17,11 +17,28 @@ pub fn lower_expr<'a>(ctx: &mut LowerCtx<'a>, expr: &AstExpr) -> Result<&'a IrEx
             .expr_arena
             .alloc(IrExpr::Literal(IrLiteral::Int(IntKind::Int(*i))))),
         AstExpr::Literal(AstLiteral::Ident(ident)) => {
-            let var = ctx.envs.lookup_local(ident).expect("TODO");
-            Ok(ctx
-                .ir_ctx
-                .expr_arena
-                .alloc(IrExpr::Literal(IrLiteral::Local(var))))
+            if let Some(local) = ctx.envs.lookup_local(ident) {
+                Ok(ctx
+                    .ir_ctx
+                    .expr_arena
+                    .alloc(IrExpr::Literal(IrLiteral::Local(local))))
+            } else {
+                ctx.envs.lookup(ident).map_or_else(
+                    || {
+                        todo!()
+                        // Err(Error::Message(
+                        //     format!("Undefined identifier: {}", ident),
+                        //     loc,
+                        // ))
+                    },
+                    |_ty| {
+                        Ok(&*ctx
+                            .ir_ctx
+                            .expr_arena
+                            .alloc(IrExpr::Literal(IrLiteral::Global(ident.to_owned()))))
+                    },
+                )
+            }
         }
         AstExpr::Binary(op, lhs, rhs) => {
             let lhs = Located::new(lower_expr(ctx, &lhs.inner)?, lhs.loc());
@@ -35,6 +52,14 @@ pub fn lower_expr<'a>(ctx: &mut LowerCtx<'a>, expr: &AstExpr) -> Result<&'a IrEx
                 .ir_ctx
                 .expr_arena
                 .alloc(IrExpr::Assign(AssignOp::None, lhs, rhs)))
+        }
+        AstExpr::Call(callee, args) => {
+            let callee = Located::new(lower_expr(ctx, &callee.inner)?, callee.loc());
+            let mut new_args = vec![];
+            for arg in args {
+                new_args.push(Located::new(lower_expr(ctx, &arg.inner)?, arg.loc()));
+            }
+            Ok(ctx.ir_ctx.expr_arena.alloc(IrExpr::Call(callee, new_args)))
         }
         _ => todo!(),
     }

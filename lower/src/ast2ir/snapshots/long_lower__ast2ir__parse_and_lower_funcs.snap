@@ -1,0 +1,89 @@
+---
+source: lower/src/ast2ir/mod.rs
+expression: decls
+
+---
+[
+    Ok(
+        FuncDef(
+            FuncDef {
+                name: Global(
+                    [
+                        "f",
+                    ],
+                ),
+                sig: FuncSignature {
+                    ret: Int(
+                        Signed,
+                    ),
+                    params: [],
+                },
+                body: BlockStmt(
+                    [
+                        Located {
+                            inner: Return(
+                                Some(
+                                    Located {
+                                        inner: Literal(
+                                            Int(
+                                                Int(
+                                                    1,
+                                                ),
+                                            ),
+                                        ),
+                                        loc: None:2:18,
+                                    },
+                                ),
+                            ),
+                            loc: None:2:11,
+                        },
+                    ],
+                ),
+                locals: Locals {  },
+            },
+        ),
+    ),
+    Ok(
+        FuncDef(
+            FuncDef {
+                name: Global(
+                    [
+                        "main",
+                    ],
+                ),
+                sig: FuncSignature {
+                    ret: Int(
+                        Signed,
+                    ),
+                    params: [],
+                },
+                body: BlockStmt(
+                    [
+                        Located {
+                            inner: Return(
+                                Some(
+                                    Located {
+                                        inner: Call(
+                                            Located {
+                                                inner: Literal(
+                                                    Global(
+                                                        "f",
+                                                    ),
+                                                ),
+                                                loc: None:4:12,
+                                            },
+                                            [],
+                                        ),
+                                        loc: None:4:12,
+                                    },
+                                ),
+                            ),
+                            loc: None:4:5,
+                        },
+                    ],
+                ),
+                locals: Locals {  },
+            },
+        ),
+    ),
+]

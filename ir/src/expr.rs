@@ -29,6 +29,9 @@ pub enum Expr<'a> {
 
     /// An Assign expression.
     Assign(AssignOp, Located<&'a Expr<'a>>, Located<&'a Expr<'a>>),
+
+    /// A call expression.
+    Call(Located<&'a Expr<'a>>, Vec<Located<&'a Expr<'a>>>),
 }
 
 /// A literal node.
@@ -36,4 +39,5 @@ pub enum Expr<'a> {
 pub enum Literal<'a> {
     Int(IntKind),
     Local(Id<Local<'a>>),
+    Global(String), // TODO: Use `Name`.
 }
